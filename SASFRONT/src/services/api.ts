@@ -18,7 +18,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json'
   },
-  timeout: 5000 // 5 second timeout
+  timeout: 10000 // 10 second timeout
 });
 
 // Add token to requests if available and log requests
@@ -239,7 +239,8 @@ const createFallbackService = (realService: any, mockService: any, serviceName: 
 
           return result;
         } catch (error) {
-          logger.warn(`API call failed, using mock data for ${serviceName}.${String(prop)}`, error);
+          logger.warn(`API call failed, using mock data for ${serviceName}.${String(prop)}`, {});
+          console.error(`API call error details:`, error);
           localStorage.setItem('backendAvailable', 'false');
 
           // Save the request to localStorage for later sync

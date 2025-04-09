@@ -146,7 +146,7 @@ const NutritionPlansView = () => {
           </Box>
 
           <Grid container spacing={3}>
-            <Grid item xs={12} md={4}>
+            <Grid md={4} lg={4} sm={12}>
               <Card elevation={2}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
@@ -182,7 +182,7 @@ const NutritionPlansView = () => {
               </Card>
             </Grid>
 
-            <Grid item xs={12} md={8}>
+            <Grid md={8} lg={8} sm={12}>
               <Paper elevation={2} sx={{ p: 2 }}>
                 <Typography variant="h6" gutterBottom>
                   Comidas del Día
