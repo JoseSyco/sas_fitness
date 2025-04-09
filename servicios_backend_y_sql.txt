@@ -1,0 +1,201 @@
+# Servicios del Backend (API Endpoints)
+
+## Autenticación
+- POST /api/auth/register - Registrar un nuevo usuario
+- POST /api/auth/login - Iniciar sesión
+
+## Usuarios
+- GET /api/users/profile - Obtener perfil del usuario
+- PUT /api/users/profile - Actualizar perfil del usuario
+- GET /api/users/goals - Obtener objetivos de fitness
+- POST /api/users/goals - Crear un nuevo objetivo
+- PUT /api/users/goals/:goalId - Actualizar un objetivo
+- POST /api/users/progress - Registrar progreso
+- GET /api/users/progress - Obtener historial de progreso
+
+## Planes de Entrenamiento
+- GET /api/workouts/plans - Obtener todos los planes de entrenamiento
+- GET /api/workouts/plans/:planId - Obtener un plan específico
+- POST /api/workouts/plans - Crear un nuevo plan
+- POST /api/workouts/logs - Registrar un entrenamiento completado
+- GET /api/workouts/logs - Obtener registros de entrenamientos
+- GET /api/workouts/exercises - Obtener todos los ejercicios
+
+## Planes de Nutrición
+- GET /api/nutrition/plans - Obtener todos los planes de nutrición
+- GET /api/nutrition/plans/:planId - Obtener un plan específico
+- POST /api/nutrition/plans - Crear un nuevo plan
+- PUT /api/nutrition/plans/:planId - Actualizar un plan
+
+## Inteligencia Artificial
+- POST /api/ai/generate-workout - Generar un plan de entrenamiento
+- POST /api/ai/generate-nutrition - Generar un plan de nutrición
+- POST /api/ai/advice - Obtener consejos de fitness
+
+# SQL para la Base de Datos
+
+```sql
+-- Database: sas2
+
+CREATE DATABASE sas2
+    WITH
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1;
+
+\c sas2
+
+-- Users Table
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- User Profiles Table
+CREATE TABLE user_profiles (
+    profile_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    age INTEGER,
+    gender VARCHAR(20),
+    height NUMERIC(5,2), -- in cm
+    weight NUMERIC(5,2), -- in kg
+    activity_level VARCHAR(50), -- sedentary, light, moderate, active, very active
+    fitness_level VARCHAR(50), -- beginner, intermediate, advanced
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Fitness Goals Table
+CREATE TABLE fitness_goals (
+    goal_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    goal_type VARCHAR(50) NOT NULL, -- weight loss, muscle gain, endurance, etc.
+    target_value NUMERIC(5,2), -- target weight, etc.
+    start_date DATE NOT NULL,
+    target_date DATE,
+    status VARCHAR(20) DEFAULT 'active', -- active, completed, abandoned
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Workout Plans Table
+CREATE TABLE workout_plans (
+    plan_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    plan_name VARCHAR(100) NOT NULL,
+    description TEXT,
+    is_ai_generated BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Workout Sessions Table
+CREATE TABLE workout_sessions (
+    session_id SERIAL PRIMARY KEY,
+    plan_id INTEGER REFERENCES workout_plans(plan_id) ON DELETE CASCADE,
+    day_of_week VARCHAR(10) NOT NULL, -- Monday, Tuesday, etc.
+    focus_area VARCHAR(50) NOT NULL, -- Chest, Back, Legs, etc.
+    duration_minutes INTEGER NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Exercises Table
+CREATE TABLE exercises (
+    exercise_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    muscle_group VARCHAR(50) NOT NULL,
+    equipment_needed VARCHAR(100),
+    difficulty_level VARCHAR(20), -- beginner, intermediate, advanced
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Workout Exercises Junction Table
+CREATE TABLE workout_exercises (
+    workout_exercise_id SERIAL PRIMARY KEY,
+    session_id INTEGER REFERENCES workout_sessions(session_id) ON DELETE CASCADE,
+    exercise_id INTEGER REFERENCES exercises(exercise_id) ON DELETE CASCADE,
+    sets INTEGER NOT NULL,
+    reps INTEGER,
+    duration_seconds INTEGER,
+    rest_seconds INTEGER,
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Nutrition Plans Table
+CREATE TABLE nutrition_plans (
+    nutrition_plan_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    plan_name VARCHAR(100) NOT NULL,
+    daily_calories INTEGER,
+    protein_grams INTEGER,
+    carbs_grams INTEGER,
+    fat_grams INTEGER,
+    is_ai_generated BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Meals Table
+CREATE TABLE meals (
+    meal_id SERIAL PRIMARY KEY,
+    nutrition_plan_id INTEGER REFERENCES nutrition_plans(nutrition_plan_id) ON DELETE CASCADE,
+    meal_name VARCHAR(50) NOT NULL, -- Breakfast, Lunch, Dinner, Snack
+    description TEXT,
+    calories INTEGER,
+    protein_grams INTEGER,
+    carbs_grams INTEGER,
+    fat_grams INTEGER,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Progress Tracking Table
+CREATE TABLE progress_tracking (
+    progress_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    tracking_date DATE NOT NULL,
+    weight NUMERIC(5,2), -- in kg
+    body_fat_percentage NUMERIC(5,2),
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Workout Logs Table
+CREATE TABLE workout_logs (
+    log_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    workout_date DATE NOT NULL,
+    plan_id INTEGER REFERENCES workout_plans(plan_id),
+    session_id INTEGER REFERENCES workout_sessions(session_id),
+    duration_minutes INTEGER,
+    calories_burned INTEGER,
+    rating INTEGER, -- 1-5 rating of workout
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- AI Interaction Logs Table
+CREATE TABLE ai_interaction_logs (
+    log_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    interaction_type VARCHAR(50) NOT NULL, -- workout_generation, nutrition_advice, etc.
+    prompt_data JSONB, -- data sent to AI
+    response_data JSONB, -- data received from AI
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+```

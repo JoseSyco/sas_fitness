@@ -1,0 +1,9 @@
+@echo off
+echo Deteniendo procesos anteriores...
+taskkill /f /im node.exe
+echo Limpiando caché...
+rmdir /s /q "C:\Users\usuario1\Desktop\SAS 2\SASFRONT\node_modules\.vite"
+echo Reiniciando el frontend...
+cd "C:\Users\usuario1\Desktop\SAS 2\SASFRONT"
+npx vite
+echo Frontend reiniciado!
