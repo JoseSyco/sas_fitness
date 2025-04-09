@@ -191,6 +191,28 @@ router.get('/progress', authenticateToken, async (req, res) => {
   }
 });
 
+// Test endpoint for checking server status
+router.get('/test', async (req, res) => {
+  try {
+    console.log('[Backend] Test endpoint called');
+
+    // Test database connection
+    const testResult = await db.query('SELECT NOW() as server_time');
+
+    res.status(200).json({
+      message: 'Server is running correctly',
+      server_time: testResult.rows[0].server_time,
+      database_connected: true
+    });
+  } catch (error) {
+    console.error('[Backend] Error in test endpoint:', error);
+    res.status(500).json({
+      message: 'Server is running but database connection failed',
+      error: error.message
+    });
+  }
+});
+
 // Get user preferences
 router.get('/preferences', authenticateToken, async (req, res) => {
   try {

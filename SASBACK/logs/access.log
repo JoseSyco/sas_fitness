@@ -424,3 +424,116 @@
 [2025-04-09T18:59:18.558Z] [INFO] [req-1744225158558-926] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
 [2025-04-09T18:59:18.600Z] [INFO] [req-1744225158558-926] ⚠️ REQUEST END: GET /api - 404 (1ms)
 [2025-04-09T18:59:18.653Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":404,"responseTime":"101ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:12:24.725Z] [INFO] Server running on port 5000
+[2025-04-09T19:12:44.259Z] [INFO] [req-1744225964259-804] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.19041.2673"},"query":{},"params":{}}
+[2025-04-09T19:12:44.265Z] [INFO] [req-1744225964259-804] ⚠️ REQUEST END: GET /api - 404 (4ms)
+[2025-04-09T19:12:44.267Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":404,"responseTime":"9ms","userAgent":"Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.19041.2673","ip":"::1"}
+[2025-04-09T19:17:20.851Z] [INFO] Server running on port 5000
+[2025-04-09T19:17:25.708Z] [INFO] [req-1744226245708-25] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:17:25.713Z] [INFO] [req-1744226245708-25] ⚠️ REQUEST END: GET /api - 404 (5ms)
+[2025-04-09T19:17:25.714Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":404,"responseTime":"7ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:17:36.705Z] [INFO] [req-1744226256705-371] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:17:36.716Z] [INFO] [req-1744226256705-371] ⚠️ REQUEST END: GET /api - 404 (1ms)
+[2025-04-09T19:17:36.720Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":404,"responseTime":"17ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:17:43.409Z] [INFO] [req-1744226263409-847] 🟢 REQUEST START: GET / {"headers":{"user-agent":"Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.19041.2673"},"query":{},"params":{}}
+[2025-04-09T19:17:43.414Z] [INFO] [req-1744226263409-847] ✅ REQUEST END: GET / - 200 (3ms)
+[2025-04-09T19:17:43.415Z] [INFO] HTTP Request {"method":"GET","url":"/","status":200,"responseTime":"10ms","userAgent":"Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.19041.2673","ip":"::1"}
+[2025-04-09T19:17:48.826Z] [INFO] [req-1744226268826-246] 🟢 REQUEST START: GET / {"headers":{"user-agent":"Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.19041.2673"},"query":{},"params":{}}
+[2025-04-09T19:17:48.827Z] [INFO] [req-1744226268826-246] ✅ REQUEST END: GET / - 200 (0ms)
+[2025-04-09T19:17:48.828Z] [INFO] HTTP Request {"method":"GET","url":"/","status":200,"responseTime":"4ms","userAgent":"Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.19041.2673","ip":"::1"}
+[2025-04-09T19:17:54.311Z] [INFO] [req-1744226274311-252] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:17:54.313Z] [INFO] [req-1744226274311-252] ⚠️ REQUEST END: GET /api - 404 (1ms)
+[2025-04-09T19:17:54.313Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":404,"responseTime":"3ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:17:55.632Z] [INFO] [req-1744226275632-96] 🟢 REQUEST START: GET /api/users/test {"headers":{"user-agent":"Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.19041.2673"},"query":{},"params":{}}
+[2025-04-09T19:17:55.651Z] [INFO] [req-1744226275632-96] ❌ REQUEST END: GET /api/users/test - 500 (18ms)
+[2025-04-09T19:17:55.660Z] [INFO] HTTP Request {"method":"GET","url":"/api/users/test","status":500,"responseTime":"29ms","userAgent":"Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.19041.2673","ip":"::1"}
+[2025-04-09T19:17:55.689Z] [INFO] [req-1744226275688-727] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:17:55.691Z] [INFO] [req-1744226275688-727] ⚠️ REQUEST END: GET /api - 404 (1ms)
+[2025-04-09T19:17:55.692Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":404,"responseTime":"7ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:18:07.086Z] [INFO] [req-1744226287086-352] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:18:07.090Z] [INFO] [req-1744226287086-352] ⚠️ REQUEST END: GET /api - 404 (1ms)
+[2025-04-09T19:18:07.091Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":404,"responseTime":"9ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:18:07.107Z] [INFO] [req-1744226287106-145] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:18:07.109Z] [INFO] [req-1744226287106-145] ⚠️ REQUEST END: GET /api - 404 (1ms)
+[2025-04-09T19:18:07.113Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":404,"responseTime":"9ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:18:07.209Z] [INFO] [req-1744226287209-145] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:18:07.212Z] [INFO] [req-1744226287209-145] ⚠️ REQUEST END: GET /api - 404 (1ms)
+[2025-04-09T19:18:07.237Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":404,"responseTime":"30ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:18:12.504Z] [INFO] [req-1744226292504-390] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:18:12.505Z] [INFO] [req-1744226292504-390] ⚠️ REQUEST END: GET /api - 404 (0ms)
+[2025-04-09T19:18:12.506Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":404,"responseTime":"22ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:18:37.278Z] [INFO] [req-1744226317278-968] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:18:37.280Z] [INFO] [req-1744226317278-968] ⚠️ REQUEST END: GET /api - 404 (1ms)
+[2025-04-09T19:18:37.281Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":404,"responseTime":"7ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:18:40.368Z] [INFO] [req-1744226320368-752] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:18:40.371Z] [INFO] [req-1744226320368-752] ⚠️ REQUEST END: GET /api - 404 (1ms)
+[2025-04-09T19:18:40.404Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":404,"responseTime":"38ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:18:40.484Z] [INFO] [req-1744226320483-851] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:18:40.485Z] [INFO] [req-1744226320483-851] ⚠️ REQUEST END: GET /api - 404 (0ms)
+[2025-04-09T19:18:40.487Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":404,"responseTime":"54ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:18:40.583Z] [INFO] [req-1744226320583-884] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:18:40.602Z] [INFO] [req-1744226320583-884] ⚠️ REQUEST END: GET /api - 404 (1ms)
+[2025-04-09T19:18:40.603Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":404,"responseTime":"35ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:19:10.568Z] [INFO] [req-1744226350568-865] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:19:10.570Z] [INFO] [req-1744226350568-865] ⚠️ REQUEST END: GET /api - 404 (1ms)
+[2025-04-09T19:19:10.570Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":404,"responseTime":"10ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:19:40.549Z] [INFO] [req-1744226380549-229] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:19:40.550Z] [INFO] [req-1744226380549-229] ⚠️ REQUEST END: GET /api - 404 (0ms)
+[2025-04-09T19:19:40.551Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":404,"responseTime":"6ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:20:11.557Z] [INFO] [req-1744226411557-263] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:20:11.559Z] [INFO] [req-1744226411557-263] ⚠️ REQUEST END: GET /api - 404 (1ms)
+[2025-04-09T19:20:11.559Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":404,"responseTime":"3ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:20:31.469Z] [INFO] Server running on port 5000
+[2025-04-09T19:20:41.336Z] [INFO] [req-1744226441336-362] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:20:41.344Z] [INFO] [req-1744226441336-362] ✅ REQUEST END: GET /api - 200 (6ms)
+[2025-04-09T19:20:41.346Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":200,"responseTime":"10ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:20:41.814Z] [INFO] [req-1744226441814-222] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:20:41.818Z] [INFO] [req-1744226441814-222] ✅ REQUEST END: GET /api - 304 (2ms)
+[2025-04-09T19:20:41.819Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":304,"responseTime":"9ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:20:52.729Z] [INFO] [req-1744226452729-571] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:20:52.731Z] [INFO] [req-1744226452729-571] ✅ REQUEST END: GET /api - 304 (0ms)
+[2025-04-09T19:20:52.732Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":304,"responseTime":"4ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:20:52.735Z] [INFO] [req-1744226452735-792] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:20:52.738Z] [INFO] [req-1744226452735-792] ✅ REQUEST END: GET /api - 304 (0ms)
+[2025-04-09T19:20:52.746Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":304,"responseTime":"11ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:20:52.838Z] [INFO] [req-1744226452838-978] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:20:52.885Z] [INFO] [req-1744226452838-978] ✅ REQUEST END: GET /api - 304 (1ms)
+[2025-04-09T19:20:52.887Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":304,"responseTime":"51ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:21:02.593Z] [INFO] [req-1744226462593-534] 🟢 REQUEST START: POST /api/ai/chat {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","content-type":"application/json","authorization":"Bearer [REDACTED]"},"query":{},"params":{},"body":{"message":"hola"}}
+[2025-04-09T19:21:02.600Z] [INFO] Received chat message {"userId":1,"messageLength":4}
+[2025-04-09T19:21:02.632Z] [INFO] [req-1744226462593-534] 🔍 INTENT RECOGNITION: Starting intent recognition for message {"messageLength":4}
+[2025-04-09T19:21:02.633Z] [INFO] [req-1744226462593-534] 🌟 INTENT RECOGNIZED: greeting (confidence: 0.9) {"intent_type":"greeting","confidence":0.9,"parameters":{}}
+[2025-04-09T19:21:02.661Z] [INFO] [req-1744226462593-534] 🛠 INTENT HANDLER: Processing greeting intent {"type":"greeting","userId":1}
+[2025-04-09T19:21:02.663Z] [INFO] Handling greeting intent {"userId":1}
+[2025-04-09T19:21:02.695Z] [INFO] [req-1744226462593-534] ✅ REQUEST END: POST /api/ai/chat - 200 (97ms)
+[2025-04-09T19:21:02.696Z] [INFO] HTTP Request {"method":"POST","url":"/api/ai/chat","status":200,"responseTime":"112ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:21:22.845Z] [INFO] [req-1744226482845-335] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:21:22.847Z] [INFO] [req-1744226482845-335] ✅ REQUEST END: GET /api - 304 (0ms)
+[2025-04-09T19:21:22.852Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":304,"responseTime":"9ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:21:52.861Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":304,"responseTime":"8ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:21:52.859Z] [INFO] [req-1744226512855-831] ✅ REQUEST END: GET /api - 304 (3ms)
+[2025-04-09T19:21:52.855Z] [INFO] [req-1744226512855-831] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:22:22.989Z] [INFO] [req-1744226542989-521] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:22:22.992Z] [INFO] [req-1744226542989-521] ✅ REQUEST END: GET /api - 304 (2ms)
+[2025-04-09T19:22:23.092Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":304,"responseTime":"157ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:22:34.327Z] [INFO] [req-1744226554327-279] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:22:34.331Z] [INFO] [req-1744226554327-279] ✅ REQUEST END: GET /api - 304 (2ms)
+[2025-04-09T19:22:34.337Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":304,"responseTime":"10ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:22:34.407Z] [INFO] [req-1744226554406-826] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:22:34.411Z] [INFO] [req-1744226554406-826] ✅ REQUEST END: GET /api - 304 (1ms)
+[2025-04-09T19:22:34.417Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":304,"responseTime":"55ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:22:34.506Z] [INFO] [req-1744226554505-963] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:22:34.512Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":304,"responseTime":"37ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:22:34.511Z] [INFO] [req-1744226554505-963] ✅ REQUEST END: GET /api - 304 (0ms)
+[2025-04-09T19:22:53.282Z] [INFO] [req-1744226573282-961] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:22:53.284Z] [INFO] [req-1744226573282-961] ✅ REQUEST END: GET /api - 304 (1ms)
+[2025-04-09T19:22:53.285Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":304,"responseTime":"4ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:23:04.513Z] [INFO] [req-1744226584513-71] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:23:04.517Z] [INFO] [req-1744226584513-71] ✅ REQUEST END: GET /api - 304 (1ms)
+[2025-04-09T19:23:04.519Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":304,"responseTime":"9ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:23:23.293Z] [INFO] [req-1744226603293-752] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:23:23.297Z] [INFO] [req-1744226603293-752] ✅ REQUEST END: GET /api - 304 (2ms)
+[2025-04-09T19:23:23.299Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":304,"responseTime":"9ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}
+[2025-04-09T19:23:34.492Z] [INFO] [req-1744226614492-267] 🟢 REQUEST START: GET /api {"headers":{"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"},"query":{},"params":{}}
+[2025-04-09T19:23:34.496Z] [INFO] [req-1744226614492-267] ✅ REQUEST END: GET /api - 304 (1ms)
+[2025-04-09T19:23:34.498Z] [INFO] HTTP Request {"method":"GET","url":"/api","status":304,"responseTime":"8ms","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36","ip":"::1"}

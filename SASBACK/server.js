@@ -82,6 +82,19 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to SAS2 Fitness API' });
 });
 
+// API status route
+app.get('/api', (req, res) => {
+  res.json({
+    status: 'online',
+    message: 'API is running',
+    database: {
+      connected: false,
+      error: 'Database connection error. Using mock data.'
+    },
+    version: '1.0.0'
+  });
+});
+
 // Import routes
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
