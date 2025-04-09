@@ -49,6 +49,50 @@ async function callDeepseekAPI(prompt, userId, systemPromptType = 'GENERAL_COACH
       // Continue even if logging fails
     }
 
+    // Log the full DeepSeek response
+    console.log('\n\n==== DEEPSEEK API RESPONSE START ====');
+    console.log(`Request ID: ${requestId || 'N/A'}`);
+    console.log(`System Prompt Type: ${systemPromptType}`);
+    console.log(`User ID: ${userId}`);
+
+    console.log('\nFull Response Object:');
+    console.log(JSON.stringify(response.data, null, 2));
+
+    console.log('\nResponse Content:');
+    console.log(response.data.choices[0].message.content);
+
+    // Check if the response contains JSON data
+    try {
+      const content = response.data.choices[0].message.content;
+      // Try to find JSON in the content
+      const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) ||
+                        content.match(/```\n([\s\S]*?)\n```/) ||
+                        content.match(/{[\s\S]*?}/);
+
+      if (jsonMatch) {
+        console.log('\nDETECTED JSON DATA IN RESPONSE:');
+        const jsonStr = jsonMatch[0].replace(/```json\n|```\n|```/g, '');
+        try {
+          const jsonData = JSON.parse(jsonStr);
+          console.log('JSON DATA:');
+          console.log(JSON.stringify(jsonData, null, 2));
+
+          // If there's a data field, log it separately
+          if (jsonData.data) {
+            console.log('\nDATA FIELD:');
+            console.log(JSON.stringify(jsonData.data, null, 2));
+          }
+        } catch (jsonError) {
+          console.log('Failed to parse JSON, showing raw match:');
+          console.log(jsonStr);
+        }
+      }
+    } catch (error) {
+      console.log('Error checking for JSON in response:', error.message);
+    }
+
+    console.log('==== DEEPSEEK API RESPONSE END ====\n\n');
+
     logger.info(`${logPrefix} 📬 DEEPSEEK API: Received response`, {
       responseLength: JSON.stringify(response.data).length,
       firstTokens: response.data.choices[0].message.content.substring(0, 100) + '...'
@@ -70,11 +114,25 @@ function extractJsonFromResponse(aiResponse) {
   try {
     const content = aiResponse.choices[0].message.content;
 
+    console.log('\n\n==== EXTRACTING JSON FROM RESPONSE ====');
+    console.log('Raw content:');
+    console.log(content);
+
     // Try to parse the entire content as JSON first (new format)
     try {
       const parsedJson = JSON.parse(content);
       if (parsedJson.message && parsedJson.data) {
         logger.info('Successfully parsed structured JSON response with message and data');
+        console.log('\nParsed JSON:');
+        console.log(JSON.stringify(parsedJson, null, 2));
+
+        // Explicitly log the data part
+        if (parsedJson.data && Object.keys(parsedJson.data).length > 0) {
+          console.log('\nEXTRACTED DATA:');
+          console.log(JSON.stringify(parsedJson.data, null, 2));
+        }
+
+        console.log('==== JSON EXTRACTION COMPLETE ====\n\n');
         return parsedJson;
       }
     } catch (initialError) {
@@ -87,31 +145,122 @@ function extractJsonFromResponse(aiResponse) {
                       content.match(/{[\s\S]*?}/);
 
     if (jsonMatch) {
-      const extractedJson = JSON.parse(jsonMatch[0].replace(/```json\n|```\n|```/g, ''));
+      const jsonStr = jsonMatch[0].replace(/```json\n|```\n|```/g, '');
+      console.log('\nExtracted JSON string:');
+      console.log(jsonStr);
 
-      // Check if it's already in our expected format
-      if (extractedJson.message && extractedJson.data) {
-        logger.info('Successfully extracted structured JSON with message and data from markdown');
-        return extractedJson;
-      } else {
-        // If it's just raw data, wrap it in our expected format
-        logger.info('Extracted raw JSON data, wrapping in structured format');
-        return {
-          message: content.replace(jsonMatch[0], '').trim(),
-          data: extractedJson
-        };
+      try {
+        const extractedJson = JSON.parse(jsonStr);
+
+        // Check if it's already in our expected format
+        if (extractedJson.message && extractedJson.data) {
+          logger.info('Successfully extracted structured JSON with message and data from markdown');
+          console.log('\nExtracted JSON with message and data:');
+          console.log(JSON.stringify(extractedJson, null, 2));
+
+          // Explicitly log the data part
+          if (extractedJson.data && Object.keys(extractedJson.data).length > 0) {
+            console.log('\nEXTRACTED DATA:');
+            console.log(JSON.stringify(extractedJson.data, null, 2));
+          }
+
+          console.log('==== JSON EXTRACTION COMPLETE ====\n\n');
+          return extractedJson;
+        } else {
+          // If it's just raw data, wrap it in our expected format
+          logger.info('Extracted raw JSON data, wrapping in structured format');
+          const result = {
+            message: content.replace(jsonMatch[0], '').trim(),
+            data: extractedJson
+          };
+          console.log('\nWrapped JSON:');
+          console.log(JSON.stringify(result, null, 2));
+
+          // Explicitly log the data part
+          console.log('\nEXTRACTED DATA (wrapped):');
+          console.log(JSON.stringify(extractedJson, null, 2));
+
+          console.log('==== JSON EXTRACTION COMPLETE ====\n\n');
+          return result;
+        }
+      } catch (jsonError) {
+        console.log('\nFailed to parse extracted JSON:');
+        console.log(jsonError.message);
+        console.log('Raw match:');
+        console.log(jsonStr);
       }
-    } else {
-      // If no JSON found, treat the entire content as a message
-      logger.info('No JSON found in response, treating entire content as message');
-      return {
-        message: content,
-        data: {}
-      };
     }
+
+    // If no JSON found or parsing failed, treat the entire content as a message
+    logger.info('No valid JSON found in response, treating entire content as message');
+    console.log('\nNo valid JSON found, using content as message');
+    console.log('==== JSON EXTRACTION COMPLETE ====\n\n');
+    return {
+      message: content,
+      data: {}
+    };
   } catch (error) {
     logger.error('Error extracting JSON from AI response', error);
     throw new Error('Failed to parse AI response');
+  }
+}
+
+/**
+ * Main intent handler that routes to specific handlers based on intent type
+ * @param {Object} intent - Recognized intent
+ * @param {number} userId - User ID
+ * @param {string} message - Original user message
+ * @param {string} requestId - Request ID for logging
+ * @returns {Object} - Handler response
+ */
+async function handleIntent(intent, userId, message, requestId = null) {
+  const logPrefix = requestId ? `[${requestId}]` : '';
+  logger.info(`${logPrefix} 🎯 INTENT HANDLER: Handling intent ${intent.intent_type}`, { intent });
+
+  try {
+    // Route to specific handler based on intent type
+    switch (intent.intent_type) {
+      case INTENT_TYPES.CREATE_WORKOUT:
+        return await handleCreateWorkout(intent, userId, requestId);
+      case INTENT_TYPES.CREATE_NUTRITION:
+        return await handleCreateNutrition(intent, userId, requestId);
+      case INTENT_TYPES.LOG_PROGRESS:
+        return await handleLogProgress(intent, userId, requestId);
+      case INTENT_TYPES.GET_PROGRESS:
+        return await handleGetProgress(intent, userId, requestId);
+      case INTENT_TYPES.GET_WORKOUT_INFO:
+        return await handleGetWorkoutInfo(intent, userId, requestId);
+      case INTENT_TYPES.GET_NUTRITION_INFO:
+        return await handleGetNutritionInfo(intent, userId, requestId);
+      case INTENT_TYPES.GET_EXERCISE_INFO:
+        return await handleGetExerciseInfo(intent, userId, requestId);
+      case INTENT_TYPES.CREATE_HABIT:
+        return await handleCreateHabit(intent, userId, requestId);
+      case INTENT_TYPES.GET_MOTIVATION:
+        return await handleGetMotivation(intent, userId, requestId);
+      case INTENT_TYPES.PROVIDE_USER_DATA:
+        return await handleProvideUserData(intent, userId, requestId);
+      case INTENT_TYPES.GREETING:
+        return await handleGreeting(intent, userId, requestId);
+      case INTENT_TYPES.GENERAL_ADVICE:
+        return await handleGeneralAdvice(intent, userId, message, requestId);
+      case INTENT_TYPES.SUGGEST_EXERCISE:
+        return await handleSuggestExercise(intent, userId, requestId);
+      case INTENT_TYPES.UPDATE_EXERCISE:
+        return await handleUpdateExercise(intent, userId, requestId);
+      case INTENT_TYPES.REMOVE_EXERCISE:
+        return await handleRemoveExercise(intent, userId, requestId);
+      default:
+        // For unknown intents, use general advice handler
+        logger.info(`${logPrefix} Unknown intent type: ${intent.intent_type}, using general advice handler`);
+        return await handleGeneralAdvice(intent, userId, message, requestId);
+    }
+  } catch (error) {
+    logger.error(`${logPrefix} Error in intent handler`, error);
+    return {
+      message: 'Lo siento, tuve un problema procesando tu solicitud. ¿Podrías intentarlo de nuevo?',
+      error: error.message
+    };
   }
 }
 

@@ -432,10 +432,13 @@ export const aiService = {
     };
   },
   getAdvice: async (query: string) => {
+    console.log('[AI Service] Getting advice for query:', query);
+
     await delay(1000);
     // Simulate AI-generated response based on user query
     let message = '';
     let action = null;
+    let data = null;
 
     // Process different types of queries
     if (query.toLowerCase().includes('rutina') || query.toLowerCase().includes('entrenamiento')) {
@@ -476,16 +479,49 @@ export const aiService = {
       message = 'Entiendo tu consulta. Para ayudarte mejor, ¿podrías especificar si está relacionada con tu entrenamiento, nutrición o seguimiento de progreso? Así podré darte información más precisa y útil para tus objetivos.';
     }
 
-    return {
+    // Create sample data for workout plan if that's the action
+    if (action && action.type === 'CREATED_WORKOUT_PLAN') {
+      data = {
+        plan_name: "Plan de entrenamiento personalizado",
+        description: "Rutina de 4 días enfocada en fuerza y resistencia",
+        sessions: [
+          {
+            day_of_week: "Lunes",
+            focus_area: "Pecho y Tríceps",
+            exercises: [
+              { name: "Press de banca", sets: 4, reps: 10 },
+              { name: "Fondos", sets: 3, reps: 12 }
+            ]
+          }
+        ]
+      };
+    }
+
+    const response = {
       data: {
         message,
-        action
+        action,
+        data
       }
     };
+
+    console.log('[AI Service] Generated response:', response.data);
+    return response;
   },
   sendChatMessage: async (message: string) => {
+    console.log('[AI Service] Sending chat message:', message);
+
     // Reuse the same logic as getAdvice for mock implementation
-    return await aiService.getAdvice(message);
+    const response = await aiService.getAdvice(message);
+
+    console.log('[AI Service] Received response:', response.data);
+
+    // Check if there's structured data in the response
+    if (response.data.action) {
+      console.log('[AI Service] Detected action in response:', response.data.action);
+    }
+
+    return response;
   }
 };
 

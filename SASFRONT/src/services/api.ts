@@ -227,14 +227,20 @@ const createFallbackService = (realService: any, mockService: any, serviceName: 
             throw new Error('Backend unavailable, using mock data');
           }
 
+          console.log(`[API] Calling ${serviceName}.${String(prop)} with args:`, args);
+
           const result = await realService[prop](...args);
           localStorage.setItem('backendAvailable', 'true');
+
+          console.log(`[API] Response from ${serviceName}.${String(prop)}:`, result);
 
           // If this is a successful create/update operation, also save to localStorage
           if (serviceName === 'workoutService' && prop === 'createPlan') {
             localStorageService.saveWorkoutPlan(args[0]);
+            console.log(`[API] Saved workout plan to localStorage:`, args[0]);
           } else if (serviceName === 'nutritionService' && prop === 'createPlan') {
             localStorageService.saveNutritionPlan(args[0]);
+            console.log(`[API] Saved nutrition plan to localStorage:`, args[0]);
           }
 
           return result;
@@ -244,11 +250,14 @@ const createFallbackService = (realService: any, mockService: any, serviceName: 
           localStorage.setItem('backendAvailable', 'false');
 
           // Save the request to localStorage for later sync
-          localStorageService.addPendingRequest({
+          const pendingRequest = {
             service: serviceName,
             method: prop,
             args,
-          });
+          };
+
+          console.log(`[API] Adding pending request for later sync:`, pendingRequest);
+          localStorageService.addPendingRequest(pendingRequest);
 
           // For specific operations, save data to localStorage
           if (serviceName === 'workoutService') {

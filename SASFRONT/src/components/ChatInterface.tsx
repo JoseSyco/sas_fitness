@@ -219,6 +219,7 @@ const ChatInterface = () => {
 
     try {
       logger.debug('Sending message to AI service', { message: input });
+      console.log('[ChatInterface] Sending message to AI:', input);
 
       // Send message to AI service using the new chat endpoint
       const response = await aiService.sendChatMessage(input);
@@ -227,6 +228,13 @@ const ChatInterface = () => {
         responseLength: response.data.message?.length || 0,
         action: response.data.action
       });
+
+      console.log('[ChatInterface] Received AI response:', response.data);
+
+      // Log structured data if present
+      if (response.data.data) {
+        console.log('[ChatInterface] Structured data in response:', response.data.data);
+      }
 
       // Add AI response
       const aiMessage: Message = {
@@ -238,6 +246,7 @@ const ChatInterface = () => {
 
       // If there's an action, handle it (e.g., navigate to the relevant section)
       if (response.data.action) {
+        console.log('[ChatInterface] Handling action:', response.data.action);
         logger.info('AI response includes action', { action: response.data.action });
         // Ejecutar servicios basados en la acción recibida
         await executeServiceBasedOnAction(response.data.action, response.data.data);
@@ -250,13 +259,21 @@ const ChatInterface = () => {
           dataSize: JSON.stringify(response.data.data).length
         });
 
+        console.log('[ChatInterface] Processing structured data:', response.data.data);
+
         // Procesar datos estructurados automáticamente
-        await processStructuredData(response.data.data);
+        try {
+          await processStructuredData(response.data.data);
+          console.log('[ChatInterface] Structured data processed successfully');
+        } catch (dataError) {
+          console.error('[ChatInterface] Error processing structured data:', dataError);
+        }
       }
 
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
       logger.error('Error getting AI response:', error);
+      console.error('[ChatInterface] Error getting AI response:', error);
 
       // Intentar conectar directamente con DeepSeek en caso de error
       try {

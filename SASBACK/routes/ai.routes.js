@@ -5,6 +5,7 @@ const logger = require('../utils/logger');
 const { authenticateToken } = require('../middleware/auth.middleware');
 const { devAuthMiddleware } = require('../middleware/dev.middleware');
 const { recognizeIntent } = require('../utils/intentRecognition');
+// Use the original intentHandlers file
 const { handleIntent, callDeepseekAPI } = require('../utils/intentHandlers');
 
 // Use development middleware in development mode
