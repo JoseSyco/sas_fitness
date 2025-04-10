@@ -13,7 +13,8 @@ import {
   TableRow,
   Tabs,
   Tab,
-  Button
+  Button,
+  LinearProgress
 } from '@mui/material';
 import {
   LineChart,
@@ -59,6 +60,8 @@ const ProgressView = () => {
   const [tabValue, setTabValue] = useState(0);
   const [progressData, setProgressData] = useState<any[]>([]);
   const [workoutLogs, setWorkoutLogs] = useState<any[]>([]);
+  const [workoutPlans, setWorkoutPlans] = useState<any[]>([]);
+  const [nutritionPlans, setNutritionPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -68,16 +71,22 @@ const ProgressView = () => {
 
         // Intentar obtener datos del backend
         try {
-          const [progressRes, workoutLogsRes] = await Promise.all([
+          const [progressRes, workoutLogsRes, workoutPlansRes, nutritionPlansRes] = await Promise.all([
             userService.getProgressHistory(),
-            workoutService.getWorkoutLogs()
+            workoutService.getWorkoutLogs(),
+            workoutService.getPlans(1),
+            userService.getNutritionPlans()
           ]);
 
           console.log('Progress data response:', progressRes);
           console.log('Workout logs response:', workoutLogsRes);
+          console.log('Workout plans response:', workoutPlansRes);
+          console.log('Nutrition plans response:', nutritionPlansRes);
 
           if (progressRes.data && Array.isArray(progressRes.data.progress) &&
-              workoutLogsRes.data && Array.isArray(workoutLogsRes.data.logs)) {
+              workoutLogsRes.data && Array.isArray(workoutLogsRes.data.logs) &&
+              workoutPlansRes.data && Array.isArray(workoutPlansRes.data.plans) &&
+              nutritionPlansRes.data && Array.isArray(nutritionPlansRes.data.plans)) {
 
             // Sort by date
             const sortedProgress = progressRes.data.progress.sort(
@@ -90,6 +99,8 @@ const ProgressView = () => {
 
             setProgressData(sortedProgress);
             setWorkoutLogs(sortedWorkoutLogs);
+            setWorkoutPlans(workoutPlansRes.data.plans);
+            setNutritionPlans(nutritionPlansRes.data.plans);
             setLoading(false);
             return;
           }
@@ -101,9 +112,13 @@ const ProgressView = () => {
         try {
           const jsonProgress = await jsonDataService.getProgress();
           const jsonWorkoutLogs = jsonDataService.getWorkoutLogs();
+          const jsonWorkoutPlans = await jsonDataService.getWorkoutPlans();
+          const jsonNutritionPlans = await jsonDataService.getNutritionPlans();
 
           console.log('Progress data from JSON:', jsonProgress);
           console.log('Workout logs from JSON:', jsonWorkoutLogs);
+          console.log('Workout plans from JSON:', jsonWorkoutPlans);
+          console.log('Nutrition plans from JSON:', jsonNutritionPlans);
 
           // Verificar que los datos JSON tienen el formato correcto
           if (Array.isArray(jsonProgress)) {
@@ -126,15 +141,33 @@ const ProgressView = () => {
             console.error('Formato de datos JSON inesperado para logs de entrenamiento:', jsonWorkoutLogs);
             setWorkoutLogs([]);
           }
+
+          if (Array.isArray(jsonWorkoutPlans)) {
+            setWorkoutPlans(jsonWorkoutPlans);
+          } else {
+            console.error('Formato de datos JSON inesperado para planes de entrenamiento:', jsonWorkoutPlans);
+            setWorkoutPlans([]);
+          }
+
+          if (Array.isArray(jsonNutritionPlans)) {
+            setNutritionPlans(jsonNutritionPlans);
+          } else {
+            console.error('Formato de datos JSON inesperado para planes de nutrición:', jsonNutritionPlans);
+            setNutritionPlans([]);
+          }
         } catch (jsonError) {
           console.error('Error al cargar datos JSON de progreso:', jsonError);
           setProgressData([]);
           setWorkoutLogs([]);
+          setWorkoutPlans([]);
+          setNutritionPlans([]);
         }
       } catch (error) {
         console.error('Error fetching progress data:', error);
         setProgressData([]);
         setWorkoutLogs([]);
+        setWorkoutPlans([]);
+        setNutritionPlans([]);
       } finally {
         setLoading(false);
       }
@@ -188,6 +221,7 @@ const ProgressView = () => {
           <Tab label="Gráficos" id="progress-tab-0" />
           <Tab label="Historial de Medidas" id="progress-tab-1" />
           <Tab label="Historial de Entrenamientos" id="progress-tab-2" />
+          <Tab label="Historial de Planes" id="progress-tab-3" />
         </Tabs>
       </Box>
 
@@ -388,6 +422,185 @@ const ProgressView = () => {
             </TableBody>
           </Table>
         </TableContainer>
+      </TabPanel>
+
+      {/* Historial de Planes Tab */}
+      <TabPanel value={tabValue} index={3}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Paper elevation={2} sx={{ p: 2, mb: 3 }}>
+              <Typography variant="h6" gutterBottom>
+                Planes de Entrenamiento
+              </Typography>
+
+              <TableContainer>
+                <Table sx={{ minWidth: 650 }} aria-label="workout plans table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Nombre del Plan</TableCell>
+                      <TableCell>Fecha Inicio</TableCell>
+                      <TableCell>Fecha Fin</TableCell>
+                      <TableCell>Días Programados</TableCell>
+                      <TableCell>Progreso</TableCell>
+                      <TableCell>Detalles</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {workoutPlans && workoutPlans.length > 0 ? (
+                      workoutPlans.map((plan: any) => (
+                        <TableRow
+                          key={plan.plan_id}
+                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        >
+                          <TableCell component="th" scope="row">
+                            {plan.plan_name}
+                          </TableCell>
+                          <TableCell>{plan.start_date || '01/01/2023'}</TableCell>
+                          <TableCell>{plan.end_date || '31/03/2023'}</TableCell>
+                          <TableCell>{plan.days_to_follow || 30} días</TableCell>
+                          <TableCell>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <Box sx={{ width: '100%', mr: 1 }}>
+                                <LinearProgress
+                                  variant="determinate"
+                                  value={plan.progress || 65}
+                                  color="primary"
+                                  sx={{ height: 8, borderRadius: 4 }}
+                                />
+                              </Box>
+                              <Box sx={{ minWidth: 35 }}>
+                                <Typography variant="body2" color="text.secondary">
+                                  {plan.progress || 65}%
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </TableCell>
+                          <TableCell>
+                            <Button size="small" color="primary">
+                              Ver Sesiones
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={6} align="center">
+                          <Typography variant="body2" color="text.secondary">
+                            No hay planes de entrenamiento disponibles.
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Paper elevation={2} sx={{ p: 2, mb: 3 }}>
+              <Typography variant="h6" gutterBottom>
+                Planes de Nutrición
+              </Typography>
+
+              <TableContainer>
+                <Table sx={{ minWidth: 650 }} aria-label="nutrition plans table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Nombre del Plan</TableCell>
+                      <TableCell>Fecha Inicio</TableCell>
+                      <TableCell>Fecha Fin</TableCell>
+                      <TableCell>Días Programados</TableCell>
+                      <TableCell>Calorías</TableCell>
+                      <TableCell>Detalles</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {nutritionPlans && nutritionPlans.length > 0 ? (
+                      nutritionPlans.map((plan: any) => (
+                        <TableRow
+                          key={plan.nutrition_plan_id}
+                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        >
+                          <TableCell component="th" scope="row">
+                            {plan.plan_name}
+                          </TableCell>
+                          <TableCell>{plan.start_date || '01/01/2023'}</TableCell>
+                          <TableCell>{plan.end_date || '31/03/2023'}</TableCell>
+                          <TableCell>{plan.days_to_follow || 90} días</TableCell>
+                          <TableCell>{plan.daily_calories} kcal</TableCell>
+                          <TableCell>
+                            <Button size="small" color="primary">
+                              Ver Comidas
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={6} align="center">
+                          <Typography variant="body2" color="text.secondary">
+                            No hay planes de nutrición disponibles.
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Paper elevation={2} sx={{ p: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Registros de Seguimiento
+              </Typography>
+
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="subtitle1" color="primary">
+                  Detalles de Seguimiento de Planes
+                </Typography>
+                <Typography variant="body2" color="text.secondary" paragraph>
+                  Aquí puedes ver el historial detallado de seguimiento de tus planes de entrenamiento y nutrición.
+                </Typography>
+
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Paper elevation={1} sx={{ p: 2, textAlign: 'center', bgcolor: 'primary.light', color: 'white' }}>
+                      <Typography variant="h4">{workoutPlans.length + nutritionPlans.length}</Typography>
+                      <Typography variant="body2">Planes Totales</Typography>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Paper elevation={1} sx={{ p: 2, textAlign: 'center', bgcolor: 'secondary.light', color: 'white' }}>
+                      <Typography variant="h4">
+                        {workoutPlans.reduce((total, plan) => total + (plan.sessions?.length || 0), 0)}
+                      </Typography>
+                      <Typography variant="body2">Sesiones Programadas</Typography>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Paper elevation={1} sx={{ p: 2, textAlign: 'center', bgcolor: 'success.light', color: 'white' }}>
+                      <Typography variant="h4">
+                        {nutritionPlans.reduce((total, plan) => total + (plan.meals?.length || 0), 0)}
+                      </Typography>
+                      <Typography variant="body2">Comidas Programadas</Typography>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Paper elevation={1} sx={{ p: 2, textAlign: 'center', bgcolor: 'info.light', color: 'white' }}>
+                      <Typography variant="h4">
+                        {workoutLogs.length}
+                      </Typography>
+                      <Typography variant="body2">Registros Completados</Typography>
+                    </Paper>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
       </TabPanel>
     </Box>
   );
