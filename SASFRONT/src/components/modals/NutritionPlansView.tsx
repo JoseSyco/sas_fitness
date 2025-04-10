@@ -37,6 +37,8 @@ import AutorenewIcon from '@mui/icons-material/Autorenew';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import CloseIcon from '@mui/icons-material/Close';
 import InfoIcon from '@mui/icons-material/Info';
+import CancelIcon from '@mui/icons-material/Cancel';
+import EditIcon from '@mui/icons-material/Edit';
 import { nutritionService } from '../../services/api';
 import jsonDataService from '../../services/jsonDataService';
 
@@ -252,7 +254,9 @@ const NutritionPlansView = () => {
                             Frecuencia:
                           </Typography>
                           <Typography variant="body2">
-                            {plan.frequency || 'Todos los días'}
+                            {Array.isArray(plan.frequency)
+                              ? plan.frequency.join(', ')
+                              : plan.frequency || 'Todos los días'}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -306,18 +310,10 @@ const NutritionPlansView = () => {
                             />
                           </Box>
 
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2, flex: 1 }}>
+                          <Box>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                               {meal.description}
                             </Typography>
-                            <IconButton
-                              size="small"
-                              color="primary"
-                              onClick={() => handleOpenMealDialog(meal)}
-                              sx={{ ml: 1, mt: -1 }}
-                            >
-                              <InfoIcon fontSize="small" />
-                            </IconButton>
                           </Box>
 
                           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
@@ -342,35 +338,17 @@ const NutritionPlansView = () => {
                           </Box>
                         </Box>
 
-                        {/* Seguimiento de completado - Gestionado automáticamente */}
-                        <Box sx={{ mt: 2 }}>
-                          {meal.completion_tracking && meal.completion_tracking.length > 0 ? (
-                            <Box>
-                              <Chip
-                                icon={<CheckCircleIcon />}
-                                label={`Última: ${meal.completion_tracking[meal.completion_tracking.length - 1].date}`}
-                                color="success"
-                                size="small"
-                                sx={{ mb: 1 }}
-                              />
-                              <Typography variant="caption" display="block" color="text.secondary">
-                                Seguimiento automático - {meal.completion_tracking.length} registros
-                              </Typography>
-                            </Box>
-                          ) : (
-                            <Box>
-                              <Chip
-                                icon={<AutorenewIcon />}
-                                label="Pendiente"
-                                color="primary"
-                                size="small"
-                                sx={{ mb: 1 }}
-                              />
-                              <Typography variant="caption" display="block" color="text.secondary">
-                                Se registrará automáticamente
-                              </Typography>
-                            </Box>
-                          )}
+                        {/* Botón para ver detalles */}
+                        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            color="primary"
+                            onClick={() => handleOpenMealDialog(meal)}
+                            fullWidth
+                          >
+                            Ver detalles
+                          </Button>
                         </Box>
                       </Paper>
                     </Grid>
@@ -518,11 +496,11 @@ const NutritionPlansView = () => {
                   </Box>
                 </Grid>
               </Grid>
+
+
             </Grid>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseMealDialog}>Cerrar</Button>
-          </DialogActions>
+
         </>
       )}
     </Dialog>

@@ -16,7 +16,7 @@
       "start_date": "2023-01-01",
       "end_date": "2023-03-31",
       "days_to_follow": 90,
-      "frequency": "Diario",
+      "frequency": ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
       "hydration_recommendation": "2.5 litros diarios",
       "created_at": "2025-04-01T10:00:00Z",
       "updated_at": "2025-04-01T10:00:00Z",
@@ -99,7 +99,29 @@
               "nutritional_highlights": "Antioxidantes"
             }
           ],
-          "completion_tracking": []
+          "completion_tracking": [
+            {
+              "date": "2023-01-01",
+              "day_of_week": "Dom",
+              "status": "completado",
+              "completion_time": "07:45",
+              "notes": "Añadí un poco más de aguacate"
+            },
+            {
+              "date": "2023-01-02",
+              "day_of_week": "Lun",
+              "status": "completado",
+              "completion_time": "07:30",
+              "notes": ""
+            },
+            {
+              "date": "2023-01-03",
+              "day_of_week": "Mar",
+              "status": "pendiente",
+              "completion_time": "",
+              "notes": ""
+            }
+          ]
         },
         {
           "meal_id": 2,
@@ -165,7 +187,29 @@
               "nutritional_highlights": "Omega-3"
             }
           ],
-          "completion_tracking": []
+          "completion_tracking": [
+            {
+              "date": "2023-01-01",
+              "day_of_week": "Dom",
+              "status": "completado",
+              "completion_time": "10:45",
+              "notes": "Usé arándanos y frambuesas"
+            },
+            {
+              "date": "2023-01-02",
+              "day_of_week": "Lun",
+              "status": "omitido",
+              "completion_time": "",
+              "notes": "No tenía hambre"
+            },
+            {
+              "date": "2023-01-03",
+              "day_of_week": "Mar",
+              "status": "pendiente",
+              "completion_time": "",
+              "notes": ""
+            }
+          ]
         },
         {
           "meal_id": 3,
@@ -265,7 +309,7 @@
       "start_date": "2023-04-01",
       "end_date": "2023-06-30",
       "days_to_follow": 90,
-      "frequency": "Días entrenamiento",
+      "frequency": ["Lun", "Mié", "Vie"],
       "hydration_recommendation": "3-4 litros diarios",
       "created_at": "2025-04-01T10:00:00Z",
       "updated_at": "2025-04-01T10:00:00Z",
@@ -362,7 +406,29 @@
               "nutritional_highlights": "Calcio"
             }
           ],
-          "completion_tracking": []
+          "completion_tracking": [
+            {
+              "date": "2023-04-03",
+              "day_of_week": "Lun",
+              "status": "completado",
+              "completion_time": "07:15",
+              "notes": "Añadí una banana extra"
+            },
+            {
+              "date": "2023-04-05",
+              "day_of_week": "Mié",
+              "status": "completado",
+              "completion_time": "07:00",
+              "notes": ""
+            },
+            {
+              "date": "2023-04-07",
+              "day_of_week": "Vie",
+              "status": "pendiente",
+              "completion_time": "",
+              "notes": ""
+            }
+          ]
         },
         {
           "meal_id": 5,
@@ -442,7 +508,29 @@
               "nutritional_highlights": "Antiinflamatorio"
             }
           ],
-          "completion_tracking": []
+          "completion_tracking": [
+            {
+              "date": "2023-04-03",
+              "day_of_week": "Lun",
+              "status": "completado",
+              "completion_time": "14:15",
+              "notes": "Añadí más arroz después del entrenamiento intenso"
+            },
+            {
+              "date": "2023-04-05",
+              "day_of_week": "Mié",
+              "status": "modificado",
+              "completion_time": "14:30",
+              "notes": "Sustituí el arroz por quinoa"
+            },
+            {
+              "date": "2023-04-07",
+              "day_of_week": "Vie",
+              "status": "pendiente",
+              "completion_time": "",
+              "notes": ""
+            }
+          ]
         }
       ]
     }

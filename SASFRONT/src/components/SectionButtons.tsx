@@ -138,9 +138,6 @@ const SectionButtons = () => {
           <DialogContent dividers sx={{ p: 3 }}>
             {section.component}
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseModal}>Cerrar</Button>
-          </DialogActions>
         </Dialog>
       ))}
     </>

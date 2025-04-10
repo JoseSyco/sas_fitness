@@ -14,7 +14,9 @@ import {
   Tabs,
   Tab,
   Button,
-  LinearProgress
+  LinearProgress,
+  Chip,
+  Divider
 } from '@mui/material';
 import {
   LineChart,
@@ -29,6 +31,10 @@ import {
 import { userService, workoutService } from '../../services/api';
 import jsonDataService from '../../services/jsonDataService';
 import AddIcon from '@mui/icons-material/Add';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+import CancelIcon from '@mui/icons-material/Cancel';
+import EditIcon from '@mui/icons-material/Edit';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -58,6 +64,8 @@ function TabPanel(props: TabPanelProps) {
 
 const ProgressView = () => {
   const [tabValue, setTabValue] = useState(0);
+  const [nutritionTabValue, setNutritionTabValue] = useState(0);
+  const [mealTabValue, setMealTabValue] = useState(0);
   const [progressData, setProgressData] = useState<any[]>([]);
   const [workoutLogs, setWorkoutLogs] = useState<any[]>([]);
   const [workoutPlans, setWorkoutPlans] = useState<any[]>([]);
@@ -180,6 +188,15 @@ const ProgressView = () => {
     setTabValue(newValue);
   };
 
+  const handleNutritionTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setNutritionTabValue(newValue);
+    setMealTabValue(0); // Reset meal tab when changing nutrition plan
+  };
+
+  const handleMealTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setMealTabValue(newValue);
+  };
+
   // Format data for charts
   const weightChartData = progressData.map(entry => ({
     date: new Date(entry.tracking_date).toLocaleDateString(),
@@ -222,6 +239,7 @@ const ProgressView = () => {
           <Tab label="Historial de Medidas" id="progress-tab-1" />
           <Tab label="Historial de Entrenamientos" id="progress-tab-2" />
           <Tab label="Historial de Planes" id="progress-tab-3" />
+          <Tab label="Historial de Nutrición" id="progress-tab-4" />
         </Tabs>
       </Box>
 
@@ -601,6 +619,201 @@ const ProgressView = () => {
             </Paper>
           </Grid>
         </Grid>
+      </TabPanel>
+
+      {/* Historial de Nutrición Tab */}
+      <TabPanel value={tabValue} index={4}>
+        <Box sx={{ width: '100%' }}>
+          <Typography variant="h6" gutterBottom>
+            Historial de Seguimiento de Nutrición
+          </Typography>
+          <Typography variant="body2" color="text.secondary" paragraph>
+            Aquí puedes ver el historial detallado de seguimiento de tus planes de nutrición y comidas.
+          </Typography>
+
+          {nutritionPlans && nutritionPlans.length > 0 ? (
+            <Box sx={{ width: '100%' }}>
+              <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+                <Tabs
+                  value={nutritionTabValue}
+                  onChange={handleNutritionTabChange}
+                  aria-label="nutrition plans tabs"
+                  variant="scrollable"
+                  scrollButtons="auto"
+                >
+                  {nutritionPlans.map((plan: any, index: number) => (
+                    <Tab key={plan.nutrition_plan_id} label={plan.plan_name} id={`nutrition-tab-${index}`} />
+                  ))}
+                </Tabs>
+              </Box>
+
+              {nutritionPlans.map((plan: any, planIndex: number) => (
+                <div
+                  key={plan.nutrition_plan_id}
+                  role="tabpanel"
+                  hidden={nutritionTabValue !== planIndex}
+                  id={`nutrition-tabpanel-${planIndex}`}
+                  aria-labelledby={`nutrition-tab-${planIndex}`}
+                >
+                  {nutritionTabValue === planIndex && (
+                    <Box sx={{ p: 2 }}>
+                      <Paper elevation={2} sx={{ p: 2, mb: 3 }}>
+                        <Typography variant="h6" gutterBottom>
+                          {plan.plan_name}
+                        </Typography>
+                        <Typography variant="body2" paragraph>
+                          {plan.description}
+                        </Typography>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} sm={6} md={3}>
+                            <Typography variant="subtitle2">Calorías Diarias:</Typography>
+                            <Typography variant="body1">{plan.daily_calories} kcal</Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={6} md={3}>
+                            <Typography variant="subtitle2">Proteínas:</Typography>
+                            <Typography variant="body1">{plan.protein_grams}g</Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={6} md={3}>
+                            <Typography variant="subtitle2">Carbohidratos:</Typography>
+                            <Typography variant="body1">{plan.carbs_grams}g</Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={6} md={3}>
+                            <Typography variant="subtitle2">Grasas:</Typography>
+                            <Typography variant="body1">{plan.fat_grams}g</Typography>
+                          </Grid>
+                        </Grid>
+                      </Paper>
+
+                      {/* Tabs para las comidas */}
+                      {plan.meals && plan.meals.length > 0 && (
+                        <Box sx={{ width: '100%' }}>
+                          <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+                            <Tabs
+                              value={mealTabValue}
+                              onChange={handleMealTabChange}
+                              aria-label="meal tabs"
+                              variant="scrollable"
+                              scrollButtons="auto"
+                            >
+                              {plan.meals.map((meal: any, index: number) => (
+                                <Tab key={meal.meal_id} label={meal.meal_name} id={`meal-tab-${index}`} />
+                              ))}
+                            </Tabs>
+                          </Box>
+
+                          {plan.meals.map((meal: any, mealIndex: number) => (
+                            <div
+                              key={meal.meal_id}
+                              role="tabpanel"
+                              hidden={mealTabValue !== mealIndex}
+                              id={`meal-tabpanel-${mealIndex}`}
+                              aria-labelledby={`meal-tab-${mealIndex}`}
+                            >
+                              {mealTabValue === mealIndex && (
+                                <Box sx={{ p: 2 }}>
+                                  <Paper elevation={2} sx={{ p: 2, mb: 3 }}>
+                                    <Grid container spacing={3}>
+                                      <Grid item xs={12} md={6}>
+                                        <Typography variant="h6" gutterBottom>
+                                          {meal.meal_name}
+                                        </Typography>
+                                        <Typography variant="body2" paragraph>
+                                          {meal.description}
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                                          <Chip label={`${meal.calories} kcal`} color="secondary" size="small" />
+                                          <Chip label={`P: ${meal.protein_grams}g`} size="small" sx={{ backgroundColor: '#ffebee' }} />
+                                          <Chip label={`C: ${meal.carbs_grams}g`} size="small" sx={{ backgroundColor: '#e3f2fd' }} />
+                                          <Chip label={`G: ${meal.fat_grams}g`} size="small" sx={{ backgroundColor: '#fff8e1' }} />
+                                        </Box>
+                                        <Typography variant="subtitle2" gutterBottom>
+                                          Hora programada: {meal.scheduled_time}
+                                        </Typography>
+                                      </Grid>
+
+
+                                    </Grid>
+                                  </Paper>
+
+                                  {/* Historial de seguimiento */}
+                                  {(
+                                    <Paper elevation={2} sx={{ p: 2 }}>
+                                      <Typography variant="h6" gutterBottom color="primary">
+                                        Historial de Seguimiento
+                                      </Typography>
+                                      <TableContainer component={Paper} variant="outlined">
+                                        <Table size="small">
+                                          <TableHead>
+                                            <TableRow>
+                                              <TableCell>Fecha</TableCell>
+                                              <TableCell>Día</TableCell>
+                                              <TableCell>Estado</TableCell>
+                                              <TableCell>Hora</TableCell>
+                                              <TableCell>Notas</TableCell>
+                                            </TableRow>
+                                          </TableHead>
+                                          <TableBody>
+                                            {meal.completion_tracking && meal.completion_tracking.length > 0 ? (
+                                              meal.completion_tracking.map((tracking: any, index: number) => {
+                                                let statusChip;
+                                                switch(tracking.status) {
+                                                  case 'completado':
+                                                    statusChip = <Chip icon={<CheckCircleIcon />} label="Completado" size="small" color="success" />;
+                                                    break;
+                                                  case 'omitido':
+                                                    statusChip = <Chip icon={<CancelIcon />} label="Omitido" size="small" color="warning" />;
+                                                    break;
+                                                  case 'modificado':
+                                                    statusChip = <Chip icon={<EditIcon />} label="Modificado" size="small" color="info" />;
+                                                    break;
+                                                  case 'pendiente':
+                                                  default:
+                                                    statusChip = <Chip icon={<AutorenewIcon />} label="Pendiente" size="small" color="primary" />;
+                                                }
+
+                                                return (
+                                                  <TableRow key={index}>
+                                                    <TableCell>{tracking.date}</TableCell>
+                                                    <TableCell>{tracking.day_of_week}</TableCell>
+                                                    <TableCell>{statusChip}</TableCell>
+                                                    <TableCell>{tracking.completion_time || '-'}</TableCell>
+                                                    <TableCell>{tracking.notes || '-'}</TableCell>
+                                                  </TableRow>
+                                                );
+                                              })
+                                            ) : (
+                                              <TableRow>
+                                                <TableCell colSpan={5} align="center">
+                                                  <Typography variant="body2" color="text.secondary">
+                                                    No hay registros de seguimiento disponibles.
+                                                  </Typography>
+                                                </TableCell>
+                                              </TableRow>
+                                            )}
+                                          </TableBody>
+                                        </Table>
+                                      </TableContainer>
+                                    </Paper>
+                                  )}
+                                </Box>
+                              )}
+                            </div>
+                          ))}
+                        </Box>
+                      )}
+                    </Box>
+                  )}
+                </div>
+              ))}
+            </Box>
+          ) : (
+            <Box sx={{ p: 2, textAlign: 'center' }}>
+              <Typography variant="body1" color="text.secondary">
+                No hay planes de nutrición disponibles.
+              </Typography>
+            </Box>
+          )}
+        </Box>
       </TabPanel>
     </Box>
   );
