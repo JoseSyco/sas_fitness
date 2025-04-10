@@ -424,12 +424,25 @@ const jsonDataService = {
   // Función para cargar datos JSON desde archivos
   loadJsonFile: async (filename: string): Promise<any> => {
     try {
-      // Intentar cargar desde la carpeta data
-      const response = await fetch(`/data/${filename}.json`);
+      // Intentar cargar desde la carpeta src/data
+      console.log(`Attempting to load ${filename}.json from src/data folder...`);
+      const response = await fetch(`/src/data/${filename}.json`);
+
       if (!response.ok) {
-        throw new Error(`Error loading ${filename}.json: ${response.statusText}`);
+        console.log(`File not found in src/data, trying public folder...`);
+        // Fallback a la carpeta public si no se encuentra en src/data
+        const publicResponse = await fetch(`/${filename}.json`);
+        if (!publicResponse.ok) {
+          throw new Error(`Error loading ${filename}.json: ${publicResponse.statusText}`);
+        }
+        const data = await publicResponse.json();
+        console.log(`Successfully loaded ${filename}.json from public folder:`, data);
+        return data;
       }
-      return await response.json();
+
+      const data = await response.json();
+      console.log(`Successfully loaded ${filename}.json from src/data folder:`, data);
+      return data;
     } catch (error) {
       console.error(`Error loading ${filename}.json:`, error);
       return null;

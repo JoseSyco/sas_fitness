@@ -110,7 +110,16 @@ const NutritionPlansView = () => {
 
         if (Array.isArray(jsonPlans) && jsonPlans.length > 0) {
           console.log('Setting nutrition plans:', jsonPlans);
-          setNutritionPlans(jsonPlans);
+          // Asegurarse de que cada comida tenga todos los campos necesarios
+          const plansWithFullDetails = jsonPlans.map(plan => ({
+            ...plan,
+            meals: plan.meals.map(meal => ({
+              ...meal,
+              detailed_description: meal.detailed_description || meal.description,
+              preparation_instructions: meal.preparation_instructions || 'Instrucciones no disponibles'
+            }))
+          }));
+          setNutritionPlans(plansWithFullDetails);
         } else {
           console.log('No nutrition plans found in JSON, trying backend...');
 
@@ -146,6 +155,7 @@ const NutritionPlansView = () => {
   };
 
   const handleOpenMealDialog = (meal: any) => {
+    console.log('Opening meal dialog with meal:', meal);
     setSelectedMeal(meal);
     setOpenMealDialog(true);
   };
@@ -396,7 +406,7 @@ const NutritionPlansView = () => {
           </DialogTitle>
           <DialogContent dividers>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12}>
                 <Typography variant="h6" gutterBottom color="primary">
                   Descripción Detallada
                 </Typography>
@@ -407,99 +417,106 @@ const NutritionPlansView = () => {
                 <Typography variant="h6" gutterBottom color="primary" sx={{ mt: 3 }}>
                   Instrucciones de Preparación
                 </Typography>
-                <Typography variant="body1" paragraph>
-                  {selectedMeal.preparation_instructions || 'Lava y prepara todos los ingredientes. Cocina siguiendo las proporciones indicadas y sirve inmediatamente para disfrutar de todos los nutrientes.'}
-                </Typography>
-
-                <Box sx={{ mt: 3, p: 2, bgcolor: 'background.paper', borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
-                  <Typography variant="subtitle1" gutterBottom color="primary">
-                    Información Nutricional
+                {selectedMeal.preparation_instructions && selectedMeal.preparation_instructions.includes('\n') ? (
+                  <Box component="div" sx={{ pl: 2 }}>
+                    {selectedMeal.preparation_instructions.split('\n').map((instruction, index) => (
+                      <Typography key={index} variant="body1" paragraph>
+                        {instruction}
+                      </Typography>
+                    ))}
+                  </Box>
+                ) : (
+                  <Typography variant="body1" paragraph>
+                    {selectedMeal.preparation_instructions || 'Lava y prepara todos los ingredientes. Cocina siguiendo las proporciones indicadas y sirve inmediatamente para disfrutar de todos los nutrientes.'}
                   </Typography>
-                  <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                      <Typography variant="body2" color="text.secondary">
-                        Calorías:
-                      </Typography>
-                      <Typography variant="body1">
-                        {selectedMeal.calories} kcal
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="body2" color="text.secondary">
-                        Proteínas:
-                      </Typography>
-                      <Typography variant="body1">
-                        {selectedMeal.protein_grams}g
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="body2" color="text.secondary">
-                        Carbohidratos:
-                      </Typography>
-                      <Typography variant="body1">
-                        {selectedMeal.carbs_grams}g
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="body2" color="text.secondary">
-                        Grasas:
-                      </Typography>
-                      <Typography variant="body1">
-                        {selectedMeal.fat_grams}g
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Box>
+                )}
               </Grid>
 
-              <Grid item xs={12} md={6}>
-                <Typography variant="h6" gutterBottom color="primary">
-                  Alimentos Incluidos
-                </Typography>
+              {/* Tablas en formato horizontal */}
+              <Grid item xs={12} container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <Box sx={{ p: 2, bgcolor: 'background.paper', borderRadius: 1, border: '1px solid', borderColor: 'divider', height: '100%' }}>
+                    <Typography variant="subtitle1" gutterBottom color="primary">
+                      Información Nutricional
+                    </Typography>
+                    <Grid container spacing={2}>
+                      <Grid item xs={6}>
+                        <Typography variant="body2" color="text.secondary">
+                          Calorías:
+                        </Typography>
+                        <Typography variant="body1">
+                          {selectedMeal.calories} kcal
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography variant="body2" color="text.secondary">
+                          Proteínas:
+                        </Typography>
+                        <Typography variant="body1">
+                          {selectedMeal.protein_grams}g
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography variant="body2" color="text.secondary">
+                          Carbohidratos:
+                        </Typography>
+                        <Typography variant="body1">
+                          {selectedMeal.carbs_grams}g
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography variant="body2" color="text.secondary">
+                          Grasas:
+                        </Typography>
+                        <Typography variant="body1">
+                          {selectedMeal.fat_grams}g
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Grid>
 
-                <TableContainer component={Paper} variant="outlined">
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Alimento</TableCell>
-                        <TableCell>Porción</TableCell>
-                        <TableCell align="right">Calorías</TableCell>
-                        <TableCell align="right">Proteínas</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {selectedMeal.foods && selectedMeal.foods.length > 0 ? (
-                        selectedMeal.foods.map((food: any) => (
-                          <TableRow key={food.food_id}>
-                            <TableCell component="th" scope="row">
-                              {food.food_name}
-                            </TableCell>
-                            <TableCell>{food.portion}</TableCell>
-                            <TableCell align="right">{food.calories} kcal</TableCell>
-                            <TableCell align="right">{food.protein_grams}g</TableCell>
+                <Grid item xs={12} sm={6}>
+                  <Box sx={{ height: '100%' }}>
+                    <Typography variant="subtitle1" gutterBottom color="primary">
+                      Alimentos Incluidos
+                    </Typography>
+                    <TableContainer component={Paper} variant="outlined" sx={{ height: 'calc(100% - 40px)' }}>
+                      <Table size="small" stickyHeader>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Alimento</TableCell>
+                            <TableCell>Porción</TableCell>
+                            <TableCell align="right">Calorías</TableCell>
+                            <TableCell align="right">Proteínas</TableCell>
                           </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={4} align="center">
-                            <Typography variant="body2" color="text.secondary">
-                              No hay detalles de alimentos disponibles
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="h6" gutterBottom color="primary">
-                    Beneficios para la Salud
-                  </Typography>
-                  <Typography variant="body1" paragraph>
-                    {selectedMeal.health_benefits || 'Esta comida proporciona un equilibrio de nutrientes esenciales para mantener niveles de energía estables y apoyar la recuperación muscular.'}
-                  </Typography>
-                </Box>
+                        </TableHead>
+                        <TableBody>
+                          {selectedMeal.foods && selectedMeal.foods.length > 0 ? (
+                            selectedMeal.foods.map((food: any) => (
+                              <TableRow key={food.food_id}>
+                                <TableCell component="th" scope="row">
+                                  {food.food_name}
+                                </TableCell>
+                                <TableCell>{food.portion}</TableCell>
+                                <TableCell align="right">{food.calories} kcal</TableCell>
+                                <TableCell align="right">{food.protein_grams}g</TableCell>
+                              </TableRow>
+                            ))
+                          ) : (
+                            <TableRow>
+                              <TableCell colSpan={4} align="center">
+                                <Typography variant="body2" color="text.secondary">
+                                  No hay detalles de alimentos disponibles
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Box>
+                </Grid>
               </Grid>
             </Grid>
           </DialogContent>
