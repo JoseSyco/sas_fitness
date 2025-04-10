@@ -1,0 +1,78 @@
+{
+  "workout_plans": [
+    {
+      "plan_id": 1,
+      "user_id": 1,
+      "plan_name": "Plan de Pérdida de Peso",
+      "description": "Un plan de entrenamiento diseñado para ayudarte a perder peso de manera saludable.",
+      "is_ai_generated": true,
+      "created_at": "2025-04-01T10:00:00Z",
+      "updated_at": "2025-04-01T10:00:00Z",
+      "sessions": [
+        {
+          "session_id": 1,
+          "plan_id": 1,
+          "day_of_week": "Monday",
+          "focus_area": "Cardio y Core",
+          "duration_minutes": 45,
+          "scheduled_time": "18:00",
+          "created_at": "2025-04-01T10:00:00Z",
+          "updated_at": "2025-04-01T10:00:00Z",
+          "exercises": [
+            {
+              "workout_exercise_id": 1,
+              "session_id": 1,
+              "exercise_id": 1,
+              "sets": 1,
+              "reps": null,
+              "duration_seconds": 1200,
+              "rest_seconds": 60,
+              "notes": "Mantener ritmo moderado"
+            },
+            {
+              "workout_exercise_id": 2,
+              "session_id": 1,
+              "exercise_id": 2,
+              "sets": 3,
+              "reps": null,
+              "duration_seconds": 60,
+              "rest_seconds": 30,
+              "notes": "Mantener posición correcta"
+            }
+          ],
+          "completion_tracking": [
+            {
+              "date": "2025-04-01",
+              "completed": true,
+              "completion_time": "18:45",
+              "notes": "Completado según lo planeado"
+            }
+          ]
+        },
+        {
+          "session_id": 2,
+          "plan_id": 1,
+          "day_of_week": "Wednesday",
+          "focus_area": "Fuerza - Tren Inferior",
+          "duration_minutes": 50,
+          "scheduled_time": "18:00",
+          "created_at": "2025-04-01T10:00:00Z",
+          "updated_at": "2025-04-01T10:00:00Z",
+          "exercises": [
+            {
+              "workout_exercise_id": 3,
+              "session_id": 2,
+              "exercise_id": 4,
+              "sets": 3,
+              "reps": 15,
+              "duration_seconds": null,
+              "rest_seconds": 60,
+              "notes": "Mantener buena forma"
+            }
+          ],
+          "completion_tracking": []
+        }
+      ]
+    }
+  ]
+}

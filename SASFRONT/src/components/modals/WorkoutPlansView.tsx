@@ -12,11 +12,14 @@ import {
   Paper,
   Grid,
   Chip,
-  CircularProgress
+  CircularProgress,
+  Button
 } from '@mui/material';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { workoutService } from '../../services/api';
+import jsonDataService from '../../services/jsonDataService';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -53,10 +56,37 @@ const WorkoutPlansView = () => {
     const fetchWorkoutPlans = async () => {
       try {
         setLoading(true);
-        const response = await workoutService.getPlans(1); // Usando el ID de usuario 1 para desarrollo
-        setWorkoutPlans(response.data.plans);
+        console.log('Fetching workout plans...');
+
+        // Cargar directamente desde JSON para simplificar
+        const jsonPlans = await jsonDataService.getWorkoutPlans();
+        console.log('Workout plans from JSON:', jsonPlans);
+
+        if (Array.isArray(jsonPlans) && jsonPlans.length > 0) {
+          console.log('Setting workout plans:', jsonPlans);
+          setWorkoutPlans(jsonPlans);
+        } else {
+          console.log('No workout plans found in JSON, trying backend...');
+
+          // Intentar obtener datos del backend como fallback
+          try {
+            const response = await workoutService.getPlans(1);
+            console.log('Workout plans response from backend:', response);
+
+            if (response.data && Array.isArray(response.data.plans)) {
+              setWorkoutPlans(response.data.plans);
+            } else {
+              console.error('No workout plans found in backend');
+              setWorkoutPlans([]);
+            }
+          } catch (apiError) {
+            console.error('Error fetching from backend:', apiError);
+            setWorkoutPlans([]);
+          }
+        }
       } catch (error) {
         console.error('Error fetching workout plans:', error);
+        setWorkoutPlans([]);
       } finally {
         setLoading(false);
       }
@@ -95,13 +125,21 @@ const WorkoutPlansView = () => {
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="workout plans tabs">
           {workoutPlans.map((plan, index) => (
-            <Tab key={plan.plan_id} label={plan.plan_name} id={`workout-tab-${index}`} />
+            <Tab
+              key={`tab-${index}-${plan.plan_id || Math.random().toString(36).substr(2, 9)}`}
+              label={plan.plan_name || `Plan ${index + 1}`}
+              id={`workout-tab-${index}`}
+            />
           ))}
         </Tabs>
       </Box>
 
       {workoutPlans.map((plan, index) => (
-        <TabPanel key={plan.plan_id} value={value} index={index}>
+        <TabPanel
+          key={`panel-${index}-${plan.plan_id || Math.random().toString(36).substr(2, 9)}`}
+          value={value}
+          index={index}
+        >
           <Box sx={{ mb: 3 }}>
             <Typography variant="h5" gutterBottom>
               {plan.plan_name}
@@ -109,14 +147,7 @@ const WorkoutPlansView = () => {
             <Typography variant="body1" color="text.secondary" paragraph>
               {plan.description}
             </Typography>
-            {plan.is_ai_generated && (
-              <Chip
-                label="Generado por IA"
-                color="primary"
-                size="small"
-                sx={{ mb: 2 }}
-              />
-            )}
+
           </Box>
 
           <Divider sx={{ mb: 3 }} />
@@ -142,18 +173,52 @@ const WorkoutPlansView = () => {
                   </Typography>
 
                   <List dense>
-                    {session.exercises && session.exercises.map((exercise: any) => (
-                      <ListItem key={exercise.workout_exercise_id}>
-                        <ListItemIcon>
-                          <FitnessCenterIcon color="action" />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={exercise.name}
-                          secondary={`${exercise.sets} series × ${exercise.reps || '-'} reps | Descanso: ${exercise.rest_seconds || '-'} seg`}
-                        />
-                      </ListItem>
-                    ))}
+                    {session.exercises && session.exercises.map((exercise: any) => {
+                      // Obtener detalles del ejercicio si está disponible
+                      const exerciseDetails = jsonDataService.getExerciseById(exercise.exercise_id);
+                      const exerciseName = exerciseDetails ? exerciseDetails.name : exercise.name || 'Ejercicio';
+
+                      return (
+                        <ListItem key={exercise.workout_exercise_id}>
+                          <ListItemIcon>
+                            <FitnessCenterIcon color="action" />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={exerciseName}
+                            secondary={`${exercise.sets} series × ${exercise.reps || '-'} reps | Descanso: ${exercise.rest_seconds || '-'} seg`}
+                          />
+                        </ListItem>
+                      );
+                    })}
                   </List>
+
+                  {/* Seguimiento de completado */}
+                  {session.completion_tracking && session.completion_tracking.length > 0 ? (
+                    <Box sx={{ mt: 2 }}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        Último completado:
+                      </Typography>
+                      {session.completion_tracking.slice(-1).map((tracking: any, idx: number) => (
+                        <Chip
+                          key={idx}
+                          icon={<CheckCircleIcon />}
+                          label={`${tracking.date} - ${tracking.completion_time || 'Completado'}`}
+                          color="success"
+                          size="small"
+                          sx={{ mt: 1 }}
+                        />
+                      ))}
+                    </Box>
+                  ) : (
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      color="primary"
+                      sx={{ mt: 2 }}
+                    >
+                      Marcar como completado
+                    </Button>
+                  )}
                 </Paper>
               </Grid>
             ))}

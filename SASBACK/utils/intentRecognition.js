@@ -424,6 +424,15 @@ async function recognizeIntent(message, requestId = null) {
     }
   }
 
+  // Check for workout request intent
+  else if (
+    (lowerMessage.includes('rutina') || lowerMessage.includes('ejercicio') ||
+    lowerMessage.includes('entrenamiento') || lowerMessage.includes('workout'))
+  ) {
+    intent.type = INTENT_TYPES.CREATE_WORKOUT;
+    intent.confidence = 0.9;
+  }
+
   // Check for greeting intent
   else if (
     lowerMessage.includes('hola') || lowerMessage.includes('buenos días') ||

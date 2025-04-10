@@ -1,0 +1,30 @@
+{
+  "exercises": [
+    {
+      "exercise_id": 1,
+      "name": "Carrera en cinta",
+      "description": "Correr a ritmo moderado en cinta.",
+      "muscle_group": "Cardio",
+      "equipment_needed": "Cinta de correr",
+      "difficulty_level": "intermediate",
+      "calories_per_minute": 10,
+      "video_url": "https://example.com/videos/treadmill-run",
+      "image_url": "https://example.com/images/treadmill-run.jpg",
+      "created_at": "2025-04-01T10:00:00Z",
+      "updated_at": "2025-04-01T10:00:00Z"
+    },
+    {
+      "exercise_id": 2,
+      "name": "Plancha",
+      "description": "Mantén la posición de plancha con el cuerpo recto.",
+      "muscle_group": "Core",
+      "equipment_needed": "Ninguno",
+      "difficulty_level": "intermediate",
+      "calories_per_minute": 5,
+      "video_url": "https://example.com/videos/plank",
+      "image_url": "https://example.com/images/plank.jpg",
+      "created_at": "2025-04-01T10:00:00Z",
+      "updated_at": "2025-04-01T10:00:00Z"
+    }
+  ]
+}

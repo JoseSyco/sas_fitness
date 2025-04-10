@@ -1,0 +1,32 @@
+{
+  "message": "¡Hola! Aquí tienes un plan de entrenamiento simple para comenzar. Este plan está diseñado para principiantes y se enfoca en ejercicios básicos que puedes hacer en casa o en el gimnasio.",
+  "data": {
+    "type": "workout_plan",
+    "plan_name": "Plan de Entrenamiento Básico",
+    "description": "Un plan de entrenamiento de 3 días para principiantes",
+    "fitness_level": "beginner",
+    "sessions": [
+      {
+        "day_of_week": "Lunes",
+        "focus_area": "Cuerpo Completo",
+        "duration_minutes": 45,
+        "exercises": [
+          {
+            "name": "Sentadillas",
+            "sets": 3,
+            "reps": 12,
+            "rest_seconds": 60,
+            "notes": "Mantén la espalda recta"
+          },
+          {
+            "name": "Flexiones",
+            "sets": 3,
+            "reps": 10,
+            "rest_seconds": 60,
+            "notes": "Modifica en rodillas si es necesario"
+          }
+        ]
+      }
+    ]
+  }
+}

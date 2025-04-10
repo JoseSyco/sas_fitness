@@ -1,0 +1,55 @@
+{
+  "nutrition_plans": [
+    {
+      "nutrition_plan_id": 1,
+      "user_id": 1,
+      "plan_name": "Plan de Nutrición para Pérdida de Peso",
+      "description": "Plan nutricional equilibrado para apoyar la pérdida de peso saludable",
+      "daily_calories": 2000,
+      "protein_grams": 150,
+      "carbs_grams": 200,
+      "fat_grams": 67,
+      "is_ai_generated": true,
+      "created_at": "2025-04-01T10:00:00Z",
+      "updated_at": "2025-04-01T10:00:00Z",
+      "meals": [
+        {
+          "meal_id": 1,
+          "nutrition_plan_id": 1,
+          "meal_name": "Desayuno",
+          "scheduled_time": "07:30",
+          "description": "Tostadas de pan integral con aguacate y huevos revueltos",
+          "calories": 450,
+          "protein_grams": 25,
+          "carbs_grams": 40,
+          "fat_grams": 20,
+          "created_at": "2025-04-01T10:00:00Z",
+          "updated_at": "2025-04-01T10:00:00Z",
+          "foods": [
+            {
+              "food_id": 1,
+              "meal_id": 1,
+              "food_name": "Pan integral",
+              "portion": "2 rebanadas",
+              "calories": 160,
+              "protein_grams": 8,
+              "carbs_grams": 30,
+              "fat_grams": 2
+            },
+            {
+              "food_id": 2,
+              "meal_id": 1,
+              "food_name": "Aguacate",
+              "portion": "1/2 unidad",
+              "calories": 120,
+              "protein_grams": 2,
+              "carbs_grams": 6,
+              "fat_grams": 10
+            }
+          ],
+          "completion_tracking": []
+        }
+      ]
+    }
+  ]
+}

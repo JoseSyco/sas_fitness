@@ -14,13 +14,16 @@ import {
   CircularProgress,
   Card,
   CardContent,
-  LinearProgress
+  LinearProgress,
+  Button
 } from '@mui/material';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import EggIcon from '@mui/icons-material/Egg';
 import GrainIcon from '@mui/icons-material/Grain';
 import OilBarrelIcon from '@mui/icons-material/OilBarrel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { nutritionService } from '../../services/api';
+import jsonDataService from '../../services/jsonDataService';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -82,10 +85,37 @@ const NutritionPlansView = () => {
     const fetchNutritionPlans = async () => {
       try {
         setLoading(true);
-        const response = await nutritionService.getPlans(1); // Usando el ID de usuario 1 para desarrollo
-        setNutritionPlans(response.data.plans);
+        console.log('Fetching nutrition plans...');
+
+        // Cargar directamente desde JSON para simplificar
+        const jsonPlans = await jsonDataService.getNutritionPlans();
+        console.log('Nutrition plans from JSON:', jsonPlans);
+
+        if (Array.isArray(jsonPlans) && jsonPlans.length > 0) {
+          console.log('Setting nutrition plans:', jsonPlans);
+          setNutritionPlans(jsonPlans);
+        } else {
+          console.log('No nutrition plans found in JSON, trying backend...');
+
+          // Intentar obtener datos del backend como fallback
+          try {
+            const response = await nutritionService.getPlans(1);
+            console.log('Nutrition plans response from backend:', response);
+
+            if (response.data && Array.isArray(response.data.plans)) {
+              setNutritionPlans(response.data.plans);
+            } else {
+              console.error('No nutrition plans found in backend');
+              setNutritionPlans([]);
+            }
+          } catch (apiError) {
+            console.error('Error fetching from backend:', apiError);
+            setNutritionPlans([]);
+          }
+        }
       } catch (error) {
         console.error('Error fetching nutrition plans:', error);
+        setNutritionPlans([]);
       } finally {
         setLoading(false);
       }
@@ -135,14 +165,7 @@ const NutritionPlansView = () => {
             <Typography variant="h5" gutterBottom>
               {plan.plan_name}
             </Typography>
-            {plan.is_ai_generated && (
-              <Chip
-                label="Generado por IA"
-                color="primary"
-                size="small"
-                sx={{ mb: 2 }}
-              />
-            )}
+
           </Box>
 
           <Grid container spacing={3}>
@@ -227,7 +250,28 @@ const NutritionPlansView = () => {
                       />
                     </Box>
 
-                    <Divider sx={{ mt: 2 }} />
+                    {/* Seguimiento de completado */}
+                    {meal.completion_tracking && meal.completion_tracking.length > 0 ? (
+                      <Box sx={{ mt: 2, mb: 2 }}>
+                        <Chip
+                          icon={<CheckCircleIcon />}
+                          label={`Última comida: ${meal.completion_tracking[meal.completion_tracking.length - 1].date}`}
+                          color="success"
+                          size="small"
+                        />
+                      </Box>
+                    ) : (
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        color="primary"
+                        sx={{ mt: 2, mb: 2 }}
+                      >
+                        Registrar comida
+                      </Button>
+                    )}
+
+                    <Divider sx={{ mt: 1 }} />
                   </Box>
                 ))}
               </Paper>

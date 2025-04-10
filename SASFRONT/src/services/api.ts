@@ -105,7 +105,9 @@ const realUserService = {
 
 const realWorkoutService = {
   getPlans: async (userId: number) => {
-    return api.get(`/workouts/plans?user_id=${userId}`);
+    const response = await api.get(`/workouts/plans?user_id=${userId}`);
+    console.log('Raw workout plans response:', response);
+    return response;
   },
   getPlan: async (planId: number) => {
     return api.get(`/workouts/plans/${planId}`);

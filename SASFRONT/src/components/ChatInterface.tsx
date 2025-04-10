@@ -133,9 +133,15 @@ const executeServiceBasedOnAction = async (action: any, data: any) => {
  * @param data - Datos estructurados a procesar
  */
 const processStructuredData = async (data: any) => {
-  if (!data || !data.type) {
-    logger.warn('No structured data type provided');
+  if (!data) {
+    logger.warn('No structured data provided');
     return;
+  }
+
+  // Asegurarse de que los datos siempre tengan un tipo
+  if (!data.type) {
+    logger.warn('No structured data type provided, using default type');
+    data.type = 'general_advice';
   }
 
   logger.info('Processing structured data', { dataType: data.type });
@@ -252,18 +258,32 @@ const ChatInterface = () => {
         await executeServiceBasedOnAction(response.data.action, response.data.data);
       }
 
-      // If there's structured data, process it based on the action type
+      // If there's structured data or action, process it
       if (response.data.data) {
-        logger.info('AI response includes structured data', {
-          dataType: response.data.data.type || 'unknown',
-          dataSize: JSON.stringify(response.data.data).length
-        });
-
-        console.log('[ChatInterface] Processing structured data:', response.data.data);
-
-        // Procesar datos estructurados automáticamente
         try {
-          await processStructuredData(response.data.data);
+          // Asegurarse de que los datos estructurados existan
+          const structuredData = response.data.data || {};
+
+          // Determinar el tipo de datos estructurados
+          if (!structuredData.type) {
+            // Intentar obtener el tipo de la acción
+            if (response.data.action && response.data.action.type) {
+              structuredData.type = response.data.action.type.toLowerCase();
+            } else {
+              // Asignar un tipo por defecto si no hay tipo ni acción
+              structuredData.type = 'general_advice';
+            }
+          }
+
+          logger.info('AI response includes structured data', {
+            dataType: structuredData.type,
+            dataSize: JSON.stringify(structuredData).length
+          });
+
+          console.log('[ChatInterface] Processing structured data:', structuredData);
+
+          // Procesar datos estructurados automáticamente
+          await processStructuredData(structuredData);
           console.log('[ChatInterface] Structured data processed successfully');
         } catch (dataError) {
           console.error('[ChatInterface] Error processing structured data:', dataError);

@@ -24,9 +24,12 @@ import ProgressView from './modals/ProgressView';
 
 const SectionButtons = () => {
   const [openModal, setOpenModal] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState<number>(0);
 
   const handleOpenModal = (section: string) => {
     setOpenModal(section);
+    // Forzar recarga de datos al abrir el modal
+    setRefreshKey(prev => prev + 1);
   };
 
   const handleCloseModal = () => {
@@ -39,28 +42,28 @@ const SectionButtons = () => {
       title: 'RUTINAS',
       icon: <FitnessCenterIcon sx={{ fontSize: 40 }} />,
       color: '#2196f3',
-      component: <WorkoutPlansView />
+      component: <WorkoutPlansView key={`workout-${refreshKey}`} />
     },
     {
       id: 'nutrition',
       title: 'NUTRICIÓN',
       icon: <RestaurantIcon sx={{ fontSize: 40 }} />,
       color: '#4caf50',
-      component: <NutritionPlansView />
+      component: <NutritionPlansView key={`nutrition-${refreshKey}`} />
     },
     {
       id: 'exercises',
       title: 'EJERCICIOS',
       icon: <SportsIcon sx={{ fontSize: 40 }} />,
       color: '#ff9800',
-      component: <ExercisesView />
+      component: <ExercisesView key={`exercises-${refreshKey}`} />
     },
     {
       id: 'progress',
       title: 'PROGRESO',
       icon: <ShowChartIcon sx={{ fontSize: 40 }} />,
       color: '#f50057',
-      component: <ProgressView />
+      component: <ProgressView key={`progress-${refreshKey}`} />
     }
   ];
 

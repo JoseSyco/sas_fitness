@@ -277,4 +277,12 @@ router.post('/advice', async (req, res) => {
   }
 });
 
+// Test endpoint to check if server is working
+router.get('/test', (req, res) => {
+  res.status(200).json({
+    message: 'Server is working correctly',
+    timestamp: new Date().toISOString()
+  });
+});
+
 module.exports = router;

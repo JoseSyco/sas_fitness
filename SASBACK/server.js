@@ -22,7 +22,7 @@ app.use(requestDetailLogger);
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
+  password: process.env.DB_PASSWORD || 'root',
   database: process.env.DB_NAME || 'sas2',
   waitForConnections: true,
   connectionLimit: 10,
@@ -99,6 +99,7 @@ app.get('/api', (req, res) => {
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const workoutRoutes = require('./routes/workout.routes');
+const workoutsRoutes = require('./routes/workouts.routes'); // Nueva ruta para planes de entrenamiento
 const nutritionRoutes = require('./routes/nutrition.routes');
 const aiRoutes = require('./routes/ai.routes');
 
@@ -106,6 +107,7 @@ const aiRoutes = require('./routes/ai.routes');
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/workouts', workoutRoutes);
+app.use('/api/workouts', workoutsRoutes); // Usar la misma base de ruta
 app.use('/api/nutrition', nutritionRoutes);
 app.use('/api/ai', aiRoutes);
 

@@ -16,11 +16,13 @@ import {
   ListItemText,
   Accordion,
   AccordionSummary,
-  AccordionDetails
+  AccordionDetails,
+  Button
 } from '@mui/material';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { workoutService } from '../../services/api';
+import jsonDataService from '../../services/jsonDataService';
 
 // Mock exercise images for demo
 const exerciseImages: Record<string, string> = {
@@ -58,21 +60,66 @@ const ExercisesView = () => {
     const fetchExercises = async () => {
       try {
         setLoading(true);
-        const response = await workoutService.getExercises();
-        setExercises(response.data.exercises);
 
-        // Group exercises by muscle group
-        const groupedExercises: ExercisesByMuscleGroup = {};
-        response.data.exercises.forEach((exercise: any) => {
-          if (!groupedExercises[exercise.muscle_group]) {
-            groupedExercises[exercise.muscle_group] = [];
+        // Intentar obtener datos del backend
+        try {
+          const response = await workoutService.getExercises();
+          console.log('Exercises response:', response);
+
+          if (response.data && Array.isArray(response.data.exercises)) {
+            setExercises(response.data.exercises);
+
+            // Group exercises by muscle group
+            const groupedExercises: ExercisesByMuscleGroup = {};
+            response.data.exercises.forEach((exercise: any) => {
+              if (!groupedExercises[exercise.muscle_group]) {
+                groupedExercises[exercise.muscle_group] = [];
+              }
+              groupedExercises[exercise.muscle_group].push(exercise);
+            });
+
+            setExercisesByMuscle(groupedExercises);
+            setLoading(false);
+            return;
           }
-          groupedExercises[exercise.muscle_group].push(exercise);
-        });
+        } catch (apiError) {
+          console.log('Usando datos JSON como fallback para ejercicios:', apiError);
+        }
 
-        setExercisesByMuscle(groupedExercises);
+        // Si falla la llamada al backend, usar datos JSON
+        try {
+          const jsonExercises = await jsonDataService.getExercises();
+          console.log('Exercises from JSON:', jsonExercises);
+
+          // Verificar que los datos JSON tienen el formato correcto
+          if (Array.isArray(jsonExercises)) {
+            setExercises(jsonExercises);
+
+            // Group exercises by muscle group
+            const groupedExercises: ExercisesByMuscleGroup = {};
+            jsonExercises.forEach((exercise: any) => {
+              const muscleGroup = exercise.muscle_group || 'Sin categoría';
+              if (!groupedExercises[muscleGroup]) {
+                groupedExercises[muscleGroup] = [];
+              }
+              groupedExercises[muscleGroup].push(exercise);
+            });
+
+            setExercisesByMuscle(groupedExercises);
+          } else {
+            console.error('Formato de datos JSON inesperado:', jsonExercises);
+            setExercises([]);
+            setExercisesByMuscle({});
+          }
+        } catch (jsonError) {
+          console.error('Error al cargar datos JSON de ejercicios:', jsonError);
+          setExercises([]);
+          setExercisesByMuscle({});
+        }
       } catch (error) {
         console.error('Error fetching exercises:', error);
+        setExercises([]);
+        setExercisesByMuscle({});
       } finally {
         setLoading(false);
       }
@@ -113,7 +160,7 @@ const ExercisesView = () => {
           Biblioteca de Ejercicios
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Ejercicios recomendados por la IA para tus rutinas de entrenamiento
+          Biblioteca completa de ejercicios para tus rutinas de entrenamiento
         </Typography>
       </Box>
 
@@ -171,6 +218,17 @@ const ExercisesView = () => {
                           <strong>Equipo necesario:</strong> {exercise.equipment_needed}
                         </Typography>
                       )}
+
+                      <Box sx={{ mt: 2 }}>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          color="primary"
+                          fullWidth
+                        >
+                          Ver detalles
+                        </Button>
+                      </Box>
                     </CardContent>
                   </Card>
                 </Grid>
@@ -187,7 +245,7 @@ const ExercisesView = () => {
       {/* Featured exercises */}
       <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
         <Typography variant="h6" gutterBottom>
-          Recomendados por la IA para tus objetivos actuales
+          Ejercicios recomendados para tus objetivos actuales
         </Typography>
         <Divider sx={{ mb: 2 }} />
 

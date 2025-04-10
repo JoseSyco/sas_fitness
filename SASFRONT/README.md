@@ -1,54 +1,144 @@
-# React + TypeScript + Vite
+# SAS2 Fitness Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A SaaS fitness platform with AI-powered workout and nutrition plans using Deepseek API.
 
-Currently, two official plugins are available:
+## Project Structure
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **SASBACK**: Backend API built with Node.js, Express, and PostgreSQL
+- **SASFRONT**: Frontend application built with React, TypeScript, and Material-UI
 
-## Expanding the ESLint configuration
+## Setup Instructions
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Database Setup
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+1. Create a PostgreSQL database named `sas2`:
+
+```sql
+CREATE DATABASE sas2;
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Run the SQL script in `SASBACK/database.sql` to create the necessary tables.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Backend Setup
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+1. Navigate to the backend directory:
+
+```bash
+cd SASBACK
 ```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Create a `.env` file with the following content (modify as needed):
+
+```
+PORT=5000
+NODE_ENV=development
+
+# Database configuration
+DB_USER=postgres
+DB_HOST=localhost
+DB_NAME=sas2
+DB_PASSWORD=postgres
+DB_PORT=5432
+
+# JWT Secret
+JWT_SECRET=sas2_secret_key_change_in_production
+
+# Deepseek API
+DEEPSEEK_API_KEY=your_deepseek_api_key
+```
+
+4. Start the backend server:
+
+```bash
+npm run dev
+```
+
+The server will run on http://localhost:5000
+
+### Frontend Setup
+
+1. Navigate to the frontend directory:
+
+```bash
+cd SASFRONT
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Start the development server:
+
+```bash
+npm run dev
+```
+
+The application will be available at http://localhost:5173
+
+## Features
+
+- User authentication (register, login)
+- User profile management
+- AI-generated workout plans
+- AI-generated nutrition plans
+- Progress tracking
+- Workout logging
+
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register a new user
+- `POST /api/auth/login` - Login a user
+
+### User
+- `GET /api/users/profile` - Get user profile
+- `PUT /api/users/profile` - Update user profile
+- `GET /api/users/goals` - Get user fitness goals
+- `POST /api/users/goals` - Create a new fitness goal
+- `PUT /api/users/goals/:goalId` - Update a fitness goal
+- `POST /api/users/progress` - Track progress
+- `GET /api/users/progress` - Get progress history
+
+### Workouts
+- `GET /api/workouts/plans` - Get all workout plans
+- `GET /api/workouts/plans/:planId` - Get a specific workout plan
+- `POST /api/workouts/plans` - Create a new workout plan
+- `POST /api/workouts/logs` - Log a completed workout
+- `GET /api/workouts/logs` - Get workout logs
+- `GET /api/workouts/exercises` - Get all exercises
+
+### Nutrition
+- `GET /api/nutrition/plans` - Get all nutrition plans
+- `GET /api/nutrition/plans/:planId` - Get a specific nutrition plan
+- `POST /api/nutrition/plans` - Create a new nutrition plan
+- `PUT /api/nutrition/plans/:planId` - Update a nutrition plan
+
+### AI
+- `POST /api/ai/generate-workout` - Generate a workout plan
+- `POST /api/ai/generate-nutrition` - Generate a nutrition plan
+- `POST /api/ai/advice` - Get fitness advice
+
+## Technologies Used
+
+### Backend
+- Node.js
+- Express.js
+- PostgreSQL
+- JSON Web Tokens (JWT)
+- bcrypt for password hashing
+- Deepseek API for AI-powered recommendations
+
+### Frontend
+- React
+- TypeScript
+- Material-UI
+- React Router
+- Axios for API calls

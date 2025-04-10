@@ -32,6 +32,9 @@ import './App.css';
 import ChatInterface from './components/ChatInterface';
 import SectionButtons from './components/SectionButtons';
 import ConnectionStatus from './components/ConnectionStatus';
+import EnhancedChatInterface from './components/EnhancedChatInterface';
+// Componentes de AI Coach
+import StandaloneAICoachChat from './components/AICoach/StandaloneAICoachChat';
 
 // Context
 import { AuthProvider } from './context/AuthContext';
@@ -184,7 +187,12 @@ function App() {
           {/* Main Content */}
           <Container maxWidth="lg" sx={{ mt: 4, mb: 2, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
             {/* Chat Interface */}
-            <ChatInterface />
+            {/* Descomentar la línea deseada para cambiar entre interfaces */}
+            {/* <ChatInterface /> */}
+            <EnhancedChatInterface />
+
+            {/* AI Coach Chat Interface (Versión Independiente) */}
+            {/* <StandaloneAICoachChat /> */}
 
             {/* Section Buttons - Fixed at bottom */}
             <Box sx={{ mt: 'auto', mb: 1 }}>

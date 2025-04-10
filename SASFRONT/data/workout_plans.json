@@ -1,0 +1,413 @@
+{
+  "workout_plans": [
+    {
+      "plan_id": 1,
+      "user_id": 1,
+      "plan_name": "Plan de Pérdida de Peso",
+      "description": "Un plan de entrenamiento diseñado para ayudarte a perder peso de manera saludable.",
+      "is_ai_generated": true,
+      "created_at": "2025-04-01T10:00:00Z",
+      "updated_at": "2025-04-01T10:00:00Z",
+      "sessions": [
+        {
+          "session_id": 1,
+          "plan_id": 1,
+          "day_of_week": "Monday",
+          "focus_area": "Cardio y Core",
+          "duration_minutes": 45,
+          "scheduled_time": "18:00",
+          "created_at": "2025-04-01T10:00:00Z",
+          "updated_at": "2025-04-01T10:00:00Z",
+          "exercises": [
+            {
+              "workout_exercise_id": 1,
+              "session_id": 1,
+              "exercise_id": 1,
+              "name": "Carrera en cinta",
+              "description": "Correr a ritmo moderado en cinta.",
+              "muscle_group": "Cardio",
+              "equipment_needed": "Cinta de correr",
+              "difficulty_level": "intermediate",
+              "sets": 1,
+              "reps": null,
+              "duration_seconds": 1200,
+              "rest_seconds": 60,
+              "notes": "Mantén un ritmo constante"
+            },
+            {
+              "workout_exercise_id": 2,
+              "session_id": 1,
+              "exercise_id": 2,
+              "name": "Plancha",
+              "description": "Mantén la posición de plancha con el cuerpo recto.",
+              "muscle_group": "Core",
+              "equipment_needed": "Ninguno",
+              "difficulty_level": "intermediate",
+              "sets": 3,
+              "reps": null,
+              "duration_seconds": 60,
+              "rest_seconds": 30,
+              "notes": "Mantén la posición correcta"
+            },
+            {
+              "workout_exercise_id": 3,
+              "session_id": 1,
+              "exercise_id": 3,
+              "name": "Crunches",
+              "description": "Abdominales clásicos.",
+              "muscle_group": "Core",
+              "equipment_needed": "Ninguno",
+              "difficulty_level": "beginner",
+              "sets": 3,
+              "reps": 15,
+              "duration_seconds": null,
+              "rest_seconds": 30,
+              "notes": "Contrae bien los abdominales"
+            }
+          ],
+          "completion_tracking": [
+            {
+              "date": "2025-04-01",
+              "completed": true,
+              "completion_time": "18:45",
+              "notes": "Buena sesión, aumenté la intensidad en la carrera"
+            },
+            {
+              "date": "2025-04-08",
+              "completed": true,
+              "completion_time": "18:30",
+              "notes": "Sesión completa, mejoré en las planchas"
+            },
+            {
+              "date": "2025-04-15",
+              "completed": false,
+              "completion_time": null,
+              "notes": "No pude completar por falta de tiempo"
+            }
+          ]
+        },
+        {
+          "session_id": 2,
+          "plan_id": 1,
+          "day_of_week": "Wednesday",
+          "focus_area": "Piernas y Glúteos",
+          "duration_minutes": 50,
+          "scheduled_time": "19:00",
+          "created_at": "2025-04-01T10:00:00Z",
+          "updated_at": "2025-04-01T10:00:00Z",
+          "exercises": [
+            {
+              "workout_exercise_id": 4,
+              "session_id": 2,
+              "exercise_id": 4,
+              "name": "Sentadillas",
+              "description": "Sentadillas con peso corporal.",
+              "muscle_group": "Piernas",
+              "equipment_needed": "Ninguno",
+              "difficulty_level": "beginner",
+              "sets": 3,
+              "reps": 15,
+              "duration_seconds": null,
+              "rest_seconds": 60,
+              "notes": "Mantén la espalda recta"
+            },
+            {
+              "workout_exercise_id": 5,
+              "session_id": 2,
+              "exercise_id": 5,
+              "name": "Zancadas",
+              "description": "Zancadas alternando piernas.",
+              "muscle_group": "Piernas",
+              "equipment_needed": "Ninguno",
+              "difficulty_level": "beginner",
+              "sets": 3,
+              "reps": 12,
+              "duration_seconds": null,
+              "rest_seconds": 60,
+              "notes": "Mantén el equilibrio"
+            }
+          ],
+          "completion_tracking": [
+            {
+              "date": "2025-04-03",
+              "completed": true,
+              "completion_time": "19:45",
+              "notes": "Completado con éxito"
+            },
+            {
+              "date": "2025-04-10",
+              "completed": true,
+              "completion_time": "19:30",
+              "notes": "Aumenté el número de repeticiones"
+            },
+            {
+              "date": "2025-04-17",
+              "completed": true,
+              "completion_time": "19:15",
+              "notes": "Mejoré mi técnica en las sentadillas"
+            }
+          ]
+        },
+        {
+          "session_id": 3,
+          "plan_id": 1,
+          "day_of_week": "Friday",
+          "focus_area": "Cuerpo Completo",
+          "duration_minutes": 60,
+          "scheduled_time": "17:30",
+          "created_at": "2025-04-01T10:00:00Z",
+          "updated_at": "2025-04-01T10:00:00Z",
+          "exercises": [
+            {
+              "workout_exercise_id": 6,
+              "session_id": 3,
+              "exercise_id": 6,
+              "name": "Burpees",
+              "description": "Ejercicio de cuerpo completo.",
+              "muscle_group": "Cuerpo Completo",
+              "equipment_needed": "Ninguno",
+              "difficulty_level": "advanced",
+              "sets": 3,
+              "reps": 10,
+              "duration_seconds": null,
+              "rest_seconds": 60,
+              "notes": "Mantén un ritmo constante"
+            },
+            {
+              "workout_exercise_id": 7,
+              "session_id": 3,
+              "exercise_id": 7,
+              "name": "Mountain Climbers",
+              "description": "Ejercicio de cardio y core.",
+              "muscle_group": "Cuerpo Completo",
+              "equipment_needed": "Ninguno",
+              "difficulty_level": "intermediate",
+              "sets": 3,
+              "reps": null,
+              "duration_seconds": 45,
+              "rest_seconds": 30,
+              "notes": "Mantén un ritmo rápido"
+            }
+          ],
+          "completion_tracking": [
+            {
+              "date": "2025-04-05",
+              "completed": true,
+              "completion_time": "18:30",
+              "notes": "Sesión intensa, buen trabajo"
+            },
+            {
+              "date": "2025-04-12",
+              "completed": false,
+              "completion_time": null,
+              "notes": "No pude asistir por viaje"
+            },
+            {
+              "date": "2025-04-19",
+              "completed": true,
+              "completion_time": "18:15",
+              "notes": "Completado con mayor intensidad"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "plan_id": 2,
+      "user_id": 1,
+      "plan_name": "Plan de Ganancia Muscular",
+      "description": "Un plan de entrenamiento diseñado para ayudarte a ganar masa muscular.",
+      "is_ai_generated": true,
+      "created_at": "2025-04-02T10:00:00Z",
+      "updated_at": "2025-04-02T10:00:00Z",
+      "sessions": [
+        {
+          "session_id": 4,
+          "plan_id": 2,
+          "day_of_week": "Monday",
+          "focus_area": "Pecho y Tríceps",
+          "duration_minutes": 60,
+          "scheduled_time": "17:00",
+          "created_at": "2025-04-02T10:00:00Z",
+          "updated_at": "2025-04-02T10:00:00Z",
+          "exercises": [
+            {
+              "workout_exercise_id": 8,
+              "session_id": 4,
+              "exercise_id": 8,
+              "name": "Press de banca",
+              "description": "Ejercicio para pecho con barra.",
+              "muscle_group": "Pecho",
+              "equipment_needed": "Barra y banco",
+              "difficulty_level": "intermediate",
+              "sets": 4,
+              "reps": 10,
+              "duration_seconds": null,
+              "rest_seconds": 90,
+              "notes": "Aumenta el peso gradualmente"
+            },
+            {
+              "workout_exercise_id": 9,
+              "session_id": 4,
+              "exercise_id": 9,
+              "name": "Fondos en paralelas",
+              "description": "Ejercicio para tríceps.",
+              "muscle_group": "Tríceps",
+              "equipment_needed": "Barras paralelas",
+              "difficulty_level": "intermediate",
+              "sets": 3,
+              "reps": 12,
+              "duration_seconds": null,
+              "rest_seconds": 60,
+              "notes": "Controla el movimiento"
+            }
+          ],
+          "completion_tracking": [
+            {
+              "date": "2025-04-01",
+              "completed": true,
+              "completion_time": "18:00",
+              "notes": "Buena sesión, aumenté peso en press de banca"
+            },
+            {
+              "date": "2025-04-08",
+              "completed": true,
+              "completion_time": "18:15",
+              "notes": "Mejoré en fondos, hice 15 repeticiones"
+            },
+            {
+              "date": "2025-04-15",
+              "completed": true,
+              "completion_time": "18:00",
+              "notes": "Sesión completa con buen rendimiento"
+            }
+          ]
+        },
+        {
+          "session_id": 5,
+          "plan_id": 2,
+          "day_of_week": "Wednesday",
+          "focus_area": "Espalda y Bíceps",
+          "duration_minutes": 60,
+          "scheduled_time": "17:00",
+          "created_at": "2025-04-02T10:00:00Z",
+          "updated_at": "2025-04-02T10:00:00Z",
+          "exercises": [
+            {
+              "workout_exercise_id": 10,
+              "session_id": 5,
+              "exercise_id": 10,
+              "name": "Dominadas",
+              "description": "Ejercicio para espalda.",
+              "muscle_group": "Espalda",
+              "equipment_needed": "Barra de dominadas",
+              "difficulty_level": "intermediate",
+              "sets": 4,
+              "reps": 8,
+              "duration_seconds": null,
+              "rest_seconds": 90,
+              "notes": "Usa banda de asistencia si es necesario"
+            },
+            {
+              "workout_exercise_id": 11,
+              "session_id": 5,
+              "exercise_id": 11,
+              "name": "Curl de bíceps",
+              "description": "Ejercicio para bíceps.",
+              "muscle_group": "Bíceps",
+              "equipment_needed": "Mancuernas",
+              "difficulty_level": "beginner",
+              "sets": 3,
+              "reps": 12,
+              "duration_seconds": null,
+              "rest_seconds": 60,
+              "notes": "Controla el movimiento"
+            }
+          ],
+          "completion_tracking": [
+            {
+              "date": "2025-04-03",
+              "completed": true,
+              "completion_time": "18:00",
+              "notes": "Logré hacer 10 dominadas sin asistencia"
+            },
+            {
+              "date": "2025-04-10",
+              "completed": false,
+              "completion_time": null,
+              "notes": "No pude asistir por trabajo"
+            },
+            {
+              "date": "2025-04-17",
+              "completed": true,
+              "completion_time": "18:10",
+              "notes": "Aumenté peso en curl de bíceps"
+            }
+          ]
+        },
+        {
+          "session_id": 6,
+          "plan_id": 2,
+          "day_of_week": "Friday",
+          "focus_area": "Piernas y Hombros",
+          "duration_minutes": 70,
+          "scheduled_time": "17:00",
+          "created_at": "2025-04-02T10:00:00Z",
+          "updated_at": "2025-04-02T10:00:00Z",
+          "exercises": [
+            {
+              "workout_exercise_id": 12,
+              "session_id": 6,
+              "exercise_id": 12,
+              "name": "Sentadillas con barra",
+              "description": "Ejercicio para piernas con barra.",
+              "muscle_group": "Piernas",
+              "equipment_needed": "Barra",
+              "difficulty_level": "intermediate",
+              "sets": 4,
+              "reps": 10,
+              "duration_seconds": null,
+              "rest_seconds": 120,
+              "notes": "Mantén la espalda recta"
+            },
+            {
+              "workout_exercise_id": 13,
+              "session_id": 6,
+              "exercise_id": 13,
+              "name": "Press militar",
+              "description": "Ejercicio para hombros.",
+              "muscle_group": "Hombros",
+              "equipment_needed": "Barra",
+              "difficulty_level": "intermediate",
+              "sets": 4,
+              "reps": 10,
+              "duration_seconds": null,
+              "rest_seconds": 90,
+              "notes": "No arquees la espalda"
+            }
+          ],
+          "completion_tracking": [
+            {
+              "date": "2025-04-05",
+              "completed": true,
+              "completion_time": "18:15",
+              "notes": "Buena sesión, aumenté peso en sentadillas"
+            },
+            {
+              "date": "2025-04-12",
+              "completed": true,
+              "completion_time": "18:20",
+              "notes": "Mejoré técnica en press militar"
+            },
+            {
+              "date": "2025-04-19",
+              "completed": false,
+              "completion_time": null,
+              "notes": "No pude completar por lesión leve"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

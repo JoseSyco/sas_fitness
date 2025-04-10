@@ -1,6 +1,0 @@
-@echo off
-echo Starting backend server...
-start cmd /k "cd SASBACK && node server.js"
-echo Starting frontend server...
-start cmd /k "cd SASFRONT && npm run dev"
-echo Services started. Check the opened command windows for details.

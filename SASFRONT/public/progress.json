@@ -1,0 +1,40 @@
+{
+  "progress": [
+    {
+      "progress_id": 1,
+      "user_id": 1,
+      "tracking_date": "2025-04-01",
+      "weight": 75,
+      "body_fat_percentage": 18,
+      "measurements": {
+        "chest": 95,
+        "waist": 85,
+        "hips": 98,
+        "biceps": 32,
+        "thighs": 55
+      },
+      "notes": "Punto de partida",
+      "created_at": "2025-04-01T10:00:00Z",
+      "updated_at": "2025-04-01T10:00:00Z"
+    },
+    {
+      "progress_id": 2,
+      "user_id": 1,
+      "tracking_date": "2025-04-08",
+      "weight": 74.2,
+      "body_fat_percentage": 17.5,
+      "measurements": {
+        "chest": 95,
+        "waist": 84,
+        "hips": 97.5,
+        "biceps": 32.5,
+        "thighs": 55
+      },
+      "notes": "Buen progreso esta semana",
+      "created_at": "2025-04-08T10:00:00Z",
+      "updated_at": "2025-04-08T10:00:00Z"
+    }
+  ],
+  "workout_logs": [],
+  "nutrition_logs": []
+}

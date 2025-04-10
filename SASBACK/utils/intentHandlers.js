@@ -3,6 +3,86 @@ const db = require('../db');
 const { INTENT_TYPES } = require('./intentRecognition');
 const SYSTEM_PROMPTS = require('./systemPrompts');
 const axios = require('axios');
+const dotenv = require('dotenv');
+const path = require('path');
+
+// Cargar variables de entorno directamente
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+// Verificar si la clave API está disponible
+const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || 'sk-00671369f73d4e1f828aa9048bc35dfb';
+
+/**
+ * Extract JSON data from DeepSeek API response
+ * @param {Object} aiResponse - DeepSeek API response
+ * @returns {Object} - Extracted message and data
+ */
+function extractJsonFromResponse(aiResponse) {
+  try {
+    const content = aiResponse.choices[0].message.content;
+    console.log('\nExtracting JSON from response content:', content.substring(0, 200) + '...');
+
+    // Try to find JSON in the content
+    const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) ||
+                      content.match(/```\n([\s\S]*?)\n```/) ||
+                      content.match(/{[\s\S]*?}/);
+
+    if (jsonMatch) {
+      const jsonStr = jsonMatch[0].replace(/```json\n|```\n|```/g, '');
+      try {
+        const jsonData = JSON.parse(jsonStr);
+        console.log('Successfully parsed JSON data:', JSON.stringify(jsonData, null, 2));
+
+        // Ensure data has a type
+        let data = jsonData.data || {};
+        if (!data.type) {
+          if (jsonData.type) {
+            data.type = jsonData.type;
+          } else {
+            data.type = 'general_advice';
+          }
+        }
+
+        // Extract the conversational message from the JSON
+        // Important: Don't return the raw JSON in the message
+        const conversationalMessage = jsonData.message || 'Aquí tienes la información que solicitaste.';
+
+        // Return the parsed JSON data with clean conversational message
+        return {
+          message: conversationalMessage, // Only the conversational part
+          data: data,
+          action: jsonData.action || { type: 'PROVIDED_GENERAL_ADVICE' }
+        };
+      } catch (jsonError) {
+        console.log('Failed to parse JSON:', jsonError.message);
+        console.log('Raw match:', jsonStr);
+      }
+    } else {
+      console.log('No JSON pattern found in response');
+    }
+
+    // If we couldn't extract JSON, clean the content to remove any JSON-like structures
+    const cleanedContent = content.replace(/```json[\s\S]*?```/g, '')
+                                  .replace(/```[\s\S]*?```/g, '')
+                                  .replace(/{[\s\S]*?}/g, '')
+                                  .trim();
+
+    const finalMessage = cleanedContent || 'Aquí tienes la información que solicitaste.';
+
+    return {
+      message: finalMessage,
+      data: { type: 'general_advice' },
+      action: { type: 'PROVIDED_GENERAL_ADVICE' }
+    };
+  } catch (error) {
+    console.log('Error extracting JSON from response:', error.message);
+    return {
+      message: 'Lo siento, tuve un problema al procesar tu consulta. Por favor, intenta de nuevo o formula tu pregunta de otra manera.',
+      data: { type: 'general_advice' },
+      action: { type: 'PROVIDED_GENERAL_ADVICE' }
+    };
+  }
+}
 
 /**
  * Call Deepseek API with a prompt and specific system prompt
@@ -19,6 +99,14 @@ async function callDeepseekAPI(prompt, userId, systemPromptType = 'GENERAL_COACH
     // Get the appropriate system prompt
     const systemPrompt = SYSTEM_PROMPTS[systemPromptType] || SYSTEM_PROMPTS.GENERAL_COACH;
 
+    // Log the API key being used (masked for security)
+    const apiKey = DEEPSEEK_API_KEY;
+    const maskedKey = apiKey.length > 8
+      ? `${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}`
+      : '(not set)';
+    console.log(`Using DeepSeek API Key: ${maskedKey}`);
+    console.log(`API Key length: ${apiKey.length} characters`);
+
     const response = await axios.post(
       'https://api.deepseek.com/v1/chat/completions',
       {
@@ -33,10 +121,12 @@ async function callDeepseekAPI(prompt, userId, systemPromptType = 'GENERAL_COACH
       {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
+          'Authorization': `Bearer ${apiKey}`
         }
       }
     );
+
+    console.log('DeepSeek API call successful');
 
     // Log the interaction
     try {
@@ -61,35 +151,10 @@ async function callDeepseekAPI(prompt, userId, systemPromptType = 'GENERAL_COACH
     console.log('\nResponse Content:');
     console.log(response.data.choices[0].message.content);
 
-    // Check if the response contains JSON data
-    try {
-      const content = response.data.choices[0].message.content;
-      // Try to find JSON in the content
-      const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) ||
-                        content.match(/```\n([\s\S]*?)\n```/) ||
-                        content.match(/{[\s\S]*?}/);
-
-      if (jsonMatch) {
-        console.log('\nDETECTED JSON DATA IN RESPONSE:');
-        const jsonStr = jsonMatch[0].replace(/```json\n|```\n|```/g, '');
-        try {
-          const jsonData = JSON.parse(jsonStr);
-          console.log('JSON DATA:');
-          console.log(JSON.stringify(jsonData, null, 2));
-
-          // If there's a data field, log it separately
-          if (jsonData.data) {
-            console.log('\nDATA FIELD:');
-            console.log(JSON.stringify(jsonData.data, null, 2));
-          }
-        } catch (jsonError) {
-          console.log('Failed to parse JSON, showing raw match:');
-          console.log(jsonStr);
-        }
-      }
-    } catch (error) {
-      console.log('Error checking for JSON in response:', error.message);
-    }
+    // Extract JSON data from response
+    const extractedData = extractJsonFromResponse(response.data);
+    console.log('\nExtracted Data:');
+    console.log(JSON.stringify(extractedData, null, 2));
 
     console.log('==== DEEPSEEK API RESPONSE END ====\n\n');
 
@@ -98,7 +163,8 @@ async function callDeepseekAPI(prompt, userId, systemPromptType = 'GENERAL_COACH
       firstTokens: response.data.choices[0].message.content.substring(0, 100) + '...'
     });
 
-    return response.data;
+    // Return the extracted data instead of the raw response
+    return extractedData;
   } catch (error) {
     logger.error('Error calling Deepseek API', error);
     throw new Error('Failed to get response from Deepseek API');
@@ -885,13 +951,18 @@ async function processStructuredData(data, userId) {
     logger.info('Processing structured data', { dataType: data.type, userId });
 
     // Process workout plan data
-    if (data.type === 'workout_plan' && data.plan) {
-      const plan = data.plan;
+    if (data.type === 'workout_plan') {
+      // Check if data has plan or if data itself is the plan
+      const plan = data.plan || data;
+      const planName = plan.plan_name || plan.name || 'Plan de entrenamiento';
+      const planDescription = plan.description || '';
+
+      console.log('Creating workout plan with data:', { planName, planDescription });
 
       // Create workout plan
       const [result] = await db.query(
         'INSERT INTO workout_plans (user_id, plan_name, description, is_ai_generated) VALUES (?, ?, ?, TRUE)',
-        [userId, plan.name || 'Plan de entrenamiento', plan.description || '']
+        [userId, planName, planDescription]
       );
 
       const planId = result.insertId;
@@ -899,42 +970,72 @@ async function processStructuredData(data, userId) {
 
       // Create sessions if available
       if (plan.sessions && Array.isArray(plan.sessions)) {
+        console.log('Processing workout sessions:', plan.sessions.length);
+
         for (const session of plan.sessions) {
+          const dayOfWeek = session.day_of_week || session.day || 'Día 1';
+          const focusArea = session.focus_area || 'General';
+          const durationMinutes = session.duration_minutes || 60;
+
+          console.log('Creating workout session:', { dayOfWeek, focusArea, durationMinutes });
+
           const [sessionResult] = await db.query(
             'INSERT INTO workout_sessions (plan_id, day_of_week, focus_area, duration_minutes) VALUES (?, ?, ?, ?)',
-            [planId, session.day || 'Día 1', session.focus_area || 'General', session.duration_minutes || 60]
+            [planId, dayOfWeek, focusArea, durationMinutes]
           );
 
           const sessionId = sessionResult.insertId;
+          console.log('Created workout session with ID:', sessionId);
 
           // Create exercises if available
           if (session.exercises && Array.isArray(session.exercises)) {
+            console.log('Processing exercises for session:', session.exercises.length);
+
             for (const exercise of session.exercises) {
-              // Check if exercise exists
-              const [exerciseRows] = await db.query(
-                'SELECT exercise_id FROM exercises WHERE name = ?',
-                [exercise.name]
-              );
+              // Handle both exercise_id and name
+              let exerciseId = exercise.exercise_id;
+              let exerciseName = exercise.name || 'Ejercicio';
 
-              let exerciseId;
-
-              if (exerciseRows.length > 0) {
-                exerciseId = exerciseRows[0].exercise_id;
-              } else {
-                // Create exercise
-                const [exerciseResult] = await db.query(
-                  'INSERT INTO exercises (name, description, muscle_group, difficulty_level) VALUES (?, ?, ?, ?)',
-                  [exercise.name, exercise.description || '', session.focus_area || 'General', 'intermediate']
+              // If we have an exercise_id, use it directly
+              if (!exerciseId) {
+                // Check if exercise exists by name
+                const [exerciseRows] = await db.query(
+                  'SELECT exercise_id FROM exercises WHERE name = ?',
+                  [exerciseName]
                 );
 
-                exerciseId = exerciseResult.insertId;
+                if (exerciseRows.length > 0) {
+                  exerciseId = exerciseRows[0].exercise_id;
+                  console.log('Found existing exercise:', { exerciseId, exerciseName });
+                } else {
+                  // Create exercise
+                  console.log('Creating new exercise:', exerciseName);
+                  const [exerciseResult] = await db.query(
+                    'INSERT INTO exercises (name, description, muscle_group, difficulty_level) VALUES (?, ?, ?, ?)',
+                    [exerciseName, exercise.description || '', focusArea, 'intermediate']
+                  );
+
+                  exerciseId = exerciseResult.insertId;
+                  console.log('Created new exercise with ID:', exerciseId);
+                }
+              } else {
+                console.log('Using provided exercise_id:', exerciseId);
               }
 
               // Add exercise to session
+              const sets = exercise.sets || 3;
+              const reps = exercise.reps || 10;
+              const restSeconds = exercise.rest_seconds || 60;
+              const notes = exercise.notes || '';
+
+              console.log('Adding exercise to session:', { exerciseId, sets, reps });
+
               await db.query(
                 'INSERT INTO workout_exercises (session_id, exercise_id, sets, reps, rest_seconds, notes) VALUES (?, ?, ?, ?, ?, ?)',
-                [sessionId, exerciseId, exercise.sets || 3, exercise.reps || 10, exercise.rest_seconds || 60, exercise.notes || '']
+                [sessionId, exerciseId, sets, reps, restSeconds, notes]
               );
+
+              console.log('Exercise added to session successfully');
             }
           }
         }
@@ -1052,6 +1153,120 @@ async function processStructuredData(data, userId) {
   }
 }
 
+/**
+ * Handle create workout intent
+ * @param {Object} intent - Recognized intent
+ * @param {number} userId - User ID
+ * @param {string} message - Original user message
+ * @returns {Object} - Handler response
+ */
+async function handleCreateWorkout(intent, userId, message) {
+  try {
+    logger.info('Handling create workout intent', { userId });
+
+    // Get user profile
+    const [userRows] = await db.query('SELECT * FROM users WHERE user_id = ?', [userId]);
+    const user = userRows.length > 0 ? userRows[0] : { name: 'Usuario' };
+
+    // Get user fitness profile if available
+    const [profileRows] = await db.query('SELECT * FROM user_profiles WHERE user_id = ?', [userId]);
+    const profile = profileRows.length > 0 ? profileRows[0] : {};
+
+    // Extract parameters from intent
+    const { goal, fitness_level, days_per_week, duration_minutes } = intent.parameters;
+
+    // Construct prompt for Deepseek
+    const prompt = `
+      El usuario ha solicitado un plan de entrenamiento con las siguientes características:
+      - Mensaje original: "${message}"
+      - Objetivo: ${goal || 'No especificado'}
+      - Nivel de condición física: ${fitness_level || 'No especificado'}
+      - Días por semana: ${days_per_week || 'No especificado'}
+      - Duración de sesión: ${duration_minutes || 'No especificada'} minutos
+
+      Perfil del usuario:
+      - Edad: ${profile.age || 'No especificada'}
+      - Género: ${profile.gender || 'No especificado'}
+      - Altura: ${profile.height || 'No especificada'} cm
+      - Peso: ${profile.weight || 'No especificado'} kg
+      - Nivel de actividad: ${profile.activity_level || 'No especificado'}
+
+      Por favor, crea un plan de entrenamiento estructurado con:
+      1. Un nombre para el plan
+      2. Una descripción general
+      3. Para cada sesión de entrenamiento:
+         - Día de la semana
+         - Área de enfoque (p.ej., "Tren Superior", "Piernas", etc.)
+         - Duración en minutos
+         - Lista de ejercicios con series, repeticiones y descanso
+
+      Formatea la respuesta como JSON con la siguiente estructura:
+      {
+        "message": "Mensaje conversacional para el usuario explicando el plan",
+        "data": {
+          "type": "workout_plan",
+          "plan_name": "Nombre del plan",
+          "description": "Descripción detallada del plan",
+          "fitness_level": "beginner/intermediate/advanced",
+          "sessions": [
+            {
+              "day_of_week": "Lunes",
+              "focus_area": "Tren Superior",
+              "duration_minutes": 45,
+              "exercises": [
+                {
+                  "exercise_id": 1,
+                  "sets": 3,
+                  "reps": 10,
+                  "rest_seconds": 60,
+                  "notes": "Mantén la espalda recta"
+                },
+                // más ejercicios...
+              ]
+            },
+            // más sesiones...
+          ]
+        },
+        "action": {
+          "type": "CREATE_WORKOUT_PLAN"
+        }
+      }
+    `;
+
+    console.log('Sending workout creation prompt to DeepSeek API');
+
+    // Call Deepseek API with workout creation prompt
+    const parsedResponse = await callDeepseekAPI(prompt, userId, 'WORKOUT_CREATION');
+
+    console.log('Received response from DeepSeek API for workout creation');
+
+    // Process structured data if available
+    let processResult = { processed: false };
+    if (parsedResponse.data && Object.keys(parsedResponse.data).length > 0) {
+      processResult = await processStructuredData(parsedResponse.data, userId);
+      logger.info('Processed structured workout data result', { processResult });
+    }
+
+    const response = {
+      message: parsedResponse.message,
+      action: processResult.processed ? processResult.action : {
+        type: 'PROVIDED_WORKOUT_ADVICE'
+      },
+      data: parsedResponse.data
+    };
+
+    logger.info('Created workout plan');
+
+    return response;
+  } catch (error) {
+    logger.error('Error handling create workout intent', error);
+    return {
+      message: 'Lo siento, tuve un problema al crear tu plan de entrenamiento. Por favor, intenta de nuevo.',
+      error: error.message
+    };
+  }
+}
+
 async function handleGeneralAdvice(intent, userId, message) {
   try {
     logger.info('Handling general advice intent', { userId });
@@ -1126,10 +1341,8 @@ async function handleGeneralAdvice(intent, userId, message) {
     `;
 
     // Call Deepseek API with general coach prompt
-    const aiResponse = await callDeepseekAPI(prompt, userId, 'GENERAL_COACH');
-
-    // Extract the structured response using our new function
-    const parsedResponse = extractJsonFromResponse(aiResponse);
+    // This now returns the extracted data directly
+    const parsedResponse = await callDeepseekAPI(prompt, userId, 'GENERAL_COACH');
 
     // Process structured data if available
     let processResult = { processed: false };
@@ -1138,12 +1351,20 @@ async function handleGeneralAdvice(intent, userId, message) {
       logger.info('Processed structured data result', { processResult });
     }
 
+    // Asegurarse de que los datos estructurados siempre tengan un tipo
+    let structuredData = parsedResponse.data;
+    if (!structuredData || Object.keys(structuredData).length === 0) {
+      structuredData = { type: 'general_advice' };
+    } else if (!structuredData.type) {
+      structuredData.type = 'general_advice';
+    }
+
     const response = {
       message: parsedResponse.message,
       action: processResult.processed ? processResult.action : {
         type: 'PROVIDED_GENERAL_ADVICE'
       },
-      data: parsedResponse.data // Include the structured data for potential use by the frontend
+      data: structuredData // Include the structured data for potential use by the frontend
     };
 
     logger.info('Provided general advice');
@@ -1153,7 +1374,8 @@ async function handleGeneralAdvice(intent, userId, message) {
     logger.error('Error handling general advice intent', error);
     return {
       message: 'Lo siento, tuve un problema al procesar tu consulta. Por favor, intenta de nuevo o formula tu pregunta de otra manera.',
-      error: error.message
+      error: error.message,
+      data: { type: 'general_advice' }
     };
   }
 }
@@ -1457,13 +1679,19 @@ async function handleGreeting(intent, userId) {
       message: greetingMessage,
       action: {
         type: 'GREETED_USER'
+      },
+      data: {
+        type: 'greeting'
       }
     };
   } catch (error) {
     logger.error('Error handling greeting intent', error);
     return {
       message: 'Hola! ¿En qué puedo ayudarte hoy?',
-      error: error.message
+      error: error.message,
+      data: {
+        type: 'greeting'
+      }
     };
   }
 }
@@ -1908,6 +2136,82 @@ async function handleRemoveExercise(intent, userId, requestId = null) {
     logger.error('Error handling remove exercise intent', error);
     return {
       message: 'Lo siento, tuve un problema al eliminar el ejercicio.',
+      error: error.message
+    };
+  }
+}
+
+/**
+ * Handle intent based on type
+ * @param {Object} intent - Recognized intent
+ * @param {number} userId - User ID
+ * @param {string} message - Original user message
+ * @param {string} requestId - Request ID for logging
+ * @returns {Object} - Handler response
+ */
+async function handleIntent(intent, userId, message, requestId = null) {
+  const logPrefix = requestId ? `[${requestId}]` : '';
+  logger.info(`${logPrefix} 🛠 INTENT HANDLER: Processing ${intent.type} intent`, { type: intent.type, userId });
+
+  try {
+    switch (intent.type) {
+      case INTENT_TYPES.CREATE_WORKOUT:
+        return await handleCreateWorkout(intent, userId, message);
+
+      case INTENT_TYPES.UPDATE_WORKOUT:
+        return await handleUpdateWorkout(intent, userId, message);
+
+      case INTENT_TYPES.CREATE_NUTRITION:
+        return await handleCreateNutrition(intent, userId, message);
+
+      case INTENT_TYPES.UPDATE_NUTRITION:
+        return await handleUpdateNutrition(intent, userId, message);
+
+      case INTENT_TYPES.LOG_PROGRESS:
+        return await handleLogProgress(intent, userId, message);
+
+      case INTENT_TYPES.GET_PROGRESS:
+        return await handleGetProgress(intent, userId, message);
+
+      case INTENT_TYPES.GET_WORKOUT_INFO:
+        return await handleGetWorkoutInfo(intent, userId, message);
+
+      case INTENT_TYPES.GET_NUTRITION_INFO:
+        return await handleGetNutritionInfo(intent, userId, message);
+
+      case INTENT_TYPES.GET_EXERCISE_INFO:
+        return await handleGetExerciseInfo(intent, userId, message);
+
+      case INTENT_TYPES.CREATE_HABIT:
+        return await handleCreateHabit(intent, userId, message);
+
+      case INTENT_TYPES.GET_MOTIVATION:
+        return await handleGetMotivation(intent, userId, message);
+
+      case INTENT_TYPES.PROVIDE_USER_DATA:
+        return await handleProvideUserData(intent, userId, message);
+
+      case INTENT_TYPES.SUGGEST_EXERCISE:
+        return await handleSuggestExercise(intent, userId, message);
+
+      case INTENT_TYPES.UPDATE_EXERCISE:
+        return await handleUpdateExercise(intent, userId, message);
+
+      case INTENT_TYPES.REMOVE_EXERCISE:
+        return await handleRemoveExercise(intent, userId, message);
+
+      case INTENT_TYPES.GREETING:
+        return await handleGreeting(intent, userId, message);
+
+      case INTENT_TYPES.GENERAL_ADVICE:
+      case INTENT_TYPES.UNKNOWN:
+      default:
+        return await handleGeneralAdvice(intent, userId, message);
+    }
+  } catch (error) {
+    logger.error(`${logPrefix} Error handling intent`, { error, intentType: intent.type });
+    return {
+      message: 'Lo siento, tuve un problema al procesar tu solicitud. Por favor, intenta de nuevo.',
       error: error.message
     };
   }
