@@ -15,7 +15,18 @@ import {
   Card,
   CardContent,
   LinearProgress,
-  Button
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
 } from '@mui/material';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import EggIcon from '@mui/icons-material/Egg';
@@ -24,6 +35,8 @@ import OilBarrelIcon from '@mui/icons-material/OilBarrel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
+import CloseIcon from '@mui/icons-material/Close';
+import InfoIcon from '@mui/icons-material/Info';
 import { nutritionService } from '../../services/api';
 import jsonDataService from '../../services/jsonDataService';
 
@@ -82,6 +95,8 @@ const NutritionPlansView = () => {
   const [value, setValue] = useState(0);
   const [nutritionPlans, setNutritionPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [openMealDialog, setOpenMealDialog] = useState(false);
+  const [selectedMeal, setSelectedMeal] = useState<any>(null);
 
   useEffect(() => {
     const fetchNutritionPlans = async () => {
@@ -130,6 +145,15 @@ const NutritionPlansView = () => {
     setValue(newValue);
   };
 
+  const handleOpenMealDialog = (meal: any) => {
+    setSelectedMeal(meal);
+    setOpenMealDialog(true);
+  };
+
+  const handleCloseMealDialog = () => {
+    setOpenMealDialog(false);
+  };
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
@@ -152,23 +176,24 @@ const NutritionPlansView = () => {
   }
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="nutrition plans tabs">
-          {nutritionPlans.map((plan, index) => (
-            <Tab key={plan.nutrition_plan_id} label={plan.plan_name} id={`nutrition-tab-${index}`} />
-          ))}
-        </Tabs>
-      </Box>
+    <>
+      <Box sx={{ width: '100%' }}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs value={value} onChange={handleChange} aria-label="nutrition plans tabs">
+            {nutritionPlans.map((plan, index) => (
+              <Tab key={plan.nutrition_plan_id} label={plan.plan_name} id={`nutrition-tab-${index}`} />
+            ))}
+          </Tabs>
+        </Box>
 
-      {nutritionPlans.map((plan, index) => (
-        <TabPanel key={plan.nutrition_plan_id} value={value} index={index}>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h5" gutterBottom>
-              {plan.plan_name}
-            </Typography>
+        {nutritionPlans.map((plan, index) => (
+          <TabPanel key={plan.nutrition_plan_id} value={value} index={index}>
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h5" gutterBottom>
+                {plan.plan_name}
+              </Typography>
 
-          </Box>
+            </Box>
 
           <Grid container spacing={3}>
             <Grid md={4} lg={4} sm={12}>
@@ -271,9 +296,19 @@ const NutritionPlansView = () => {
                             />
                           </Box>
 
-                          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                            {meal.description}
-                          </Typography>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2, flex: 1 }}>
+                              {meal.description}
+                            </Typography>
+                            <IconButton
+                              size="small"
+                              color="primary"
+                              onClick={() => handleOpenMealDialog(meal)}
+                              sx={{ ml: 1, mt: -1 }}
+                            >
+                              <InfoIcon fontSize="small" />
+                            </IconButton>
+                          </Box>
 
                           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
                             <Chip
@@ -336,7 +371,145 @@ const NutritionPlansView = () => {
           </Grid>
         </TabPanel>
       ))}
-    </Box>
+      </Box>
+
+      {/* Diálogo de detalle de comida */}
+    <Dialog
+      open={openMealDialog}
+      onClose={handleCloseMealDialog}
+      maxWidth="md"
+      fullWidth
+    >
+      {selectedMeal && (
+        <>
+          <DialogTitle sx={{ m: 0, p: 2, bgcolor: 'primary.main', color: 'white' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Typography variant="h6">{selectedMeal.meal_name}</Typography>
+              <IconButton
+                aria-label="close"
+                onClick={handleCloseMealDialog}
+                sx={{ color: 'white' }}
+              >
+                <CloseIcon />
+              </IconButton>
+            </Box>
+          </DialogTitle>
+          <DialogContent dividers>
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" gutterBottom color="primary">
+                  Descripción Detallada
+                </Typography>
+                <Typography variant="body1" paragraph>
+                  {selectedMeal.detailed_description || selectedMeal.description}
+                </Typography>
+
+                <Typography variant="h6" gutterBottom color="primary" sx={{ mt: 3 }}>
+                  Instrucciones de Preparación
+                </Typography>
+                <Typography variant="body1" paragraph>
+                  {selectedMeal.preparation_instructions || 'Lava y prepara todos los ingredientes. Cocina siguiendo las proporciones indicadas y sirve inmediatamente para disfrutar de todos los nutrientes.'}
+                </Typography>
+
+                <Box sx={{ mt: 3, p: 2, bgcolor: 'background.paper', borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
+                  <Typography variant="subtitle1" gutterBottom color="primary">
+                    Información Nutricional
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="text.secondary">
+                        Calorías:
+                      </Typography>
+                      <Typography variant="body1">
+                        {selectedMeal.calories} kcal
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="text.secondary">
+                        Proteínas:
+                      </Typography>
+                      <Typography variant="body1">
+                        {selectedMeal.protein_grams}g
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="text.secondary">
+                        Carbohidratos:
+                      </Typography>
+                      <Typography variant="body1">
+                        {selectedMeal.carbs_grams}g
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="text.secondary">
+                        Grasas:
+                      </Typography>
+                      <Typography variant="body1">
+                        {selectedMeal.fat_grams}g
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6" gutterBottom color="primary">
+                  Alimentos Incluidos
+                </Typography>
+
+                <TableContainer component={Paper} variant="outlined">
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Alimento</TableCell>
+                        <TableCell>Porción</TableCell>
+                        <TableCell align="right">Calorías</TableCell>
+                        <TableCell align="right">Proteínas</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {selectedMeal.foods && selectedMeal.foods.length > 0 ? (
+                        selectedMeal.foods.map((food: any) => (
+                          <TableRow key={food.food_id}>
+                            <TableCell component="th" scope="row">
+                              {food.food_name}
+                            </TableCell>
+                            <TableCell>{food.portion}</TableCell>
+                            <TableCell align="right">{food.calories} kcal</TableCell>
+                            <TableCell align="right">{food.protein_grams}g</TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={4} align="center">
+                            <Typography variant="body2" color="text.secondary">
+                              No hay detalles de alimentos disponibles
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+
+                <Box sx={{ mt: 3 }}>
+                  <Typography variant="h6" gutterBottom color="primary">
+                    Beneficios para la Salud
+                  </Typography>
+                  <Typography variant="body1" paragraph>
+                    {selectedMeal.health_benefits || 'Esta comida proporciona un equilibrio de nutrientes esenciales para mantener niveles de energía estables y apoyar la recuperación muscular.'}
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseMealDialog}>Cerrar</Button>
+          </DialogActions>
+        </>
+      )}
+    </Dialog>
+    </>
   );
 };
 
