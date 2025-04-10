@@ -27,6 +27,7 @@ import {
 } from 'recharts';
 import { userService, workoutService } from '../../services/api';
 import jsonDataService from '../../services/jsonDataService';
+import AddIcon from '@mui/icons-material/Add';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -305,11 +306,42 @@ const ProgressView = () => {
 
       {/* Workout Logs Tab */}
       <TabPanel value={tabValue} index={2}>
-        <Box sx={{ mb: 2 }}>
-          <Button variant="contained" color="primary">
+        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="h6">Historial de Entrenamientos</Typography>
+          <Button variant="contained" color="primary" startIcon={<AddIcon />}>
             Registrar Nuevo Entrenamiento
           </Button>
         </Box>
+
+        <Paper elevation={2} sx={{ p: 2, mb: 3 }}>
+          <Typography variant="subtitle1" color="primary" gutterBottom>
+            Resumen de Actividad Reciente
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <Paper elevation={1} sx={{ p: 2, textAlign: 'center', bgcolor: 'primary.light', color: 'white' }}>
+                <Typography variant="h4">{workoutLogs.length}</Typography>
+                <Typography variant="body2">Entrenamientos Totales</Typography>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Paper elevation={1} sx={{ p: 2, textAlign: 'center', bgcolor: 'secondary.light', color: 'white' }}>
+                <Typography variant="h4">
+                  {workoutLogs.reduce((total, log) => total + (log.duration_minutes || 0), 0)}
+                </Typography>
+                <Typography variant="body2">Minutos Totales</Typography>
+              </Paper>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Paper elevation={1} sx={{ p: 2, textAlign: 'center', bgcolor: 'success.light', color: 'white' }}>
+                <Typography variant="h4">
+                  {workoutLogs.reduce((total, log) => total + (log.calories_burned || 0), 0)}
+                </Typography>
+                <Typography variant="body2">Calorías Quemadas</Typography>
+              </Paper>
+            </Grid>
+          </Grid>
+        </Paper>
 
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="workout logs table">
@@ -319,7 +351,7 @@ const ProgressView = () => {
                 <TableCell>Rutina</TableCell>
                 <TableCell align="right">Duración (min)</TableCell>
                 <TableCell align="right">Calorías</TableCell>
-                <TableCell align="right">Valoración</TableCell>
+                <TableCell align="right">Ejercicios</TableCell>
                 <TableCell>Notas</TableCell>
               </TableRow>
             </TableHead>
@@ -336,7 +368,11 @@ const ProgressView = () => {
                     <TableCell>{log.plan_name || '-'}</TableCell>
                     <TableCell align="right">{log.duration_minutes || '-'}</TableCell>
                     <TableCell align="right">{log.calories_burned || '-'}</TableCell>
-                    <TableCell align="right">{log.rating ? `${log.rating}/5` : '-'}</TableCell>
+                    <TableCell align="right">
+                      <Button size="small" color="primary">
+                        Ver Ejercicios
+                      </Button>
+                    </TableCell>
                     <TableCell>{log.notes || '-'}</TableCell>
                   </TableRow>
                 ))

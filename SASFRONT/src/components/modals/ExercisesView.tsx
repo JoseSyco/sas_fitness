@@ -17,10 +17,22 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Button
+  Button,
+  Tabs,
+  Tab,
+  Checkbox,
+  FormControlLabel,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import AddIcon from '@mui/icons-material/Add';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { workoutService } from '../../services/api';
 import jsonDataService from '../../services/jsonDataService';
 
@@ -50,11 +62,90 @@ interface ExercisesByMuscleGroup {
   [key: string]: any[];
 }
 
+interface ExerciseProgress {
+  date: string;
+  completed: boolean;
+  sets_completed: number;
+  reps_completed: number;
+  weight_used: number;
+  notes: string;
+}
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`exercise-tabpanel-${index}`}
+      aria-labelledby={`exercise-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          {children}
+        </Box>
+      )}
+    </div>
+  );
+}
+
 const ExercisesView = () => {
   const [exercises, setExercises] = useState<any[]>([]);
   const [exercisesByMuscle, setExercisesByMuscle] = useState<ExercisesByMuscleGroup>({});
   const [loading, setLoading] = useState(true);
   const [expandedMuscleGroup, setExpandedMuscleGroup] = useState<string | false>(false);
+  const [tabValue, setTabValue] = useState(0);
+  const [selectedExercise, setSelectedExercise] = useState<any>(null);
+  const [openProgressDialog, setOpenProgressDialog] = useState(false);
+  const [progressData, setProgressData] = useState<ExerciseProgress>({
+    date: new Date().toISOString().split('T')[0],
+    completed: false,
+    sets_completed: 0,
+    reps_completed: 0,
+    weight_used: 0,
+    notes: ''
+  });
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
+
+  const handleOpenProgressDialog = (exercise: any) => {
+    setSelectedExercise(exercise);
+    setOpenProgressDialog(true);
+  };
+
+  const handleCloseProgressDialog = () => {
+    setOpenProgressDialog(false);
+  };
+
+  const handleSaveProgress = () => {
+    // Aquí se guardaría el progreso en la base de datos
+    // Por ahora solo mostramos en consola
+    console.log('Guardando progreso para ejercicio:', selectedExercise?.name);
+    console.log('Datos de progreso:', progressData);
+
+    // Cerrar el diálogo
+    handleCloseProgressDialog();
+
+    // Reiniciar el formulario
+    setProgressData({
+      date: new Date().toISOString().split('T')[0],
+      completed: false,
+      sets_completed: 0,
+      reps_completed: 0,
+      weight_used: 0,
+      notes: ''
+    });
+  };
 
   useEffect(() => {
     const fetchExercises = async () => {
@@ -155,18 +246,26 @@ const ExercisesView = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h5" gutterBottom>
-          Biblioteca de Ejercicios
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Biblioteca completa de ejercicios para tus rutinas de entrenamiento
-        </Typography>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Tabs value={tabValue} onChange={handleTabChange} aria-label="exercise tabs">
+          <Tab label="Biblioteca de Ejercicios" id="exercise-tab-0" />
+          <Tab label="Seguimiento de Progreso" id="exercise-tab-1" />
+        </Tabs>
       </Box>
 
-      <Typography variant="subtitle1" color="primary" gutterBottom sx={{ mt: 3, mb: 2 }}>
-        Ejercicios por Grupo Muscular
-      </Typography>
+      <TabPanel value={tabValue} index={0}>
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h5" gutterBottom>
+            Biblioteca de Ejercicios
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Biblioteca completa de ejercicios para tus rutinas de entrenamiento
+          </Typography>
+        </Box>
+
+        <Typography variant="subtitle1" color="primary" gutterBottom sx={{ mt: 3, mb: 2 }}>
+          Ejercicios por Grupo Muscular
+        </Typography>
 
       {/* Exercises by muscle group */}
       {Object.keys(exercisesByMuscle).map((muscleGroup) => (
@@ -219,14 +318,22 @@ const ExercisesView = () => {
                         </Typography>
                       )}
 
-                      <Box sx={{ mt: 2 }}>
+                      <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
                         <Button
                           variant="outlined"
                           size="small"
                           color="primary"
-                          fullWidth
                         >
                           Ver detalles
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          size="small"
+                          startIcon={<CheckCircleIcon />}
+                          onClick={() => handleOpenProgressDialog(exercise)}
+                        >
+                          Registrar
                         </Button>
                       </Box>
                     </CardContent>
@@ -237,32 +344,143 @@ const ExercisesView = () => {
           </AccordionDetails>
         </Accordion>
       ))}
+      </TabPanel>
 
-      <Typography variant="subtitle1" color="primary" gutterBottom sx={{ mt: 4, mb: 2 }}>
-        Ejercicios Destacados
-      </Typography>
+      <TabPanel value={tabValue} index={1}>
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h5" gutterBottom>
+            Seguimiento de Progreso de Ejercicios
+          </Typography>
+          <Typography variant="body1" color="text.secondary" paragraph>
+            La IA registra automáticamente tu progreso para cada ejercicio y mantén un seguimiento de tu rendimiento a lo largo del tiempo.
+          </Typography>
 
-      {/* Featured exercises */}
-      <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
-        <Typography variant="h6" gutterBottom>
-          Ejercicios recomendados para tus objetivos actuales
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
+          <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
+            <Typography variant="h6" gutterBottom>
+              Seguimiento Automático por IA
+            </Typography>
+            <Typography variant="body2" color="text.secondary" paragraph>
+              La IA registra automáticamente tu progreso para cada ejercicio. Puedes ver el historial de series, repeticiones, peso utilizado y notas adicionales.
+            </Typography>
 
-        <List>
-          {exercises.slice(0, 5).map((exercise) => (
-            <ListItem key={exercise.exercise_id}>
-              <ListItemIcon>
-                <FitnessCenterIcon color="primary" />
-              </ListItemIcon>
-              <ListItemText
-                primary={exercise.name}
-                secondary={`${exercise.muscle_group} | ${exercise.difficulty_level}`}
-              />
-            </ListItem>
-          ))}
-        </List>
-      </Paper>
+            <Grid container spacing={2} sx={{ mt: 2 }}>
+              {exercises.slice(0, 6).map((exercise) => (
+                <Grid item xs={12} sm={6} md={4} key={exercise.exercise_id}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom>
+                        {exercise.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {exercise.muscle_group} | {exercise.difficulty_level}
+                      </Typography>
+                      <Box sx={{ mt: 2 }}>
+                        <Box>
+                          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                            Seguimiento automático por IA
+                          </Typography>
+                          <Button
+                            variant="outlined"
+                            color="primary"
+                            fullWidth
+                            startIcon={<CheckCircleIcon />}
+                            onClick={() => handleOpenProgressDialog(exercise)}
+                          >
+                            Ver Historial
+                          </Button>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+
+                </Grid>
+              ))}
+            </Grid>
+          </Paper>
+        </Box>
+      </TabPanel>
+
+      {/* Dialog for viewing exercise progress history */}
+      <Dialog open={openProgressDialog} onClose={handleCloseProgressDialog} maxWidth="md" fullWidth>
+        <DialogTitle>
+          Historial de Progreso: {selectedExercise?.name}
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 2 }}>
+            <Typography variant="subtitle1" color="primary" gutterBottom>
+              Seguimiento Automático por IA
+            </Typography>
+            <Typography variant="body2" color="text.secondary" paragraph>
+              La IA registra automáticamente tu progreso para este ejercicio. Aquí puedes ver el historial completo.
+            </Typography>
+
+            <Paper elevation={1} sx={{ p: 2, mb: 3, bgcolor: 'primary.light', color: 'white' }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={3} sx={{ textAlign: 'center' }}>
+                  <Typography variant="h4">12</Typography>
+                  <Typography variant="body2">Sesiones</Typography>
+                </Grid>
+                <Grid item xs={12} sm={3} sx={{ textAlign: 'center' }}>
+                  <Typography variant="h4">4</Typography>
+                  <Typography variant="body2">Series promedio</Typography>
+                </Grid>
+                <Grid item xs={12} sm={3} sx={{ textAlign: 'center' }}>
+                  <Typography variant="h4">10</Typography>
+                  <Typography variant="body2">Reps promedio</Typography>
+                </Grid>
+                <Grid item xs={12} sm={3} sx={{ textAlign: 'center' }}>
+                  <Typography variant="h4">75kg</Typography>
+                  <Typography variant="body2">Peso máximo</Typography>
+                </Grid>
+              </Grid>
+            </Paper>
+
+            <Typography variant="h6" gutterBottom>
+              Historial de Sesiones
+            </Typography>
+
+            <Box sx={{ maxHeight: '300px', overflow: 'auto' }}>
+              <List>
+                {/* Datos de ejemplo - en una implementación real vendrían de la base de datos */}
+                {[
+                  { date: '2023-04-10', sets: 4, reps: 12, weight: 70, notes: 'Buena sesión, aumenté el peso' },
+                  { date: '2023-04-03', sets: 4, reps: 10, weight: 65, notes: 'Sesión normal' },
+                  { date: '2023-03-27', sets: 3, reps: 12, weight: 65, notes: 'Un poco cansado hoy' },
+                  { date: '2023-03-20', sets: 4, reps: 10, weight: 60, notes: 'Primera vez con este peso' },
+                  { date: '2023-03-13', sets: 3, reps: 12, weight: 55, notes: 'Empezando con este ejercicio' }
+                ].map((session, index) => (
+                  <Paper key={index} elevation={0} sx={{ mb: 2, p: 2, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
+                    <Grid container spacing={2} alignItems="center">
+                      <Grid item xs={12} sm={2}>
+                        <Typography variant="subtitle2">{session.date}</Typography>
+                      </Grid>
+                      <Grid item xs={4} sm={1}>
+                        <Typography variant="body2">{session.sets} series</Typography>
+                      </Grid>
+                      <Grid item xs={4} sm={1}>
+                        <Typography variant="body2">{session.reps} reps</Typography>
+                      </Grid>
+                      <Grid item xs={4} sm={1}>
+                        <Typography variant="body2">{session.weight} kg</Typography>
+                      </Grid>
+                      <Grid item xs={12} sm={7}>
+                        <Typography variant="body2" color="text.secondary">{session.notes}</Typography>
+                      </Grid>
+                    </Grid>
+                  </Paper>
+                ))}
+              </List>
+            </Box>
+
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2, textAlign: 'center' }}>
+              El seguimiento es gestionado automáticamente por la IA basado en tus rutinas completadas
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseProgressDialog}>Cerrar</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

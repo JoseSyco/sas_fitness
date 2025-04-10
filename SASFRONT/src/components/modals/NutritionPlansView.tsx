@@ -22,6 +22,8 @@ import EggIcon from '@mui/icons-material/Egg';
 import GrainIcon from '@mui/icons-material/Grain';
 import OilBarrelIcon from '@mui/icons-material/OilBarrel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 import { nutritionService } from '../../services/api';
 import jsonDataService from '../../services/jsonDataService';
 
@@ -250,26 +252,38 @@ const NutritionPlansView = () => {
                       />
                     </Box>
 
-                    {/* Seguimiento de completado */}
-                    {meal.completion_tracking && meal.completion_tracking.length > 0 ? (
-                      <Box sx={{ mt: 2, mb: 2 }}>
-                        <Chip
-                          icon={<CheckCircleIcon />}
-                          label={`Última comida: ${meal.completion_tracking[meal.completion_tracking.length - 1].date}`}
-                          color="success"
-                          size="small"
-                        />
-                      </Box>
-                    ) : (
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        color="primary"
-                        sx={{ mt: 2, mb: 2 }}
-                      >
-                        Registrar comida
-                      </Button>
-                    )}
+                    {/* Seguimiento de completado - Gestionado automáticamente por IA */}
+                    <Box sx={{ mt: 2, mb: 2 }}>
+                      {meal.completion_tracking && meal.completion_tracking.length > 0 ? (
+                        <Box>
+                          <Chip
+                            icon={<CheckCircleIcon />}
+                            label={`Última comida: ${meal.completion_tracking[meal.completion_tracking.length - 1].date}`}
+                            color="success"
+                            size="small"
+                            sx={{ mb: 1 }}
+                          />
+                          <Typography variant="caption" display="block" color="text.secondary">
+                            <SmartToyIcon sx={{ fontSize: 14, verticalAlign: 'middle', mr: 0.5 }} />
+                            Seguimiento automático por IA - {meal.completion_tracking.length} registros
+                          </Typography>
+                        </Box>
+                      ) : (
+                        <Box>
+                          <Chip
+                            icon={<AutorenewIcon />}
+                            label="Pendiente de seguimiento"
+                            color="primary"
+                            size="small"
+                            sx={{ mb: 1 }}
+                          />
+                          <Typography variant="caption" display="block" color="text.secondary">
+                            <SmartToyIcon sx={{ fontSize: 14, verticalAlign: 'middle', mr: 0.5 }} />
+                            La IA registrará automáticamente cuando se consuma
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
 
                     <Divider sx={{ mt: 1 }} />
                   </Box>
