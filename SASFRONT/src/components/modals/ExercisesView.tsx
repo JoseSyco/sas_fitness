@@ -352,15 +352,15 @@ const ExercisesView = () => {
             Seguimiento de Progreso de Ejercicios
           </Typography>
           <Typography variant="body1" color="text.secondary" paragraph>
-            La IA registra automáticamente tu progreso para cada ejercicio y mantén un seguimiento de tu rendimiento a lo largo del tiempo.
+            Seguimiento automático de tu progreso para cada ejercicio. Mantén un registro de tu rendimiento a lo largo del tiempo.
           </Typography>
 
           <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
             <Typography variant="h6" gutterBottom>
-              Seguimiento Automático por IA
+              Seguimiento Automático
             </Typography>
             <Typography variant="body2" color="text.secondary" paragraph>
-              La IA registra automáticamente tu progreso para cada ejercicio. Puedes ver el historial de series, repeticiones, peso utilizado y notas adicionales.
+              El sistema registra automáticamente tu progreso para cada ejercicio. Puedes ver el historial de series, repeticiones, peso utilizado y notas adicionales.
             </Typography>
 
             <Grid container spacing={2} sx={{ mt: 2 }}>
@@ -377,7 +377,7 @@ const ExercisesView = () => {
                       <Box sx={{ mt: 2 }}>
                         <Box>
                           <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-                            Seguimiento automático por IA
+                            Seguimiento automático
                           </Typography>
                           <Button
                             variant="outlined"
@@ -408,10 +408,10 @@ const ExercisesView = () => {
         <DialogContent>
           <Box sx={{ pt: 2 }}>
             <Typography variant="subtitle1" color="primary" gutterBottom>
-              Seguimiento Automático por IA
+              Historial de Seguimiento
             </Typography>
             <Typography variant="body2" color="text.secondary" paragraph>
-              La IA registra automáticamente tu progreso para este ejercicio. Aquí puedes ver el historial completo.
+              El sistema registra automáticamente tu progreso para este ejercicio. Aquí puedes ver el historial completo.
             </Typography>
 
             <Paper elevation={1} sx={{ p: 2, mb: 3, bgcolor: 'primary.light', color: 'white' }}>
@@ -473,7 +473,7 @@ const ExercisesView = () => {
             </Box>
 
             <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2, textAlign: 'center' }}>
-              El seguimiento es gestionado automáticamente por la IA basado en tus rutinas completadas
+              El seguimiento es gestionado automáticamente basado en tus rutinas completadas
             </Typography>
           </Box>
         </DialogContent>

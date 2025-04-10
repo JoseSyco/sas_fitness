@@ -182,6 +182,47 @@ const NutritionPlansView = () => {
                       {plan.daily_calories} kcal
                     </Typography>
 
+                    {/* Información de duración del plan */}
+                    <Box sx={{ mt: 2, mb: 2, p: 1, bgcolor: 'background.paper', borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        Duración del Plan
+                      </Typography>
+                      <Grid container spacing={1}>
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary">
+                            Fecha inicio:
+                          </Typography>
+                          <Typography variant="body2">
+                            {plan.start_date || '01/01/2023'}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary">
+                            Fecha fin:
+                          </Typography>
+                          <Typography variant="body2">
+                            {plan.end_date || '31/03/2023'}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary">
+                            Días programados:
+                          </Typography>
+                          <Typography variant="body2">
+                            {plan.days_to_follow || 90} días
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary">
+                            Frecuencia:
+                          </Typography>
+                          <Typography variant="body2">
+                            {plan.frequency || 'Todos los días'}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </Box>
+
                     <Box sx={{ mt: 3 }}>
                       <MacroProgressBar
                         value={plan.protein_grams}
@@ -214,80 +255,82 @@ const NutritionPlansView = () => {
                 </Typography>
                 <Divider sx={{ mb: 2 }} />
 
-                {plan.meals && plan.meals.map((meal: any) => (
-                  <Box key={meal.meal_id} sx={{ mb: 3 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                        {meal.meal_name}
-                      </Typography>
-                      <Chip
-                        label={`${meal.calories} kcal`}
-                        size="small"
-                        color="secondary"
-                      />
-                    </Box>
-
-                    <Typography variant="body2" color="text.secondary" paragraph sx={{ mt: 1 }}>
-                      {meal.description}
-                    </Typography>
-
-                    <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-                      <Chip
-                        icon={<EggIcon />}
-                        label={`P: ${meal.protein_grams}g`}
-                        size="small"
-                        sx={{ backgroundColor: '#ffebee' }}
-                      />
-                      <Chip
-                        icon={<GrainIcon />}
-                        label={`C: ${meal.carbs_grams}g`}
-                        size="small"
-                        sx={{ backgroundColor: '#e3f2fd' }}
-                      />
-                      <Chip
-                        icon={<OilBarrelIcon />}
-                        label={`G: ${meal.fat_grams}g`}
-                        size="small"
-                        sx={{ backgroundColor: '#fff8e1' }}
-                      />
-                    </Box>
-
-                    {/* Seguimiento de completado - Gestionado automáticamente por IA */}
-                    <Box sx={{ mt: 2, mb: 2 }}>
-                      {meal.completion_tracking && meal.completion_tracking.length > 0 ? (
+                <Grid container spacing={2}>
+                  {plan.meals && plan.meals.map((meal: any) => (
+                    <Grid item xs={12} sm={6} md={6} lg={4} key={meal.meal_id}>
+                      <Paper elevation={1} sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                         <Box>
-                          <Chip
-                            icon={<CheckCircleIcon />}
-                            label={`Última comida: ${meal.completion_tracking[meal.completion_tracking.length - 1].date}`}
-                            color="success"
-                            size="small"
-                            sx={{ mb: 1 }}
-                          />
-                          <Typography variant="caption" display="block" color="text.secondary">
-                            <SmartToyIcon sx={{ fontSize: 14, verticalAlign: 'middle', mr: 0.5 }} />
-                            Seguimiento automático por IA - {meal.completion_tracking.length} registros
-                          </Typography>
-                        </Box>
-                      ) : (
-                        <Box>
-                          <Chip
-                            icon={<AutorenewIcon />}
-                            label="Pendiente de seguimiento"
-                            color="primary"
-                            size="small"
-                            sx={{ mb: 1 }}
-                          />
-                          <Typography variant="caption" display="block" color="text.secondary">
-                            <SmartToyIcon sx={{ fontSize: 14, verticalAlign: 'middle', mr: 0.5 }} />
-                            La IA registrará automáticamente cuando se consuma
-                          </Typography>
-                        </Box>
-                      )}
-                    </Box>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                              {meal.meal_name}
+                            </Typography>
+                            <Chip
+                              label={`${meal.calories} kcal`}
+                              size="small"
+                              color="secondary"
+                            />
+                          </Box>
 
-                    <Divider sx={{ mt: 1 }} />
-                  </Box>
-                ))}
+                          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                            {meal.description}
+                          </Typography>
+
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                            <Chip
+                              icon={<EggIcon />}
+                              label={`P: ${meal.protein_grams}g`}
+                              size="small"
+                              sx={{ backgroundColor: '#ffebee' }}
+                            />
+                            <Chip
+                              icon={<GrainIcon />}
+                              label={`C: ${meal.carbs_grams}g`}
+                              size="small"
+                              sx={{ backgroundColor: '#e3f2fd' }}
+                            />
+                            <Chip
+                              icon={<OilBarrelIcon />}
+                              label={`G: ${meal.fat_grams}g`}
+                              size="small"
+                              sx={{ backgroundColor: '#fff8e1' }}
+                            />
+                          </Box>
+                        </Box>
+
+                        {/* Seguimiento de completado - Gestionado automáticamente */}
+                        <Box sx={{ mt: 2 }}>
+                          {meal.completion_tracking && meal.completion_tracking.length > 0 ? (
+                            <Box>
+                              <Chip
+                                icon={<CheckCircleIcon />}
+                                label={`Última: ${meal.completion_tracking[meal.completion_tracking.length - 1].date}`}
+                                color="success"
+                                size="small"
+                                sx={{ mb: 1 }}
+                              />
+                              <Typography variant="caption" display="block" color="text.secondary">
+                                Seguimiento automático - {meal.completion_tracking.length} registros
+                              </Typography>
+                            </Box>
+                          ) : (
+                            <Box>
+                              <Chip
+                                icon={<AutorenewIcon />}
+                                label="Pendiente"
+                                color="primary"
+                                size="small"
+                                sx={{ mb: 1 }}
+                              />
+                              <Typography variant="caption" display="block" color="text.secondary">
+                                Se registrará automáticamente
+                              </Typography>
+                            </Box>
+                          )}
+                        </Box>
+                      </Paper>
+                    </Grid>
+                  ))}
+                </Grid>
               </Paper>
             </Grid>
           </Grid>

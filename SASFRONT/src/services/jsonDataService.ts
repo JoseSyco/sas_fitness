@@ -424,7 +424,8 @@ const jsonDataService = {
   // Función para cargar datos JSON desde archivos
   loadJsonFile: async (filename: string): Promise<any> => {
     try {
-      const response = await fetch(`/${filename}.json`);
+      // Intentar cargar desde la carpeta data
+      const response = await fetch(`/data/${filename}.json`);
       if (!response.ok) {
         throw new Error(`Error loading ${filename}.json: ${response.statusText}`);
       }
@@ -471,9 +472,15 @@ const jsonDataService = {
     }
   },
 
-  getNutritionPlanById: (planId: number): NutritionPlan | undefined => {
+  getNutritionPlanById: async (planId: number): Promise<NutritionPlan | undefined> => {
     logger.info('Getting nutrition plan by ID from JSON data', { planId });
-    return nutritionPlansData.nutrition_plans?.find(plan => plan.nutrition_plan_id === planId);
+    try {
+      const data = await jsonDataService.loadJsonFile('nutrition_plans');
+      return data?.nutrition_plans?.find((plan: NutritionPlan) => plan.nutrition_plan_id === planId);
+    } catch (error) {
+      console.error('Error getting nutrition plan by ID:', error);
+      return nutritionPlansData.nutrition_plans?.find(plan => plan.nutrition_plan_id === planId);
+    }
   },
 
   // Ejercicios

@@ -219,6 +219,44 @@ const WorkoutPlansView = () => {
               {plan.description}
             </Typography>
 
+            {/* Información de duración del plan */}
+            <Box sx={{ mt: 2, mb: 3, p: 1.5, bgcolor: 'background.paper', borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Typography variant="caption" color="text.secondary">
+                    Fecha inicio:
+                  </Typography>
+                  <Typography variant="body2">
+                    {plan.start_date || '01/01/2023'}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Typography variant="caption" color="text.secondary">
+                    Fecha fin:
+                  </Typography>
+                  <Typography variant="body2">
+                    {plan.end_date || '31/03/2023'}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Typography variant="caption" color="text.secondary">
+                    Días programados:
+                  </Typography>
+                  <Typography variant="body2">
+                    {plan.days_to_follow || 30} días
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Typography variant="caption" color="text.secondary">
+                    Frecuencia:
+                  </Typography>
+                  <Typography variant="body2">
+                    {plan.frequency || 'Lun, Mié, Vie'}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Box>
+
             {planStatus[plan.plan_id] && (
               <Box sx={{ mb: 2 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
@@ -240,7 +278,7 @@ const WorkoutPlansView = () => {
                   sx={{ height: 8, borderRadius: 4 }}
                 />
                 <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
-                  Seguimiento gestionado automáticamente por IA
+                  Seguimiento automático de progreso
                 </Typography>
               </Box>
             )}
@@ -303,7 +341,7 @@ const WorkoutPlansView = () => {
                           sx={{ mt: 1, mb: 1 }}
                         />
                         <Typography variant="caption" display="block" color="text.secondary">
-                          Seguimiento automático por IA - {session.completion_tracking.length} sesiones registradas
+                          Seguimiento automático - {session.completion_tracking.length} sesiones registradas
                         </Typography>
                       </Box>
                     ) : (
@@ -316,7 +354,7 @@ const WorkoutPlansView = () => {
                           sx={{ mt: 1, mb: 1 }}
                         />
                         <Typography variant="caption" display="block" color="text.secondary">
-                          La IA registrará automáticamente cuando se complete
+                          Se registrará automáticamente cuando se complete
                         </Typography>
                       </Box>
                     )}
