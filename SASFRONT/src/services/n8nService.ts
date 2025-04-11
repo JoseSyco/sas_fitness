@@ -69,7 +69,19 @@ const n8nService = {
       if (response.data.output && typeof response.data.output === 'string') {
         try {
           console.log('Detectado campo output con string JSON, intentando parsear...');
-          const parsedOutput = JSON.parse(response.data.output);
+
+          // Limpiar el string de marcadores Markdown si existen
+          let outputStr = response.data.output;
+
+          // Eliminar marcadores de código Markdown al inicio
+          outputStr = outputStr.replace(/^```json\s*\n/, '');
+
+          // Eliminar marcadores de código Markdown al final
+          outputStr = outputStr.replace(/\n```\s*$/, '');
+
+          console.log('String limpio para parsear:', outputStr);
+
+          const parsedOutput = JSON.parse(outputStr);
           console.log('Output parseado correctamente:', parsedOutput);
 
           if (parsedOutput.mensaje_agente) {
@@ -77,6 +89,22 @@ const n8nService = {
           }
         } catch (parseError) {
           console.error('Error al parsear el campo output:', parseError);
+          console.log('String que causó el error:', response.data.output);
+
+          // Intento de extracción manual del mensaje del agente
+          try {
+            const matchMensaje = response.data.output.match(/"mensaje_agente"\s*:\s*"([^"]+)"/);
+            if (matchMensaje && matchMensaje[1]) {
+              console.log('Extracción manual del mensaje del agente exitosa');
+              return {
+                mensaje_agente: matchMensaje[1],
+                data: {},
+                action: null
+              };
+            }
+          } catch (extractError) {
+            console.error('Error en la extracción manual:', extractError);
+          }
         }
       }
 
@@ -155,7 +183,19 @@ const n8nService = {
           if (data.output && typeof data.output === 'string') {
             try {
               console.log('Detectado campo output con string JSON en fetch, intentando parsear...');
-              const parsedOutput = JSON.parse(data.output);
+
+              // Limpiar el string de marcadores Markdown si existen
+              let outputStr = data.output;
+
+              // Eliminar marcadores de código Markdown al inicio
+              outputStr = outputStr.replace(/^```json\s*\n/, '');
+
+              // Eliminar marcadores de código Markdown al final
+              outputStr = outputStr.replace(/\n```\s*$/, '');
+
+              console.log('String limpio para parsear (fetch):', outputStr);
+
+              const parsedOutput = JSON.parse(outputStr);
               console.log('Output de fetch parseado correctamente:', parsedOutput);
 
               if (parsedOutput.mensaje_agente) {
@@ -163,6 +203,22 @@ const n8nService = {
               }
             } catch (parseError) {
               console.error('Error al parsear el campo output en fetch:', parseError);
+              console.log('String que causó el error (fetch):', data.output);
+
+              // Intento de extracción manual del mensaje del agente
+              try {
+                const matchMensaje = data.output.match(/"mensaje_agente"\s*:\s*"([^"]+)"/);
+                if (matchMensaje && matchMensaje[1]) {
+                  console.log('Extracción manual del mensaje del agente exitosa (fetch)');
+                  return {
+                    mensaje_agente: matchMensaje[1],
+                    data: {},
+                    action: null
+                  };
+                }
+              } catch (extractError) {
+                console.error('Error en la extracción manual (fetch):', extractError);
+              }
             }
           }
 

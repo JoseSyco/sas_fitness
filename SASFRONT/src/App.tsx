@@ -30,16 +30,7 @@ import { mockProfile } from './services/mockData';
 import './App.css';
 
 // Components
-import ChatInterface from './components/ChatInterface';
 import SectionButtons from './components/SectionButtons';
-// import ConnectionStatus from './components/ConnectionStatus'; // Eliminado
-import EnhancedChatInterface from './components/EnhancedChatInterface';
-// Componentes de AI Coach
-import StandaloneAICoachChat from './components/AICoach/StandaloneAICoachChat';
-// Componente de prueba n8n
-import N8nTester from './components/N8nTester';
-// Nuevo componente de chat
-import ChatInterfaceV2 from './components/ChatInterfaceV2';
 // Componente de chat simple para pruebas con n8n
 import SimpleChatInterface from './components/SimpleChatInterface';
 
@@ -253,14 +244,6 @@ function App() {
 
           {/* Main Content */}
           <Box sx={{ mt: 0, mb: 2, flexGrow: 1, display: 'flex', flexDirection: 'column', p: 0, width: '100%', padding: 0 }}>
-            {/* Chat Interface */}
-            {/* Descomentar la línea deseada para cambiar entre interfaces */}
-            {/* <ChatInterface /> */}
-            {/* <EnhancedChatInterface /> */}
-
-            {/* AI Coach Chat Interface (Versión Independiente) */}
-            {/* <StandaloneAICoachChat /> */}
-
             {/* Interfaz de chat simple para pruebas con n8n */}
             <SimpleChatInterface onRef={(ref) => (chatInterfaceRef.current = ref)} />
 
