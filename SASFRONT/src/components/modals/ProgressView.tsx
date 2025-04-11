@@ -18,6 +18,7 @@ import {
   Chip,
   Divider
 } from '@mui/material';
+
 import {
   LineChart,
   Line,
@@ -79,6 +80,7 @@ const ProgressView = () => {
   const [workoutPlans, setWorkoutPlans] = useState<any[]>([]);
   const [nutritionPlans, setNutritionPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedMeasurement, setSelectedMeasurement] = useState<any>(null);
 
   useEffect(() => {
     const fetchProgressData = async () => {
@@ -252,20 +254,24 @@ const ProgressView = () => {
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={tabValue} onChange={handleTabChange} aria-label="progress tabs">
-          <Tab label="Gráficos" id="progress-tab-0" />
-          <Tab label="Historial de Medidas" id="progress-tab-1" />
-          <Tab label="Historial de Entrenamientos" id="progress-tab-2" />
-          <Tab label="Historial de Planes" id="progress-tab-3" />
-          <Tab label="Historial de Nutrición" id="progress-tab-4" />
+          <Tab label="Progreso de Medidas" id="progress-tab-0" />
+          <Tab label="Historial de Planes" id="progress-tab-1" />
+          <Tab label="Historial de Nutrición" id="progress-tab-2" />
         </Tabs>
       </Box>
 
-      {/* Charts Tab */}
+      {/* Progreso de Medidas Tab - Combinación de gráficos y tabla */}
       <TabPanel value={tabValue} index={0}>
-        <Grid container spacing={3}>
-          {weightChartData.length > 0 && (
-            <Grid item xs={12} md={6}>
-              <Paper elevation={2} sx={{ p: 2 }}>
+        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Typography variant="h6">Progreso de Medidas</Typography>
+        </Box>
+
+        {/* Gráfico y Detalles */}
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 4 }}>
+          {/* Gráfica de Peso - 50% del ancho */}
+          <Box sx={{ width: '50%', pr: 1.5 }}>
+            {weightChartData.length > 0 && (
+              <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
                 <Typography variant="h6" gutterBottom>
                   Progreso de Peso
                 </Typography>
@@ -274,6 +280,15 @@ const ProgressView = () => {
                     <LineChart
                       data={weightChartData}
                       margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                      onClick={(data) => {
+                        if (data && data.activePayload && data.activePayload[0]) {
+                          const clickedData = data.activePayload[0].payload;
+                          const matchingEntry = progressData.find(
+                            entry => new Date(entry.tracking_date).toLocaleDateString() === clickedData.date
+                          );
+                          setSelectedMeasurement(matchingEntry || null);
+                        }
+                      }}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="date" />
@@ -291,176 +306,79 @@ const ProgressView = () => {
                   </ResponsiveContainer>
                 </Box>
               </Paper>
-            </Grid>
-          )}
+            )}
+          </Box>
 
-          {bodyFatChartData.length > 0 && (
-            <Grid item xs={12} md={6}>
-              <Paper elevation={2} sx={{ p: 2 }}>
+          {/* Panel de detalles de la medida seleccionada (visible solo cuando se selecciona un punto) - 50% del ancho */}
+          <Box sx={{ width: '50%', pl: 1.5 }}>
+            {selectedMeasurement ? (
+              <Paper elevation={2} sx={{ p: 2, height: '100%', minHeight: 300 }}>
                 <Typography variant="h6" gutterBottom>
-                  Progreso de Grasa Corporal
+                  Detalles
                 </Typography>
-                <Box sx={{ height: 300 }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                      data={bodyFatChartData}
-                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Line
-                        type="monotone"
-                        dataKey="bodyFat"
-                        name="Grasa Corporal (%)"
-                        stroke="#82ca9d"
-                        activeDot={{ r: 8 }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
+                <Box>
+                  <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Typography variant="body1" sx={{ fontWeight: 'bold', minWidth: '120px' }}>
+                        Grasa Corporal:
+                      </Typography>
+                      <Typography variant="body1">
+                        {selectedMeasurement.body_fat_percentage || '-'}%
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  {selectedMeasurement.measurements && (
+                    <Box sx={{ mt: 3 }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                        Medidas:
+                      </Typography>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, pl: 2 }}>
+                        <Typography variant="body2">
+                          Cintura: {selectedMeasurement.measurements.waist}cm
+                        </Typography>
+                        <Typography variant="body2">
+                          Pecho: {selectedMeasurement.measurements.chest}cm
+                        </Typography>
+                        {selectedMeasurement.measurements.arms && (
+                          <Typography variant="body2">
+                            Brazos: {selectedMeasurement.measurements.arms}cm
+                          </Typography>
+                        )}
+                        {selectedMeasurement.measurements.legs && (
+                          <Typography variant="body2">
+                            Piernas: {selectedMeasurement.measurements.legs}cm
+                          </Typography>
+                        )}
+                      </Box>
+                    </Box>
+                  )}
+
+                  {selectedMeasurement.notes && (
+                    <Box sx={{ mt: 3 }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                        Notas:
+                      </Typography>
+                      <Box sx={{ pl: 2 }}>
+                        <Typography variant="body2">
+                          {selectedMeasurement.notes}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  )}
                 </Box>
               </Paper>
-            </Grid>
-          )}
-        </Grid>
-      </TabPanel>
-
-      {/* Measurements History Tab */}
-      <TabPanel value={tabValue} index={1}>
-        <Box sx={{ mb: 2 }}>
-          <Button variant="contained" color="primary">
-            Registrar Nueva Medida
-          </Button>
+            ) : (
+              <Box sx={{ height: '100%', minHeight: 300 }} />
+            )}
+          </Box>
         </Box>
 
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="measurements table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Fecha</TableCell>
-                <TableCell align="right">Peso (kg)</TableCell>
-                <TableCell align="right">Grasa Corporal (%)</TableCell>
-                <TableCell>Medidas</TableCell>
-                <TableCell>Notas</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {progressData.map((entry) => (
-                <TableRow
-                  key={entry.progress_id}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-                    {new Date(entry.tracking_date).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell align="right">{entry.weight}</TableCell>
-                  <TableCell align="right">{entry.body_fat_percentage || '-'}</TableCell>
-                  <TableCell>
-                    {entry.measurements ? (
-                      <Typography variant="body2">
-                        Cintura: {entry.measurements.waist}cm,
-                        Pecho: {entry.measurements.chest}cm
-                      </Typography>
-                    ) : '-'}
-                  </TableCell>
-                  <TableCell>{entry.notes || '-'}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </TabPanel>
 
-      {/* Workout Logs Tab */}
-      <TabPanel value={tabValue} index={2}>
-        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6">Historial de Entrenamientos</Typography>
-          <Button variant="contained" color="primary" startIcon={<AddIcon />}>
-            Registrar Nuevo Entrenamiento
-          </Button>
-        </Box>
-
-        <Paper elevation={2} sx={{ p: 2, mb: 3 }}>
-          <Typography variant="subtitle1" color="primary" gutterBottom>
-            Resumen de Actividad Reciente
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
-              <Paper elevation={1} sx={{ p: 2, textAlign: 'center', bgcolor: 'primary.light', color: 'white' }}>
-                <Typography variant="h4">{workoutLogs.length}</Typography>
-                <Typography variant="body2">Entrenamientos Totales</Typography>
-              </Paper>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Paper elevation={1} sx={{ p: 2, textAlign: 'center', bgcolor: 'secondary.light', color: 'white' }}>
-                <Typography variant="h4">
-                  {workoutLogs.reduce((total, log) => total + (log.duration_minutes || 0), 0)}
-                </Typography>
-                <Typography variant="body2">Minutos Totales</Typography>
-              </Paper>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Paper elevation={1} sx={{ p: 2, textAlign: 'center', bgcolor: 'success.light', color: 'white' }}>
-                <Typography variant="h4">
-                  {workoutLogs.reduce((total, log) => total + (log.calories_burned || 0), 0)}
-                </Typography>
-                <Typography variant="body2">Calorías Quemadas</Typography>
-              </Paper>
-            </Grid>
-          </Grid>
-        </Paper>
-
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="workout logs table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Fecha</TableCell>
-                <TableCell>Rutina</TableCell>
-                <TableCell align="right">Duración (min)</TableCell>
-                <TableCell align="right">Calorías</TableCell>
-                <TableCell align="right">Ejercicios</TableCell>
-                <TableCell>Notas</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {workoutLogs.length > 0 ? (
-                workoutLogs.map((log) => (
-                  <TableRow
-                    key={log.log_id}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      {new Date(log.workout_date).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>{log.plan_name || '-'}</TableCell>
-                    <TableCell align="right">{log.duration_minutes || '-'}</TableCell>
-                    <TableCell align="right">{log.calories_burned || '-'}</TableCell>
-                    <TableCell align="right">
-                      <Button size="small" color="primary">
-                        Ver Ejercicios
-                      </Button>
-                    </TableCell>
-                    <TableCell>{log.notes || '-'}</TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={6} align="center">
-                    <Typography variant="body2" color="text.secondary">
-                      No hay registros de entrenamientos disponibles.
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
       </TabPanel>
 
       {/* Historial de Planes Tab */}
-      <TabPanel value={tabValue} index={3}>
+      <TabPanel value={tabValue} index={1}>
         <Box sx={{ width: '100%' }}>
           <Typography variant="h6" gutterBottom>
             Historial de Seguimiento de Rutinas
@@ -670,8 +588,10 @@ const ProgressView = () => {
         </Box>
       </TabPanel>
 
+
+
       {/* Historial de Nutrición Tab */}
-      <TabPanel value={tabValue} index={4}>
+      <TabPanel value={tabValue} index={2}>
         <Box sx={{ width: '100%' }}>
           <Typography variant="h6" gutterBottom>
             Historial de Seguimiento de Nutrición

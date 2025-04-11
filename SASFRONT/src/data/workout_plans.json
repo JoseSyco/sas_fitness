@@ -8,6 +8,10 @@
       "is_ai_generated": true,
       "created_at": "2025-04-01T10:00:00Z",
       "updated_at": "2025-04-01T10:00:00Z",
+      "start_date": "01/01/2023",
+      "end_date": "31/03/2023",
+      "days_to_follow": 30,
+      "frequency": "Lun, Mié, Vie",
       "sessions": [
         {
           "session_id": 1,
@@ -27,7 +31,8 @@
               "sets": 1,
               "reps": null,
               "duration_seconds": 1200,
-              "rest_seconds": 60,
+              "rest_seconds": 25,
+              "equipment_needed": "Cinta de correr",
               "notes": "Mantener ritmo moderado"
             },
             {
@@ -39,6 +44,7 @@
               "reps": null,
               "duration_seconds": 60,
               "rest_seconds": 30,
+              "equipment_needed": "Ninguno",
               "notes": "Mantener posición correcta"
             }
           ],
@@ -71,6 +77,7 @@
               "reps": 15,
               "duration_seconds": null,
               "rest_seconds": 60,
+              "equipment_needed": "Ninguno (o pesas para mayor intensidad)",
               "notes": "Mantener buena forma"
             }
           ],

@@ -22,6 +22,7 @@ import {
   TableRow
 } from '@mui/material';
 import ExerciseHistoryModal from './ExerciseHistoryModal';
+import SessionExercisesModal from './SessionExercisesModal';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -68,6 +69,8 @@ const WorkoutPlansView = () => {
   const [openHistoryModal, setOpenHistoryModal] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<any>(null);
   const [selectedSession, setSelectedSession] = useState<any>(null);
+  const [sessionModalOpen, setSessionModalOpen] = useState(false);
+  const [selectedSessionForModal, setSelectedSessionForModal] = useState<any>(null);
 
   useEffect(() => {
     const fetchWorkoutPlans = async () => {
@@ -155,11 +158,56 @@ const WorkoutPlansView = () => {
     setValue(newValue);
   };
 
+  const handleOpenSessionModal = (session: any) => {
+    console.log('Abriendo modal de ejercicios de sesión:', session);
+    setSelectedSessionForModal(session);
+    setSessionModalOpen(true);
+  };
+
   const handleOpenHistoryModal = (exercise: any, session: any) => {
     console.log('Abriendo modal de detalles en WorkoutPlansView:', { exercise, session });
-    setSelectedExercise(exercise);
-    setSelectedSession(session);
-    setOpenHistoryModal(true);
+
+    // Intentar obtener los detalles completos del ejercicio desde el servicio
+    if (exercise.exercise_id) {
+      jsonDataService.getExerciseById(exercise.exercise_id)
+        .then(fullExercise => {
+          if (fullExercise) {
+            console.log('Ejercicio completo obtenido para modal:', fullExercise);
+            setSelectedExercise(fullExercise);
+          } else {
+            console.log('No se encontró el ejercicio completo, usando datos parciales');
+            setSelectedExercise(exercise);
+          }
+          setSelectedSession(session);
+          setOpenHistoryModal(true);
+        })
+        .catch(error => {
+          console.error('Error al obtener ejercicio completo para modal:', error);
+          setSelectedExercise(exercise);
+          setSelectedSession(session);
+          setOpenHistoryModal(true);
+        });
+    } else {
+      // Si no tiene ID, buscar por nombre
+      jsonDataService.getExercises()
+        .then(exercises => {
+          const foundExercise = exercises.find((e: any) => e.name === exercise.name);
+          if (foundExercise) {
+            console.log('Ejercicio encontrado por nombre:', foundExercise);
+            setSelectedExercise(foundExercise);
+          } else {
+            setSelectedExercise(exercise);
+          }
+          setSelectedSession(session);
+          setOpenHistoryModal(true);
+        })
+        .catch(error => {
+          console.error('Error al buscar ejercicio por nombre:', error);
+          setSelectedExercise(exercise);
+          setSelectedSession(session);
+          setOpenHistoryModal(true);
+        });
+    }
   };
 
   const handleCloseHistoryModal = () => {
@@ -286,6 +334,7 @@ const WorkoutPlansView = () => {
                       // Obtener detalles del ejercicio si está disponible
                       const exerciseDetails = jsonDataService.getExerciseById(exercise.exercise_id);
                       const exerciseName = exerciseDetails ? exerciseDetails.name : exercise.name || 'Ejercicio';
+                      const equipmentNeeded = exerciseDetails ? exerciseDetails.equipment_needed : exercise.equipment_needed || 'Ninguno';
 
                       return (
                         <ListItem key={exercise.workout_exercise_id}>
@@ -294,43 +343,29 @@ const WorkoutPlansView = () => {
                           </ListItemIcon>
                           <ListItemText
                             primary={exerciseName}
-                            secondary={`${exercise.sets} series × ${exercise.reps || '-'} reps | Descanso: ${exercise.rest_seconds || '-'} seg`}
+                            secondary={
+                              <>
+                                <Typography variant="body2" component="span">
+                                  {`${exercise.sets} series × ${exercise.reps || '-'} reps | Descanso: ${exercise.rest_seconds || '-'} seg`}
+                                </Typography>
+                                <Typography variant="body2" component="div" color="text.secondary">
+                                  <strong>Equipo necesario:</strong> {equipmentNeeded}
+                                </Typography>
+                              </>
+                            }
                           />
                         </ListItem>
                       );
                     })}
                   </List>
 
-                  {/* Botón para ver historial detallado */}
+                  {/* Botón para ver detalles */}
                   <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
                     <Button
                       variant="outlined"
                       color="primary"
                       size="small"
-                      onClick={() => {
-                        // Obtener el ejercicio completo desde el servicio
-                        const exercise = day.exercises[0];
-                        console.log('Ejercicio seleccionado para ver detalles:', exercise);
-                        // Asegurarse de que el ejercicio tenga un nombre
-                        if (!exercise.name && exercise.exercise_id) {
-                          // Si no tiene nombre pero tiene ID, intentar obtener el nombre
-                          jsonDataService.getExerciseById(exercise.exercise_id)
-                            .then(fullExercise => {
-                              if (fullExercise) {
-                                console.log('Ejercicio completo obtenido:', fullExercise);
-                                handleOpenHistoryModal(fullExercise, day);
-                              } else {
-                                handleOpenHistoryModal(exercise, day);
-                              }
-                            })
-                            .catch(error => {
-                              console.error('Error al obtener ejercicio completo:', error);
-                              handleOpenHistoryModal(exercise, day);
-                            });
-                        } else {
-                          handleOpenHistoryModal(exercise, day);
-                        }
-                      }}
+                      onClick={() => handleOpenSessionModal(session)}
                     >
                       Ver detalles
                     </Button>
@@ -347,6 +382,13 @@ const WorkoutPlansView = () => {
         onClose={handleCloseHistoryModal}
         exercise={selectedExercise}
         session={selectedSession}
+      />
+
+      {/* Modal para mostrar los ejercicios de la sesión */}
+      <SessionExercisesModal
+        open={sessionModalOpen}
+        onClose={() => setSessionModalOpen(false)}
+        session={selectedSessionForModal}
       />
     </Box>
   );

@@ -98,12 +98,17 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-const ExercisesView = () => {
+interface ExercisesViewProps {
+  planId?: number;
+}
+
+const ExercisesView = ({ planId }: ExercisesViewProps) => {
   const [exercises, setExercises] = useState<any[]>([]);
   const [exercisesByMuscle, setExercisesByMuscle] = useState<ExercisesByMuscleGroup>({});
   const [loading, setLoading] = useState(true);
   const [expandedMuscleGroup, setExpandedMuscleGroup] = useState<string | false>(false);
   const [tabValue, setTabValue] = useState(0);
+  const [activePlan, setActivePlan] = useState<any>(null);
   const [selectedExercise, setSelectedExercise] = useState<any>(null);
   const [openProgressDialog, setOpenProgressDialog] = useState(false);
   const [openHistoryModal, setOpenHistoryModal] = useState(false);
@@ -164,7 +169,71 @@ const ExercisesView = () => {
       try {
         setLoading(true);
 
-        // Intentar obtener datos del backend
+        // Si hay un planId, intentar obtener los ejercicios específicos para ese plan
+        if (planId) {
+          try {
+            // Primero intentamos obtener el plan de entrenamiento
+            const workoutPlan = await jsonDataService.getWorkoutPlanById(planId);
+            console.log('Plan de entrenamiento obtenido:', workoutPlan);
+
+            // Guardar el plan activo en el estado
+            setActivePlan(workoutPlan);
+            console.log('Plan activo establecido:', workoutPlan);
+            console.log('Nombre del plan:', workoutPlan?.plan_name);
+
+            if (workoutPlan && workoutPlan.sessions) {
+              // Extraer todos los ejercicios de todas las sesiones del plan
+              const planExercises: any[] = [];
+              const exerciseIds = new Set();
+
+              // Recorrer todas las sesiones y recopilar los IDs de ejercicios únicos
+              workoutPlan.sessions.forEach((session: any) => {
+                if (session.exercises && Array.isArray(session.exercises)) {
+                  session.exercises.forEach((exercise: any) => {
+                    if (exercise.exercise_id && !exerciseIds.has(exercise.exercise_id)) {
+                      exerciseIds.add(exercise.exercise_id);
+                    }
+                  });
+                }
+              });
+
+              // Obtener los detalles completos de cada ejercicio
+              const exercisesWithDetails = await Promise.all(
+                Array.from(exerciseIds).map(async (id: any) => {
+                  try {
+                    const exerciseDetails = await jsonDataService.getExerciseById(id);
+                    return exerciseDetails;
+                  } catch (error) {
+                    console.error(`Error al obtener detalles del ejercicio ${id}:`, error);
+                    return null;
+                  }
+                })
+              );
+
+              // Filtrar los ejercicios nulos y agruparlos por grupo muscular
+              const filteredExercises = exercisesWithDetails.filter(ex => ex !== null);
+              setExercises(filteredExercises);
+
+              // Agrupar por grupo muscular
+              const groupedExercises: ExercisesByMuscleGroup = {};
+              filteredExercises.forEach((exercise: any) => {
+                const muscleGroup = exercise.muscle_group || 'Sin categoría';
+                if (!groupedExercises[muscleGroup]) {
+                  groupedExercises[muscleGroup] = [];
+                }
+                groupedExercises[muscleGroup].push(exercise);
+              });
+
+              setExercisesByMuscle(groupedExercises);
+              setLoading(false);
+              return;
+            }
+          } catch (planError) {
+            console.error('Error al obtener ejercicios del plan:', planError);
+          }
+        }
+
+        // Si no hay planId o hubo un error, intentar obtener todos los ejercicios del backend
         try {
           const response = await workoutService.getExercises();
           console.log('Exercises response:', response);
@@ -229,7 +298,7 @@ const ExercisesView = () => {
     };
 
     fetchExercises();
-  }, []);
+  }, [planId]);
 
   const handleAccordionChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
     setExpandedMuscleGroup(isExpanded ? panel : false);
@@ -258,20 +327,16 @@ const ExercisesView = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-        <Tabs value={tabValue} onChange={handleTabChange} aria-label="exercise tabs">
-          <Tab label="Biblioteca de Ejercicios" id="exercise-tab-0" />
-          <Tab label="Seguimiento de Progreso" id="exercise-tab-1" />
-        </Tabs>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h6" color="primary" gutterBottom>
+          Ejercicios - {activePlan ? activePlan.plan_name : 'Plan Activo'}
+        </Typography>
       </Box>
 
-      <TabPanel value={tabValue} index={0}>
+      <TabPanel value={0} index={0}>
         <Box sx={{ mb: 3 }}>
-          <Typography variant="h5" gutterBottom>
-            Biblioteca de Ejercicios
-          </Typography>
           <Typography variant="body1" color="text.secondary">
-            Biblioteca completa de ejercicios para tus rutinas de entrenamiento
+            Explora los ejercicios disponibles para este plan. Encuentra información detallada, instrucciones y consejos para cada ejercicio.
           </Typography>
         </Box>
 
@@ -335,17 +400,29 @@ const ExercisesView = () => {
                           variant="outlined"
                           size="small"
                           color="primary"
+                          onClick={() => {
+                            console.log('Ejercicio seleccionado para ver detalles en biblioteca:', exercise);
+                            // Asegurarse de que el ejercicio tenga todos los detalles
+                            if (exercise.exercise_id) {
+                              jsonDataService.getExerciseById(exercise.exercise_id)
+                                .then(fullExercise => {
+                                  if (fullExercise) {
+                                    console.log('Ejercicio completo obtenido:', fullExercise);
+                                    handleOpenHistoryModal(fullExercise);
+                                  } else {
+                                    handleOpenHistoryModal(exercise);
+                                  }
+                                })
+                                .catch(error => {
+                                  console.error('Error al obtener ejercicio completo:', error);
+                                  handleOpenHistoryModal(exercise);
+                                });
+                            } else {
+                              handleOpenHistoryModal(exercise);
+                            }
+                          }}
                         >
                           Ver detalles
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          size="small"
-                          startIcon={<CheckCircleIcon />}
-                          onClick={() => handleOpenProgressDialog(exercise)}
-                        >
-                          Registrar
                         </Button>
                       </Box>
                     </CardContent>
@@ -356,80 +433,6 @@ const ExercisesView = () => {
           </AccordionDetails>
         </Accordion>
       ))}
-      </TabPanel>
-
-      <TabPanel value={tabValue} index={1}>
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="h5" gutterBottom>
-            Seguimiento de Progreso de Ejercicios
-          </Typography>
-          <Typography variant="body1" color="text.secondary" paragraph>
-            Seguimiento automático de tu progreso para cada ejercicio. Mantén un registro de tu rendimiento a lo largo del tiempo.
-          </Typography>
-
-          <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              Seguimiento Automático
-            </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
-              El sistema registra automáticamente tu progreso para cada ejercicio. Puedes ver el historial de series, repeticiones, peso utilizado y notas adicionales.
-            </Typography>
-
-            <Grid container spacing={2} sx={{ mt: 2 }}>
-              {exercises.slice(0, 6).map((exercise) => (
-                <Grid item xs={12} sm={6} md={4} key={exercise.exercise_id}>
-                  <Card variant="outlined">
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        {exercise.name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {exercise.muscle_group} | {exercise.difficulty_level}
-                      </Typography>
-                      <Box sx={{ mt: 2 }}>
-                        <Box>
-                          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-                            Seguimiento automático
-                          </Typography>
-                          <Button
-                            variant="outlined"
-                            color="primary"
-                            fullWidth
-                            startIcon={<CheckCircleIcon />}
-                            onClick={() => {
-                              console.log('Ejercicio seleccionado para ver detalles en ExercisesView:', exercise);
-                              // Asegurarse de que el ejercicio tenga todos los detalles
-                              if (exercise.exercise_id) {
-                                jsonDataService.getExerciseById(exercise.exercise_id)
-                                  .then(fullExercise => {
-                                    if (fullExercise) {
-                                      console.log('Ejercicio completo obtenido:', fullExercise);
-                                      handleOpenHistoryModal(fullExercise);
-                                    } else {
-                                      handleOpenHistoryModal(exercise);
-                                    }
-                                  })
-                                  .catch(error => {
-                                    console.error('Error al obtener ejercicio completo:', error);
-                                    handleOpenHistoryModal(exercise);
-                                  });
-                              } else {
-                                handleOpenHistoryModal(exercise);
-                              }
-                            }}
-                          >
-                            Ver detalles
-                          </Button>
-                        </Box>
-                      </Box>
-                    </CardContent>
-                  </Card>
-
-                </Grid>
-              ))}
-            </Grid>
-          </Paper>
-        </Box>
       </TabPanel>
 
       {/* Dialog for viewing exercise progress history */}

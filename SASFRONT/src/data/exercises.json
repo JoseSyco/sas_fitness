@@ -159,6 +159,86 @@
       ],
       "created_at": "2025-04-01T10:00:00Z",
       "updated_at": "2025-04-01T10:00:00Z"
+    },
+    {
+      "exercise_id": 5,
+      "name": "Jumping jacks",
+      "description": "Ejercicio cardiovascular que trabaja todo el cuerpo y mejora la coordinación.",
+      "muscle_group": "Cardio",
+      "equipment_needed": "Ninguno",
+      "difficulty_level": "beginner",
+      "calories_per_minute": 8,
+      "video_url": "https://example.com/videos/jumping-jacks",
+      "image_url": "https://example.com/images/jumping-jacks.jpg",
+      "instructions": [
+        "Comienza de pie con los pies juntos y los brazos a los lados",
+        "Salta abriendo las piernas y levantando los brazos por encima de la cabeza",
+        "Vuelve a la posición inicial con otro salto",
+        "Repite el movimiento a un ritmo constante",
+        "Mantén el core activado durante todo el ejercicio"
+      ],
+      "benefits": [
+        "Mejora la capacidad cardiovascular",
+        "Aumenta la coordinación",
+        "Trabaja múltiples grupos musculares",
+        "Quema calorías eficientemente",
+        "Mejora la movilidad de hombros"
+      ],
+      "tips": [
+        "Mantén un ritmo constante",
+        "Aterriza suavemente flexionando ligeramente las rodillas",
+        "Respira de manera rítmica con el movimiento",
+        "Para principiantes, comienza con versiones más lentas",
+        "Aumenta la velocidad gradualmente para mayor intensidad"
+      ],
+      "variations": [
+        "Jumping jacks con sentadilla",
+        "Jumping jacks laterales",
+        "Jumping jacks con rotación",
+        "Jumping jacks con pasos (sin saltos)"
+      ],
+      "created_at": "2025-04-01T10:00:00Z",
+      "updated_at": "2025-04-01T10:00:00Z"
+    },
+    {
+      "exercise_id": 6,
+      "name": "Crunches",
+      "description": "Ejercicio abdominal que fortalece principalmente el recto abdominal.",
+      "muscle_group": "Core",
+      "equipment_needed": "Ninguno",
+      "difficulty_level": "beginner",
+      "calories_per_minute": 4,
+      "video_url": "https://example.com/videos/crunches",
+      "image_url": "https://example.com/images/crunches.jpg",
+      "instructions": [
+        "Acuéstate boca arriba con las rodillas flexionadas y los pies apoyados en el suelo",
+        "Coloca las manos detrás de la cabeza o cruzadas sobre el pecho",
+        "Contrae los abdominales para elevar los hombros del suelo",
+        "Mantén la parte baja de la espalda en contacto con el suelo",
+        "Baja lentamente a la posición inicial"
+      ],
+      "benefits": [
+        "Fortalece el recto abdominal",
+        "Mejora la estabilidad del core",
+        "Ayuda a definir los músculos abdominales",
+        "Mejora la postura",
+        "Reduce el riesgo de lesiones en la espalda"
+      ],
+      "tips": [
+        "No tires del cuello con las manos",
+        "Exhala al subir, inhala al bajar",
+        "Mantén el movimiento controlado",
+        "Concéntrate en la contracción abdominal",
+        "Mantén los pies y la parte baja de la espalda en contacto con el suelo"
+      ],
+      "variations": [
+        "Crunches con piernas elevadas",
+        "Crunches con rotación",
+        "Crunches inversos",
+        "Crunches en máquina"
+      ],
+      "created_at": "2025-04-01T10:00:00Z",
+      "updated_at": "2025-04-01T10:00:00Z"
     }
   ]
 }

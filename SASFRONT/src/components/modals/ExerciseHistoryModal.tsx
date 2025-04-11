@@ -45,6 +45,14 @@ const ExerciseHistoryModal = ({ open, onClose, exercise, session }: ExerciseHist
       setLoading(true);
       console.log('Modal abierto con ejercicio:', exercise);
 
+      // Verificar si el ejercicio ya tiene todos los detalles necesarios
+      if (exercise.instructions && exercise.benefits && exercise.description) {
+        console.log('El ejercicio ya tiene todos los detalles necesarios');
+        setExerciseDetails(exercise);
+        setLoading(false);
+        return;
+      }
+
       // Cargar los datos de ejercicios
       jsonDataService.getExercises()
         .then(data => {
@@ -112,31 +120,7 @@ const ExerciseHistoryModal = ({ open, onClose, exercise, session }: ExerciseHist
       </DialogTitle>
       <DialogContent dividers>
         <Box sx={{ mb: 3 }}>
-          {session && (
-            <Paper elevation={1} sx={{ p: 2, mb: 3, bgcolor: 'background.paper' }}>
-              <Typography variant="subtitle1" color="primary" gutterBottom>
-                Detalles de la Sesión
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body2" color="text.secondary">
-                    Día:
-                  </Typography>
-                  <Typography variant="body1">
-                    {session.day_of_week}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body2" color="text.secondary">
-                    Área de enfoque:
-                  </Typography>
-                  <Typography variant="body1">
-                    {session.focus_area}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Paper>
-          )}
+
 
           <Paper elevation={1} sx={{ p: 2, mb: 3, bgcolor: 'background.paper' }}>
             <Typography variant="subtitle1" color="primary" gutterBottom>
@@ -178,16 +162,7 @@ const ExerciseHistoryModal = ({ open, onClose, exercise, session }: ExerciseHist
                   {exerciseDetails?.equipment_needed || exercise?.equipment_needed || 'Ninguno'}
                 </Typography>
               </Grid>
-              {(exerciseDetails?.description || exercise?.description) && (
-                <Grid item xs={12}>
-                  <Typography variant="body2" color="text.secondary">
-                    Descripción:
-                  </Typography>
-                  <Typography variant="body1" sx={{ mt: 0.5 }}>
-                    {exerciseDetails?.description || exercise?.description}
-                  </Typography>
-                </Grid>
-              )}
+
               <Grid item xs={12}>
                 <Divider sx={{ my: 1.5 }} />
               </Grid>
@@ -216,28 +191,7 @@ const ExerciseHistoryModal = ({ open, onClose, exercise, session }: ExerciseHist
             </Grid>
           </Paper>
 
-          {(exerciseDetails?.benefits || exercise?.benefits) && (
-            <Paper elevation={1} sx={{ p: 2, mb: 3, bgcolor: 'background.paper' }}>
-              <Typography variant="subtitle1" color="primary" gutterBottom>
-                Beneficios
-              </Typography>
-              <Box>
-                {typeof (exerciseDetails?.benefits || exercise?.benefits) === 'string' ? (
-                  <Typography variant="body1">
-                    {exerciseDetails?.benefits || exercise?.benefits}
-                  </Typography>
-                ) : (
-                  <List dense sx={{ pl: 2, pt: 0 }}>
-                    {(exerciseDetails?.benefits || exercise?.benefits)?.map((benefit: string, index: number) => (
-                      <ListItem key={index} sx={{ py: 0.5 }}>
-                        <Typography variant="body2">• {benefit}</Typography>
-                      </ListItem>
-                    ))}
-                  </List>
-                )}
-              </Box>
-            </Paper>
-          )}
+
 
           {(exerciseDetails?.variations || exercise?.variations) && (
             <Paper elevation={1} sx={{ p: 2, mb: 3, bgcolor: 'background.paper' }}>

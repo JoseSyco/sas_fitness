@@ -16,6 +16,9 @@ import RestaurantIcon from '@mui/icons-material/Restaurant';
 import SportsIcon from '@mui/icons-material/Sports';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 
+// Import services
+import jsonDataService from '../services/jsonDataService';
+
 // Import section content components
 import WorkoutPlansView from './modals/WorkoutPlansView';
 import NutritionPlansView from './modals/NutritionPlansView';
@@ -56,6 +59,26 @@ const SectionButtons = () => {
     };
   }, []);
 
+  // Estado para almacenar el ID del plan activo
+  const [activePlanId, setActivePlanId] = useState<number | undefined>(undefined);
+
+  // Efecto para obtener el primer plan de entrenamiento disponible
+  useEffect(() => {
+    const fetchFirstPlan = async () => {
+      try {
+        const plans = await jsonDataService.getWorkoutPlans();
+        if (Array.isArray(plans) && plans.length > 0) {
+          setActivePlanId(plans[0].plan_id);
+          console.log('Plan activo establecido:', plans[0].plan_id);
+        }
+      } catch (error) {
+        console.error('Error al obtener planes de entrenamiento:', error);
+      }
+    };
+
+    fetchFirstPlan();
+  }, [refreshKey]);
+
   const sections = [
     {
       id: 'workouts',
@@ -76,7 +99,7 @@ const SectionButtons = () => {
       title: 'EJERCICIOS',
       icon: <SportsIcon sx={{ fontSize: 40 }} />,
       color: '#ff9800',
-      component: <ExercisesView key={`exercises-${refreshKey}`} />
+      component: <ExercisesView key={`exercises-${refreshKey}`} planId={activePlanId} />
     },
     {
       id: 'progress',
