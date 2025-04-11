@@ -6,6 +6,7 @@ export const mockUser = {
   email: 'usuario@ejemplo.com',
   first_name: 'Juan',
   last_name: 'Pérez',
+  username: 'juanperez',
   created_at: '2025-04-01T10:00:00Z'
 };
 
@@ -19,6 +20,9 @@ export const mockProfile = {
   weight: 75,
   activity_level: 'moderate',
   fitness_level: 'intermediate',
+  fitness_goals: ['weight_loss', 'muscle_tone'],
+  health_conditions: ['none'],
+  dietary_restrictions: ['none'],
   created_at: '2025-04-01T10:00:00Z',
   updated_at: '2025-04-01T10:00:00Z'
 };

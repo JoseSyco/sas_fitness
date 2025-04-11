@@ -9,8 +9,9 @@ import {
   progressService as mockProgressService,
   exerciseService as mockExerciseService
 } from './mockApi';
-import { createContext, useContext } from 'react';
+// ApiStatusContext removed
 import localStorageService from './localStorageService';
+import n8nService from './n8nService';
 
 // Create API instance
 const api = axios.create({
@@ -194,28 +195,38 @@ const realAiService = {
     return api.post('/ai/advice', { query });
   },
   sendChatMessage: async (message: string) => {
-    return api.post('/ai/chat', { message });
+    // Usar exclusivamente n8n para el chat
+    console.log('[API] Enviando mensaje a n8n service:', message);
+
+    try {
+      // Usar un nombre de usuario fijo para pruebas
+      const n8nResponse = await n8nService.sendUserMessage('usuario_test', message);
+      console.log('[API] Respuesta recibida de n8n:', n8nResponse);
+
+      // Convertir la respuesta de n8n al formato esperado por la aplicación
+      return {
+        data: {
+          message: n8nResponse.mensaje_agente || 'No se recibió respuesta del agente',
+          data: n8nResponse.data || {},
+          action: n8nResponse.action || null
+        }
+      };
+    } catch (error) {
+      console.error('[API] Error al comunicarse con n8n:', error);
+
+      // Devolver un mensaje de error para mostrar al usuario
+      return {
+        data: {
+          message: 'Lo siento, ha ocurrido un error inesperado. Por favor, intenta de nuevo más tarde.',
+          data: {},
+          action: null
+        }
+      };
+    }
   }
 };
 
-// API Status Context
-interface ApiStatusContextType {
-  isBackendAvailable: boolean;
-  setBackendAvailable: (available: boolean) => void;
-  isUsingMockData: boolean;
-  showFallbackNotification: boolean;
-  dismissFallbackNotification: () => void;
-}
-
-export const ApiStatusContext = createContext<ApiStatusContextType>({
-  isBackendAvailable: true,
-  setBackendAvailable: () => {},
-  isUsingMockData: false,
-  showFallbackNotification: false,
-  dismissFallbackNotification: () => {}
-});
-
-export const useApiStatus = () => useContext(ApiStatusContext);
+// API Status Context removed
 
 // Create fallback service wrappers
 const createFallbackService = (realService: any, mockService: any, serviceName: string) => {
@@ -223,16 +234,13 @@ const createFallbackService = (realService: any, mockService: any, serviceName: 
     get: (target, prop) => {
       return async (...args: any[]) => {
         try {
-          // Try to use the real service first
-          const isAvailable = localStorage.getItem('backendAvailable') === 'true';
-          if (!isAvailable) {
-            throw new Error('Backend unavailable, using mock data');
-          }
+          // Always use mock data for now since backend is not required
+          throw new Error('Using mock data by default');
 
           console.log(`[API] Calling ${serviceName}.${String(prop)} with args:`, args);
 
           const result = await realService[prop](...args);
-          localStorage.setItem('backendAvailable', 'true');
+          // Backend status tracking removed
 
           console.log(`[API] Response from ${serviceName}.${String(prop)}:`, result);
 
@@ -249,7 +257,7 @@ const createFallbackService = (realService: any, mockService: any, serviceName: 
         } catch (error) {
           logger.warn(`API call failed, using mock data for ${serviceName}.${String(prop)}`, {});
           console.error(`API call error details:`, error);
-          localStorage.setItem('backendAvailable', 'false');
+          // Backend status tracking removed
 
           // Save the request to localStorage for later sync
           const pendingRequest = {

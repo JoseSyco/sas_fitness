@@ -112,9 +112,9 @@ const SectionButtons = () => {
 
   return (
     <>
-      <Grid container spacing={1}>
+      <Grid container spacing={0} sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', margin: 0, padding: 0, boxSizing: 'border-box' }}>
         {sections.map((section) => (
-          <Grid item xs={3} key={section.id}>
+          <Grid item xs={3} key={section.id} sx={{ flex: '1 1 25%', maxWidth: '25%', width: '25%', boxSizing: 'border-box', padding: '0 2px' }}>
             <Button
               variant="contained"
               fullWidth
@@ -130,7 +130,8 @@ const SectionButtons = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 textTransform: 'none',
-                boxShadow: 3
+                boxShadow: 3,
+                width: '100%'
               }}
             >
               {section.icon}

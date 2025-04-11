@@ -7,7 +7,13 @@ import axios from 'axios';
 // Keys for localStorage
 const KEYS = {
   NOTIFICATIONS: 'userPreferences_notifications',
+  EMAIL_NOTIFICATIONS: 'userPreferences_emailNotifications',
+  PUSH_NOTIFICATIONS: 'userPreferences_pushNotifications',
+  WORKOUT_REMINDERS: 'userPreferences_workoutReminders',
+  NUTRITION_REMINDERS: 'userPreferences_nutritionReminders',
   DARK_MODE: 'userPreferences_darkMode',
+  LANGUAGE: 'userPreferences_language',
+  UNITS: 'userPreferences_units',
   PENDING_REQUESTS: 'pending_requests'
 };
 
@@ -19,6 +25,54 @@ export const getNotificationsPreference = (): boolean => {
     return value;
   } catch (error) {
     console.error('[UserPreferencesService] Error getting notifications preference:', error);
+    return true; // Default value
+  }
+};
+
+// Get email notifications preference
+export const getEmailNotificationsPreference = (): boolean => {
+  try {
+    const value = localStorage.getItem(KEYS.EMAIL_NOTIFICATIONS) === 'true';
+    console.log('[UserPreferencesService] Email notifications preference:', value);
+    return value;
+  } catch (error) {
+    console.error('[UserPreferencesService] Error getting email notifications preference:', error);
+    return true; // Default value
+  }
+};
+
+// Get push notifications preference
+export const getPushNotificationsPreference = (): boolean => {
+  try {
+    const value = localStorage.getItem(KEYS.PUSH_NOTIFICATIONS) === 'true';
+    console.log('[UserPreferencesService] Push notifications preference:', value);
+    return value;
+  } catch (error) {
+    console.error('[UserPreferencesService] Error getting push notifications preference:', error);
+    return true; // Default value
+  }
+};
+
+// Get workout reminders preference
+export const getWorkoutRemindersPreference = (): boolean => {
+  try {
+    const value = localStorage.getItem(KEYS.WORKOUT_REMINDERS) === 'true';
+    console.log('[UserPreferencesService] Workout reminders preference:', value);
+    return value;
+  } catch (error) {
+    console.error('[UserPreferencesService] Error getting workout reminders preference:', error);
+    return true; // Default value
+  }
+};
+
+// Get nutrition reminders preference
+export const getNutritionRemindersPreference = (): boolean => {
+  try {
+    const value = localStorage.getItem(KEYS.NUTRITION_REMINDERS) === 'true';
+    console.log('[UserPreferencesService] Nutrition reminders preference:', value);
+    return value;
+  } catch (error) {
+    console.error('[UserPreferencesService] Error getting nutrition reminders preference:', error);
     return true; // Default value
   }
 };
@@ -35,14 +89,62 @@ export const getDarkModePreference = (): boolean => {
   }
 };
 
-// Save preferences to localStorage and try to sync with backend
-export const savePreferences = (notifications: boolean, darkMode: boolean): void => {
+// Get language preference
+export const getLanguagePreference = (): string => {
   try {
-    console.log('[UserPreferencesService] Saving preferences:', { notifications, darkMode });
+    const value = localStorage.getItem(KEYS.LANGUAGE) || 'es';
+    console.log('[UserPreferencesService] Language preference:', value);
+    return value;
+  } catch (error) {
+    console.error('[UserPreferencesService] Error getting language preference:', error);
+    return 'es'; // Default value
+  }
+};
+
+// Get units preference
+export const getUnitsPreference = (): string => {
+  try {
+    const value = localStorage.getItem(KEYS.UNITS) || 'metric';
+    console.log('[UserPreferencesService] Units preference:', value);
+    return value;
+  } catch (error) {
+    console.error('[UserPreferencesService] Error getting units preference:', error);
+    return 'metric'; // Default value
+  }
+};
+
+// Save preferences to localStorage and try to sync with backend
+export const savePreferences = (
+  notifications: boolean,
+  emailNotifications: boolean,
+  pushNotifications: boolean,
+  workoutReminders: boolean,
+  nutritionReminders: boolean,
+  darkMode: boolean,
+  language: string,
+  units: string
+): void => {
+  try {
+    console.log('[UserPreferencesService] Saving preferences:', {
+      notifications,
+      emailNotifications,
+      pushNotifications,
+      workoutReminders,
+      nutritionReminders,
+      darkMode,
+      language,
+      units
+    });
 
     // Save to localStorage as backup
     localStorage.setItem(KEYS.NOTIFICATIONS, notifications.toString());
+    localStorage.setItem(KEYS.EMAIL_NOTIFICATIONS, emailNotifications.toString());
+    localStorage.setItem(KEYS.PUSH_NOTIFICATIONS, pushNotifications.toString());
+    localStorage.setItem(KEYS.WORKOUT_REMINDERS, workoutReminders.toString());
+    localStorage.setItem(KEYS.NUTRITION_REMINDERS, nutritionReminders.toString());
     localStorage.setItem(KEYS.DARK_MODE, darkMode.toString());
+    localStorage.setItem(KEYS.LANGUAGE, language);
+    localStorage.setItem(KEYS.UNITS, units);
 
     // Try to sync with backend immediately
     console.log('[UserPreferencesService] Attempting to sync with backend immediately');
@@ -50,7 +152,13 @@ export const savePreferences = (notifications: boolean, darkMode: boolean): void
     // Create the request data
     const requestData = {
       receive_notifications: notifications,
-      dark_mode: darkMode
+      email_notifications: emailNotifications,
+      push_notifications: pushNotifications,
+      workout_reminders: workoutReminders,
+      nutrition_reminders: nutritionReminders,
+      dark_mode: darkMode,
+      language: language,
+      units: units
     };
 
     // Try to send to backend
@@ -103,12 +211,60 @@ export const initializePreferences = (): void => {
       console.log('[UserPreferencesService] Notifications preference already set:', notificationsValue);
     }
 
+    const emailNotificationsValue = localStorage.getItem(KEYS.EMAIL_NOTIFICATIONS);
+    if (emailNotificationsValue === null) {
+      console.log('[UserPreferencesService] Setting default email notifications preference: true');
+      localStorage.setItem(KEYS.EMAIL_NOTIFICATIONS, 'true');
+    } else {
+      console.log('[UserPreferencesService] Email notifications preference already set:', emailNotificationsValue);
+    }
+
+    const pushNotificationsValue = localStorage.getItem(KEYS.PUSH_NOTIFICATIONS);
+    if (pushNotificationsValue === null) {
+      console.log('[UserPreferencesService] Setting default push notifications preference: true');
+      localStorage.setItem(KEYS.PUSH_NOTIFICATIONS, 'true');
+    } else {
+      console.log('[UserPreferencesService] Push notifications preference already set:', pushNotificationsValue);
+    }
+
+    const workoutRemindersValue = localStorage.getItem(KEYS.WORKOUT_REMINDERS);
+    if (workoutRemindersValue === null) {
+      console.log('[UserPreferencesService] Setting default workout reminders preference: true');
+      localStorage.setItem(KEYS.WORKOUT_REMINDERS, 'true');
+    } else {
+      console.log('[UserPreferencesService] Workout reminders preference already set:', workoutRemindersValue);
+    }
+
+    const nutritionRemindersValue = localStorage.getItem(KEYS.NUTRITION_REMINDERS);
+    if (nutritionRemindersValue === null) {
+      console.log('[UserPreferencesService] Setting default nutrition reminders preference: true');
+      localStorage.setItem(KEYS.NUTRITION_REMINDERS, 'true');
+    } else {
+      console.log('[UserPreferencesService] Nutrition reminders preference already set:', nutritionRemindersValue);
+    }
+
     const darkModeValue = localStorage.getItem(KEYS.DARK_MODE);
     if (darkModeValue === null) {
       console.log('[UserPreferencesService] Setting default dark mode preference: false');
       localStorage.setItem(KEYS.DARK_MODE, 'false');
     } else {
       console.log('[UserPreferencesService] Dark mode preference already set:', darkModeValue);
+    }
+
+    const languageValue = localStorage.getItem(KEYS.LANGUAGE);
+    if (languageValue === null) {
+      console.log('[UserPreferencesService] Setting default language preference: es');
+      localStorage.setItem(KEYS.LANGUAGE, 'es');
+    } else {
+      console.log('[UserPreferencesService] Language preference already set:', languageValue);
+    }
+
+    const unitsValue = localStorage.getItem(KEYS.UNITS);
+    if (unitsValue === null) {
+      console.log('[UserPreferencesService] Setting default units preference: metric');
+      localStorage.setItem(KEYS.UNITS, 'metric');
+    } else {
+      console.log('[UserPreferencesService] Units preference already set:', unitsValue);
     }
   } catch (error) {
     console.error('[UserPreferencesService] Error initializing preferences:', error);
@@ -120,7 +276,13 @@ export const syncPreferencesWithBackend = async (): Promise<boolean> => {
   try {
     const preferences = {
       receive_notifications: getNotificationsPreference(),
-      dark_mode: getDarkModePreference()
+      email_notifications: getEmailNotificationsPreference(),
+      push_notifications: getPushNotificationsPreference(),
+      workout_reminders: getWorkoutRemindersPreference(),
+      nutrition_reminders: getNutritionRemindersPreference(),
+      dark_mode: getDarkModePreference(),
+      language: getLanguagePreference(),
+      units: getUnitsPreference()
     };
 
     console.log('[UserPreferencesService] Syncing preferences with backend:', preferences);

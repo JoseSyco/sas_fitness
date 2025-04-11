@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import userPreferencesService from './services/userPreferencesService';
 import { ThemeProvider } from '@mui/material/styles';
 import { lightTheme, darkTheme } from './theme';
@@ -24,6 +24,7 @@ import {
   Switch
 } from '@mui/material';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
+import { mockProfile } from './services/mockData';
 
 // Auto-login for demo purposes
 import './App.css';
@@ -31,14 +32,20 @@ import './App.css';
 // Components
 import ChatInterface from './components/ChatInterface';
 import SectionButtons from './components/SectionButtons';
-import ConnectionStatus from './components/ConnectionStatus';
+// import ConnectionStatus from './components/ConnectionStatus'; // Eliminado
 import EnhancedChatInterface from './components/EnhancedChatInterface';
 // Componentes de AI Coach
 import StandaloneAICoachChat from './components/AICoach/StandaloneAICoachChat';
+// Componente de prueba n8n
+import N8nTester from './components/N8nTester';
+// Nuevo componente de chat
+import ChatInterfaceV2 from './components/ChatInterfaceV2';
+// Componente de chat simple para pruebas con n8n
+import SimpleChatInterface from './components/SimpleChatInterface';
 
 // Context
 import { AuthProvider } from './context/AuthContext';
-import { ApiStatusProvider } from './components/ApiStatusProvider';
+// ApiStatusProvider removed
 
 // Theme configuration
 
@@ -48,17 +55,26 @@ function App() {
   const [showConfigModal, setShowConfigModal] = useState(false);
   const open = Boolean(anchorEl);
 
+  // Reference to chat interface for clearing history
+  const chatInterfaceRef = useRef<{ clearChatHistory: () => void } | null>(null);
+
   // User preferences state
   const [receiveNotifications, setReceiveNotifications] = useState(() => {
     const value = userPreferencesService.getNotificationsPreference();
     console.log('[App] Initial notifications preference:', value);
     return value;
   });
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [pushNotifications, setPushNotifications] = useState(true);
+  const [workoutReminders, setWorkoutReminders] = useState(true);
+  const [nutritionReminders, setNutritionReminders] = useState(true);
   const [darkMode, setDarkMode] = useState(() => {
     const value = userPreferencesService.getDarkModePreference();
     console.log('[App] Initial dark mode preference:', value);
     return value;
   });
+  const [language, setLanguage] = useState('es');
+  const [units, setUnits] = useState('metric');
 
   // User data from context
   const user = {
@@ -68,6 +84,30 @@ function App() {
     email: 'juan.perez@example.com',
     avatar: '',
     membership: 'Premium'
+  };
+
+  // User profile data
+  const [userProfile, setUserProfile] = useState(mockProfile);
+
+  // Manejador para actualizar campos del perfil
+  const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setUserProfile(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Manejador para actualizar arrays en el perfil (como fitness_goals)
+  const handleArrayFieldChange = (field: string, index: number, value: string) => {
+    setUserProfile(prev => {
+      const newArray = [...(prev[field as keyof typeof prev] as string[] || [])];
+      newArray[index] = value;
+      return {
+        ...prev,
+        [field]: newArray
+      };
+    });
   };
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -100,9 +140,33 @@ function App() {
         console.log('[App] Setting notifications preference:', notificationsValue);
         setReceiveNotifications(notificationsValue);
 
+        const emailNotificationsValue = userPreferencesService.getEmailNotificationsPreference();
+        console.log('[App] Setting email notifications preference:', emailNotificationsValue);
+        setEmailNotifications(emailNotificationsValue);
+
+        const pushNotificationsValue = userPreferencesService.getPushNotificationsPreference();
+        console.log('[App] Setting push notifications preference:', pushNotificationsValue);
+        setPushNotifications(pushNotificationsValue);
+
+        const workoutRemindersValue = userPreferencesService.getWorkoutRemindersPreference();
+        console.log('[App] Setting workout reminders preference:', workoutRemindersValue);
+        setWorkoutReminders(workoutRemindersValue);
+
+        const nutritionRemindersValue = userPreferencesService.getNutritionRemindersPreference();
+        console.log('[App] Setting nutrition reminders preference:', nutritionRemindersValue);
+        setNutritionReminders(nutritionRemindersValue);
+
         const darkModeValue = userPreferencesService.getDarkModePreference();
         console.log('[App] Setting dark mode preference:', darkModeValue);
         setDarkMode(darkModeValue);
+
+        const languageValue = userPreferencesService.getLanguagePreference();
+        console.log('[App] Setting language preference:', languageValue);
+        setLanguage(languageValue);
+
+        const unitsValue = userPreferencesService.getUnitsPreference();
+        console.log('[App] Setting units preference:', unitsValue);
+        setUnits(unitsValue);
 
         console.log('[App] Auto-login completed');
         setIsLoading(false);
@@ -128,11 +192,10 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <ApiStatusProvider>
-        <AuthProvider>
-        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <AuthProvider>
+        <Box className="app-container" sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '75%', mx: 'auto', padding: 0, maxWidth: '75%', boxSizing: 'border-box', margin: '0 auto' }}>
           {/* App Bar / Logo Area */}
-          <AppBar position="static" color="primary" elevation={0}>
+          <AppBar position="static" color="primary" elevation={0} sx={{ borderTopLeftRadius: 4, borderTopRightRadius: 4, width: '100%', boxSizing: 'border-box' }}>
             <Toolbar>
               <FitnessCenterIcon sx={{ mr: 2 }} />
               <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
@@ -177,7 +240,11 @@ function App() {
                     handleClose();
                     // Implement logout
                     localStorage.removeItem('token');
-                    window.location.reload();
+
+                    // Clear chat history if reference exists
+                    if (chatInterfaceRef.current) {
+                      chatInterfaceRef.current.clearChatHistory();
+                    }
                   }}>Cerrar Sesión</MenuItem>
                 </Menu>
               </Box>
@@ -185,20 +252,23 @@ function App() {
           </AppBar>
 
           {/* Main Content */}
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 2, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ mt: 0, mb: 2, flexGrow: 1, display: 'flex', flexDirection: 'column', p: 0, width: '100%', padding: 0 }}>
             {/* Chat Interface */}
             {/* Descomentar la línea deseada para cambiar entre interfaces */}
             {/* <ChatInterface /> */}
-            <EnhancedChatInterface />
+            {/* <EnhancedChatInterface /> */}
 
             {/* AI Coach Chat Interface (Versión Independiente) */}
             {/* <StandaloneAICoachChat /> */}
 
+            {/* Interfaz de chat simple para pruebas con n8n */}
+            <SimpleChatInterface onRef={(ref) => (chatInterfaceRef.current = ref)} />
+
             {/* Section Buttons - Fixed at bottom */}
-            <Box sx={{ mt: 'auto', mb: 1 }}>
+            <Box sx={{ mt: 2, mb: 1, width: '100%' }}>
               <SectionButtons />
             </Box>
-          </Container>
+          </Box>
 
           {/* Configuration Modal */}
           <Dialog
@@ -206,83 +276,316 @@ function App() {
             onClose={() => setShowConfigModal(false)}
             maxWidth="sm"
             fullWidth
+            scroll="paper"
+            PaperProps={{
+              sx: { maxHeight: '90vh' }
+            }}
           >
             <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white' }}>
               Configuración de Perfil
             </DialogTitle>
             <DialogContent dividers>
-              <Box sx={{ p: 2 }}>
+              <Box sx={{ p: 2, overflowY: 'auto' }}>
                 <Typography variant="h6" gutterBottom>Información Personal</Typography>
-                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2, mb: 3 }}>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Nombre</Typography>
                   <TextField
                     fullWidth
-                    label="Nombre"
                     value={user.first_name}
-                    margin="normal"
                     variant="outlined"
                   />
+                </Box>
+
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Apellido</Typography>
                   <TextField
                     fullWidth
-                    label="Apellido"
                     value={user.last_name}
-                    margin="normal"
                     variant="outlined"
                   />
                 </Box>
 
                 <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Nombre de usuario</Typography>
                   <TextField
                     fullWidth
-                    label="Nombre de usuario"
                     value={user.username}
-                    margin="normal"
                     variant="outlined"
                   />
                 </Box>
 
                 <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Correo electrónico</Typography>
                   <TextField
                     fullWidth
-                    label="Correo electrónico"
                     value={user.email}
-                    margin="normal"
                     variant="outlined"
                     disabled
                   />
                 </Box>
 
+                <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>Datos Físicos</Typography>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Edad</Typography>
+                  <TextField
+                    fullWidth
+                    name="age"
+                    type="number"
+                    value={userProfile?.age || ''}
+                    onChange={handleProfileChange}
+                    variant="outlined"
+                  />
+                </Box>
+
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Género</Typography>
+                  <TextField
+                    fullWidth
+                    select
+                    name="gender"
+                    value={userProfile?.gender || ''}
+                    onChange={handleProfileChange}
+                    variant="outlined"
+                  >
+                    <MenuItem value="male">Masculino</MenuItem>
+                    <MenuItem value="female">Femenino</MenuItem>
+                    <MenuItem value="other">Otro</MenuItem>
+                  </TextField>
+                </Box>
+
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Altura (cm)</Typography>
+                  <TextField
+                    fullWidth
+                    name="height"
+                    type="number"
+                    value={userProfile?.height || ''}
+                    onChange={handleProfileChange}
+                    variant="outlined"
+                  />
+                </Box>
+
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Peso (kg)</Typography>
+                  <TextField
+                    fullWidth
+                    name="weight"
+                    type="number"
+                    value={userProfile?.weight || ''}
+                    onChange={handleProfileChange}
+                    variant="outlined"
+                  />
+                </Box>
+
+                <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>Información Fitness</Typography>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Nivel de Actividad</Typography>
+                  <TextField
+                    fullWidth
+                    select
+                    name="activity_level"
+                    value={userProfile?.activity_level || ''}
+                    onChange={handleProfileChange}
+                    variant="outlined"
+                  >
+                    <MenuItem value="sedentary">Sedentario</MenuItem>
+                    <MenuItem value="light">Ligero</MenuItem>
+                    <MenuItem value="moderate">Moderado</MenuItem>
+                    <MenuItem value="active">Activo</MenuItem>
+                    <MenuItem value="very_active">Muy Activo</MenuItem>
+                  </TextField>
+                </Box>
+
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Nivel de Fitness</Typography>
+                  <TextField
+                    fullWidth
+                    select
+                    name="fitness_level"
+                    value={userProfile?.fitness_level || ''}
+                    onChange={handleProfileChange}
+                    variant="outlined"
+                  >
+                    <MenuItem value="beginner">Principiante</MenuItem>
+                    <MenuItem value="intermediate">Intermedio</MenuItem>
+                    <MenuItem value="advanced">Avanzado</MenuItem>
+                  </TextField>
+                </Box>
+
+                <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>Objetivos y Condiciones</Typography>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Objetivo de Fitness</Typography>
+                  <TextField
+                    fullWidth
+                    select
+                    name="fitness_goals"
+                    value={userProfile?.fitness_goals?.[0] || ''}
+                    onChange={(e) => handleArrayFieldChange('fitness_goals', 0, e.target.value)}
+                    variant="outlined"
+                  >
+                    <MenuItem value="weight_loss">Pérdida de Peso</MenuItem>
+                    <MenuItem value="muscle_tone">Tonificación Muscular</MenuItem>
+                    <MenuItem value="muscle_gain">Ganancia Muscular</MenuItem>
+                    <MenuItem value="endurance">Resistencia</MenuItem>
+                    <MenuItem value="flexibility">Flexibilidad</MenuItem>
+                  </TextField>
+                </Box>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Condiciones de Salud</Typography>
+                  <TextField
+                    fullWidth
+                    name="health_conditions"
+                    value={userProfile?.health_conditions?.[0] || 'none'}
+                    onChange={(e) => handleArrayFieldChange('health_conditions', 0, e.target.value)}
+                    variant="outlined"
+                  />
+                </Box>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Restricciones Dietéticas</Typography>
+                  <TextField
+                    fullWidth
+                    name="dietary_restrictions"
+                    value={userProfile?.dietary_restrictions?.[0] || 'none'}
+                    onChange={(e) => handleArrayFieldChange('dietary_restrictions', 0, e.target.value)}
+                    variant="outlined"
+                  />
+                </Box>
+
                 <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>Preferencias</Typography>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={receiveNotifications}
-                      onChange={(e) => setReceiveNotifications(e.target.checked)}
-                    />
-                  }
-                  label="Recibir notificaciones"
-                />
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={darkMode}
-                      onChange={(e) => setDarkMode(e.target.checked)}
-                    />
-                  }
-                  label="Modo oscuro"
-                />
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Recibir notificaciones</Typography>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={receiveNotifications}
+                        onChange={(e) => setReceiveNotifications(e.target.checked)}
+                      />
+                    }
+                    label={receiveNotifications ? "Activado" : "Desactivado"}
+                  />
+                </Box>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Notificaciones por email</Typography>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={emailNotifications}
+                        onChange={(e) => setEmailNotifications(e.target.checked)}
+                      />
+                    }
+                    label={emailNotifications ? "Activado" : "Desactivado"}
+                  />
+                </Box>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Notificaciones push</Typography>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={pushNotifications}
+                        onChange={(e) => setPushNotifications(e.target.checked)}
+                      />
+                    }
+                    label={pushNotifications ? "Activado" : "Desactivado"}
+                  />
+                </Box>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Recordatorios de entrenamiento</Typography>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={workoutReminders}
+                        onChange={(e) => setWorkoutReminders(e.target.checked)}
+                      />
+                    }
+                    label={workoutReminders ? "Activado" : "Desactivado"}
+                  />
+                </Box>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Recordatorios de nutrición</Typography>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={nutritionReminders}
+                        onChange={(e) => setNutritionReminders(e.target.checked)}
+                      />
+                    }
+                    label={nutritionReminders ? "Activado" : "Desactivado"}
+                  />
+                </Box>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Modo oscuro</Typography>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={darkMode}
+                        onChange={(e) => setDarkMode(e.target.checked)}
+                      />
+                    }
+                    label={darkMode ? "Activado" : "Desactivado"}
+                  />
+                </Box>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Idioma</Typography>
+                  <TextField
+                    fullWidth
+                    select
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value)}
+                    variant="outlined"
+                  >
+                    <MenuItem value="es">Español</MenuItem>
+                    <MenuItem value="en">Inglés</MenuItem>
+                  </TextField>
+                </Box>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>Unidades</Typography>
+                  <TextField
+                    fullWidth
+                    select
+                    value={units}
+                    onChange={(e) => setUnits(e.target.value)}
+                    variant="outlined"
+                  >
+                    <MenuItem value="metric">Métrico (kg, cm)</MenuItem>
+                    <MenuItem value="imperial">Imperial (lb, in)</MenuItem>
+                  </TextField>
+                </Box>
               </Box>
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setShowConfigModal(false)}>Cancelar</Button>
               <Button variant="contained" color="primary" onClick={() => {
-                console.log('[App] Saving preferences:', { receiveNotifications, darkMode });
+                console.log('[App] Saving preferences:', {
+                  receiveNotifications,
+                  emailNotifications,
+                  pushNotifications,
+                  workoutReminders,
+                  nutritionReminders,
+                  darkMode,
+                  language,
+                  units
+                });
+                console.log('[App] Saving profile:', userProfile);
 
                 // Save preferences using the service
-                userPreferencesService.savePreferences(receiveNotifications, darkMode);
+                userPreferencesService.savePreferences(
+                  receiveNotifications,
+                  emailNotifications,
+                  pushNotifications,
+                  workoutReminders,
+                  nutritionReminders,
+                  darkMode,
+                  language,
+                  units
+                );
+
+                // En un caso real, aquí guardaríamos los cambios del perfil en la base de datos
+                // Por ahora, solo actualizamos el estado local
+                setUserProfile(userProfile);
 
                 // Show success message
-                console.log('[App] Preferences saved successfully');
-                alert('Preferencias guardadas correctamente');
+                console.log('[App] Profile and preferences saved successfully');
+                alert('Perfil y preferencias guardados correctamente');
                 setShowConfigModal(false);
               }}>
                 Guardar Cambios
@@ -290,8 +593,7 @@ function App() {
             </DialogActions>
           </Dialog>
 
-          {/* Connection Status */}
-          <ConnectionStatus />
+          {/* Connection Status - Eliminado */}
 
           {/* Footer */}
           <Box component="footer" sx={{ py: 2, bgcolor: 'background.paper', textAlign: 'center' }}>
@@ -301,7 +603,6 @@ function App() {
           </Box>
         </Box>
       </AuthProvider>
-      </ApiStatusProvider>
     </ThemeProvider>
   );
 }

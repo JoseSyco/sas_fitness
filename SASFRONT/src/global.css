@@ -1,0 +1,29 @@
+/* Reset global styles */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Ensure the app takes full width */
+#root {
+  display: flex;
+  justify-content: center;
+}
+
+/* Ensure the app container takes full width */
+.app-container {
+  width: 75%;
+  margin: 0 auto;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Ensure the chat interface takes full width */
+.chat-container {
+  width: 100%;
+  padding: 0;
+  box-sizing: border-box;
+}
