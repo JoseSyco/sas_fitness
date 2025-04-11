@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { TrackingStatus } from '../../types/tracking';
 import {
   Typography,
   Box,
@@ -530,18 +531,12 @@ const ProgressView = () => {
                                             session.completion_tracking.map((tracking: any, index: number) => {
                                               let statusChip;
                                               switch(tracking.status) {
-                                                case 'completado':
+                                                case TrackingStatus.COMPLETED:
                                                   statusChip = <Chip icon={<CheckCircleIcon />} label="Completado" size="small" color="success" />;
                                                   break;
-                                                case 'omitido':
-                                                  statusChip = <Chip icon={<CancelIcon />} label="Omitido" size="small" color="warning" />;
-                                                  break;
-                                                case 'modificado':
-                                                  statusChip = <Chip icon={<EditIcon />} label="Modificado" size="small" color="info" />;
-                                                  break;
-                                                case 'pendiente':
+                                                case TrackingStatus.NOT_COMPLETED:
                                                 default:
-                                                  statusChip = <Chip icon={<AutorenewIcon />} label="Pendiente" size="small" color="primary" />;
+                                                  statusChip = <Chip icon={<CancelIcon />} label="No Completado" size="small" color="warning" />;
                                               }
 
                                               return (
@@ -726,18 +721,12 @@ const ProgressView = () => {
                                               meal.completion_tracking.map((tracking: any, index: number) => {
                                                 let statusChip;
                                                 switch(tracking.status) {
-                                                  case 'completado':
+                                                  case TrackingStatus.COMPLETED:
                                                     statusChip = <Chip icon={<CheckCircleIcon />} label="Completado" size="small" color="success" />;
                                                     break;
-                                                  case 'omitido':
-                                                    statusChip = <Chip icon={<CancelIcon />} label="Omitido" size="small" color="warning" />;
-                                                    break;
-                                                  case 'modificado':
-                                                    statusChip = <Chip icon={<EditIcon />} label="Modificado" size="small" color="info" />;
-                                                    break;
-                                                  case 'pendiente':
+                                                  case TrackingStatus.NOT_COMPLETED:
                                                   default:
-                                                    statusChip = <Chip icon={<AutorenewIcon />} label="Pendiente" size="small" color="primary" />;
+                                                    statusChip = <Chip icon={<CancelIcon />} label="No Completado" size="small" color="warning" />;
                                                 }
 
                                                 return (

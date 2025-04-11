@@ -117,7 +117,7 @@
             {
               "date": "2023-01-03",
               "day_of_week": "Mar",
-              "status": "pendiente",
+              "status": "no_completado",
               "completion_time": "",
               "notes": ""
             }
@@ -198,14 +198,14 @@
             {
               "date": "2023-01-02",
               "day_of_week": "Lun",
-              "status": "omitido",
+              "status": "no_completado",
               "completion_time": "",
               "notes": "No tenía hambre"
             },
             {
               "date": "2023-01-03",
               "day_of_week": "Mar",
-              "status": "pendiente",
+              "status": "no_completado",
               "completion_time": "",
               "notes": ""
             }
@@ -424,7 +424,7 @@
             {
               "date": "2023-04-07",
               "day_of_week": "Vie",
-              "status": "pendiente",
+              "status": "no_completado",
               "completion_time": "",
               "notes": ""
             }
@@ -519,14 +519,14 @@
             {
               "date": "2023-04-05",
               "day_of_week": "Mié",
-              "status": "modificado",
+              "status": "no_completado",
               "completion_time": "14:30",
               "notes": "Sustituí el arroz por quinoa"
             },
             {
               "date": "2023-04-07",
               "day_of_week": "Vie",
-              "status": "pendiente",
+              "status": "no_completado",
               "completion_time": "",
               "notes": ""
             }

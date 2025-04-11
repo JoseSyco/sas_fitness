@@ -92,14 +92,14 @@
             {
               "date": "2025-04-10",
               "day_of_week": "Miércoles",
-              "status": "modificado",
+              "status": "no_completado",
               "completion_time": "19:15",
               "notes": "Aumentado peso en sentadillas"
             },
             {
               "date": "2025-04-17",
               "day_of_week": "Miércoles",
-              "status": "omitido",
+              "status": "no_completado",
               "completion_time": null,
               "notes": "Dolor en rodilla"
             }
