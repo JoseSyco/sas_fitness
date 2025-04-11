@@ -14,15 +14,23 @@ import {
   Chip,
   CircularProgress,
   Button,
-  LinearProgress,
-  Tooltip
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
 } from '@mui/material';
+import ExerciseHistoryModal from './ExerciseHistoryModal';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PauseCircleIcon from '@mui/icons-material/PauseCircle';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
+import CancelIcon from '@mui/icons-material/Cancel';
+import EditIcon from '@mui/icons-material/Edit';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { workoutService } from '../../services/api';
 import jsonDataService from '../../services/jsonDataService';
 
@@ -57,6 +65,9 @@ const WorkoutPlansView = () => {
   const [workoutPlans, setWorkoutPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [planStatus, setPlanStatus] = useState<{[key: string]: {status: 'active' | 'paused' | 'completed', progress: number, daysCompleted: number, totalDays: number}}>({});
+  const [openHistoryModal, setOpenHistoryModal] = useState(false);
+  const [selectedExercise, setSelectedExercise] = useState<any>(null);
+  const [selectedSession, setSelectedSession] = useState<any>(null);
 
   useEffect(() => {
     const fetchWorkoutPlans = async () => {
@@ -144,6 +155,17 @@ const WorkoutPlansView = () => {
     setValue(newValue);
   };
 
+  const handleOpenHistoryModal = (exercise: any, session: any) => {
+    console.log('Abriendo modal de detalles en WorkoutPlansView:', { exercise, session });
+    setSelectedExercise(exercise);
+    setSelectedSession(session);
+    setOpenHistoryModal(true);
+  };
+
+  const handleCloseHistoryModal = () => {
+    setOpenHistoryModal(false);
+  };
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
@@ -186,33 +208,10 @@ const WorkoutPlansView = () => {
           index={index}
         >
           <Box sx={{ mb: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+            <Box sx={{ mb: 1 }}>
               <Typography variant="h5" gutterBottom>
                 {plan.plan_name}
               </Typography>
-
-              {planStatus[plan.plan_id] && (
-                <Tooltip title={`${planStatus[plan.plan_id].daysCompleted}/${planStatus[plan.plan_id].totalDays} días completados`}>
-                  <Chip
-                    icon={
-                      planStatus[plan.plan_id].status === 'completed' ? <DoneAllIcon /> :
-                      planStatus[plan.plan_id].status === 'paused' ? <PauseCircleIcon /> :
-                      <PlayCircleIcon />
-                    }
-                    label={
-                      planStatus[plan.plan_id].status === 'completed' ? 'Completado' :
-                      planStatus[plan.plan_id].status === 'paused' ? 'Pausado' :
-                      'Activo'
-                    }
-                    color={
-                      planStatus[plan.plan_id].status === 'completed' ? 'success' :
-                      planStatus[plan.plan_id].status === 'paused' ? 'warning' :
-                      'primary'
-                    }
-                    size="small"
-                  />
-                </Tooltip>
-              )}
             </Box>
 
             <Typography variant="body1" color="text.secondary" paragraph>
@@ -257,31 +256,7 @@ const WorkoutPlansView = () => {
               </Grid>
             </Box>
 
-            {planStatus[plan.plan_id] && (
-              <Box sx={{ mb: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Progreso: {Math.round(planStatus[plan.plan_id].progress)}%
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {planStatus[plan.plan_id].daysCompleted}/{planStatus[plan.plan_id].totalDays} días
-                  </Typography>
-                </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={planStatus[plan.plan_id].progress}
-                  color={
-                    planStatus[plan.plan_id].status === 'completed' ? 'success' :
-                    planStatus[plan.plan_id].status === 'paused' ? 'warning' :
-                    'primary'
-                  }
-                  sx={{ height: 8, borderRadius: 4 }}
-                />
-                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
-                  Seguimiento automático de progreso
-                </Typography>
-              </Box>
-            )}
+
           </Box>
 
           <Divider sx={{ mb: 3 }} />
@@ -326,38 +301,39 @@ const WorkoutPlansView = () => {
                     })}
                   </List>
 
-                  {/* Seguimiento de completado - Gestionado automáticamente por IA */}
-                  <Box sx={{ mt: 2 }}>
-                    <Typography variant="subtitle2" gutterBottom>
-                      Estado de seguimiento:
-                    </Typography>
-                    {session.completion_tracking && session.completion_tracking.length > 0 ? (
-                      <Box>
-                        <Chip
-                          icon={<CheckCircleIcon />}
-                          label={`Último: ${session.completion_tracking.slice(-1)[0].date} - ${session.completion_tracking.slice(-1)[0].completion_time || 'Completado'}`}
-                          color="success"
-                          size="small"
-                          sx={{ mt: 1, mb: 1 }}
-                        />
-                        <Typography variant="caption" display="block" color="text.secondary">
-                          Seguimiento automático - {session.completion_tracking.length} sesiones registradas
-                        </Typography>
-                      </Box>
-                    ) : (
-                      <Box>
-                        <Chip
-                          icon={<PlayCircleIcon />}
-                          label={`Programado para ${session.day_of_week}`}
-                          color="primary"
-                          size="small"
-                          sx={{ mt: 1, mb: 1 }}
-                        />
-                        <Typography variant="caption" display="block" color="text.secondary">
-                          Se registrará automáticamente cuando se complete
-                        </Typography>
-                      </Box>
-                    )}
+                  {/* Botón para ver historial detallado */}
+                  <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      size="small"
+                      onClick={() => {
+                        // Obtener el ejercicio completo desde el servicio
+                        const exercise = day.exercises[0];
+                        console.log('Ejercicio seleccionado para ver detalles:', exercise);
+                        // Asegurarse de que el ejercicio tenga un nombre
+                        if (!exercise.name && exercise.exercise_id) {
+                          // Si no tiene nombre pero tiene ID, intentar obtener el nombre
+                          jsonDataService.getExerciseById(exercise.exercise_id)
+                            .then(fullExercise => {
+                              if (fullExercise) {
+                                console.log('Ejercicio completo obtenido:', fullExercise);
+                                handleOpenHistoryModal(fullExercise, day);
+                              } else {
+                                handleOpenHistoryModal(exercise, day);
+                              }
+                            })
+                            .catch(error => {
+                              console.error('Error al obtener ejercicio completo:', error);
+                              handleOpenHistoryModal(exercise, day);
+                            });
+                        } else {
+                          handleOpenHistoryModal(exercise, day);
+                        }
+                      }}
+                    >
+                      Ver detalles
+                    </Button>
                   </Box>
                 </Paper>
               </Grid>
@@ -365,6 +341,13 @@ const WorkoutPlansView = () => {
           </Grid>
         </TabPanel>
       ))}
+      {/* Modal para mostrar el historial detallado */}
+      <ExerciseHistoryModal
+        open={openHistoryModal}
+        onClose={handleCloseHistoryModal}
+        exercise={selectedExercise}
+        session={selectedSession}
+      />
     </Box>
   );
 };

@@ -35,6 +35,12 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import CancelIcon from '@mui/icons-material/Cancel';
 import EditIcon from '@mui/icons-material/Edit';
+import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -66,6 +72,8 @@ const ProgressView = () => {
   const [tabValue, setTabValue] = useState(0);
   const [nutritionTabValue, setNutritionTabValue] = useState(0);
   const [mealTabValue, setMealTabValue] = useState(0);
+  const [workoutTabValue, setWorkoutTabValue] = useState(0);
+  const [sessionTabValue, setSessionTabValue] = useState(0);
   const [progressData, setProgressData] = useState<any[]>([]);
   const [workoutLogs, setWorkoutLogs] = useState<any[]>([]);
   const [workoutPlans, setWorkoutPlans] = useState<any[]>([]);
@@ -195,6 +203,15 @@ const ProgressView = () => {
 
   const handleMealTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setMealTabValue(newValue);
+  };
+
+  const handleWorkoutTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setWorkoutTabValue(newValue);
+    setSessionTabValue(0); // Reset session tab when changing workout plan
+  };
+
+  const handleSessionTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setSessionTabValue(newValue);
   };
 
   // Format data for charts
@@ -444,181 +461,213 @@ const ProgressView = () => {
 
       {/* Historial de Planes Tab */}
       <TabPanel value={tabValue} index={3}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <Paper elevation={2} sx={{ p: 2, mb: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Planes de Entrenamiento
-              </Typography>
+        <Box sx={{ width: '100%' }}>
+          <Typography variant="h6" gutterBottom>
+            Historial de Seguimiento de Rutinas
+          </Typography>
+          <Typography variant="body2" color="text.secondary" paragraph>
+            Aquí puedes ver el historial detallado de seguimiento de tus planes de entrenamiento y sesiones.
+          </Typography>
 
-              <TableContainer>
-                <Table sx={{ minWidth: 650 }} aria-label="workout plans table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Nombre del Plan</TableCell>
-                      <TableCell>Fecha Inicio</TableCell>
-                      <TableCell>Fecha Fin</TableCell>
-                      <TableCell>Días Programados</TableCell>
-                      <TableCell>Progreso</TableCell>
-                      <TableCell>Detalles</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {workoutPlans && workoutPlans.length > 0 ? (
-                      workoutPlans.map((plan: any) => (
-                        <TableRow
-                          key={plan.plan_id}
-                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                          <TableCell component="th" scope="row">
-                            {plan.plan_name}
-                          </TableCell>
-                          <TableCell>{plan.start_date || '01/01/2023'}</TableCell>
-                          <TableCell>{plan.end_date || '31/03/2023'}</TableCell>
-                          <TableCell>{plan.days_to_follow || 30} días</TableCell>
-                          <TableCell>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              <Box sx={{ width: '100%', mr: 1 }}>
-                                <LinearProgress
-                                  variant="determinate"
-                                  value={plan.progress || 65}
-                                  color="primary"
-                                  sx={{ height: 8, borderRadius: 4 }}
-                                />
-                              </Box>
-                              <Box sx={{ minWidth: 35 }}>
-                                <Typography variant="body2" color="text.secondary">
-                                  {plan.progress || 65}%
-                                </Typography>
-                              </Box>
-                            </Box>
-                          </TableCell>
-                          <TableCell>
-                            <Button size="small" color="primary">
-                              Ver Sesiones
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={6} align="center">
-                          <Typography variant="body2" color="text.secondary">
-                            No hay planes de entrenamiento disponibles.
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <Paper elevation={2} sx={{ p: 2, mb: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Planes de Nutrición
-              </Typography>
-
-              <TableContainer>
-                <Table sx={{ minWidth: 650 }} aria-label="nutrition plans table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Nombre del Plan</TableCell>
-                      <TableCell>Fecha Inicio</TableCell>
-                      <TableCell>Fecha Fin</TableCell>
-                      <TableCell>Días Programados</TableCell>
-                      <TableCell>Calorías</TableCell>
-                      <TableCell>Detalles</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {nutritionPlans && nutritionPlans.length > 0 ? (
-                      nutritionPlans.map((plan: any) => (
-                        <TableRow
-                          key={plan.nutrition_plan_id}
-                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                          <TableCell component="th" scope="row">
-                            {plan.plan_name}
-                          </TableCell>
-                          <TableCell>{plan.start_date || '01/01/2023'}</TableCell>
-                          <TableCell>{plan.end_date || '31/03/2023'}</TableCell>
-                          <TableCell>{plan.days_to_follow || 90} días</TableCell>
-                          <TableCell>{plan.daily_calories} kcal</TableCell>
-                          <TableCell>
-                            <Button size="small" color="primary">
-                              Ver Comidas
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={6} align="center">
-                          <Typography variant="body2" color="text.secondary">
-                            No hay planes de nutrición disponibles.
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12}>
-            <Paper elevation={2} sx={{ p: 2 }}>
-              <Typography variant="h6" gutterBottom>
-                Registros de Seguimiento
-              </Typography>
-
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle1" color="primary">
-                  Detalles de Seguimiento de Planes
-                </Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  Aquí puedes ver el historial detallado de seguimiento de tus planes de entrenamiento y nutrición.
-                </Typography>
-
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Paper elevation={1} sx={{ p: 2, textAlign: 'center', bgcolor: 'primary.light', color: 'white' }}>
-                      <Typography variant="h4">{workoutPlans.length + nutritionPlans.length}</Typography>
-                      <Typography variant="body2">Planes Totales</Typography>
-                    </Paper>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Paper elevation={1} sx={{ p: 2, textAlign: 'center', bgcolor: 'secondary.light', color: 'white' }}>
-                      <Typography variant="h4">
-                        {workoutPlans.reduce((total, plan) => total + (plan.sessions?.length || 0), 0)}
-                      </Typography>
-                      <Typography variant="body2">Sesiones Programadas</Typography>
-                    </Paper>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Paper elevation={1} sx={{ p: 2, textAlign: 'center', bgcolor: 'success.light', color: 'white' }}>
-                      <Typography variant="h4">
-                        {nutritionPlans.reduce((total, plan) => total + (plan.meals?.length || 0), 0)}
-                      </Typography>
-                      <Typography variant="body2">Comidas Programadas</Typography>
-                    </Paper>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Paper elevation={1} sx={{ p: 2, textAlign: 'center', bgcolor: 'info.light', color: 'white' }}>
-                      <Typography variant="h4">
-                        {workoutLogs.length}
-                      </Typography>
-                      <Typography variant="body2">Registros Completados</Typography>
-                    </Paper>
-                  </Grid>
-                </Grid>
+          {workoutPlans && workoutPlans.length > 0 ? (
+            <Box sx={{ width: '100%' }}>
+              <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+                <Tabs
+                  value={workoutTabValue}
+                  onChange={handleWorkoutTabChange}
+                  aria-label="workout plans tabs"
+                  variant="scrollable"
+                  scrollButtons="auto"
+                >
+                  {workoutPlans.map((plan: any, index: number) => (
+                    <Tab key={plan.plan_id} label={plan.plan_name} id={`workout-tab-${index}`} />
+                  ))}
+                </Tabs>
               </Box>
-            </Paper>
-          </Grid>
-        </Grid>
+
+              {workoutPlans.map((plan: any, planIndex: number) => (
+                <div
+                  key={plan.plan_id}
+                  role="tabpanel"
+                  hidden={workoutTabValue !== planIndex}
+                  id={`workout-tabpanel-${planIndex}`}
+                  aria-labelledby={`workout-tab-${planIndex}`}
+                >
+                  {workoutTabValue === planIndex && (
+                    <Box sx={{ p: 2 }}>
+                      <Paper elevation={2} sx={{ p: 2, mb: 3 }}>
+                        <Typography variant="h6" gutterBottom>
+                          {plan.plan_name}
+                        </Typography>
+                        <Typography variant="body2" paragraph>
+                          {plan.description}
+                        </Typography>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} sm={6} md={3}>
+                            <Typography variant="subtitle2">Fecha Inicio:</Typography>
+                            <Typography variant="body1">{plan.start_date || '01/01/2023'}</Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={6} md={3}>
+                            <Typography variant="subtitle2">Fecha Fin:</Typography>
+                            <Typography variant="body1">{plan.end_date || '31/03/2023'}</Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={6} md={3}>
+                            <Typography variant="subtitle2">Días Programados:</Typography>
+                            <Typography variant="body1">{plan.days_to_follow || 30} días</Typography>
+                          </Grid>
+                          <Grid item xs={12} sm={6} md={3}>
+                            <Typography variant="subtitle2">Frecuencia:</Typography>
+                            <Typography variant="body1">{plan.frequency || 'Lun, Mié, Vie'}</Typography>
+                          </Grid>
+                        </Grid>
+                      </Paper>
+
+                      {/* Tabs para las sesiones */}
+                      {plan.sessions && plan.sessions.length > 0 && (
+                        <Box sx={{ width: '100%' }}>
+                          <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+                            <Tabs
+                              value={sessionTabValue}
+                              onChange={handleSessionTabChange}
+                              aria-label="session tabs"
+                              variant="scrollable"
+                              scrollButtons="auto"
+                            >
+                              {plan.sessions.map((session: any, index: number) => (
+                                <Tab key={session.session_id} label={`${session.day_of_week} - ${session.focus_area}`} id={`session-tab-${index}`} />
+                              ))}
+                            </Tabs>
+                          </Box>
+
+                          {plan.sessions.map((session: any, sessionIndex: number) => (
+                            <div
+                              key={session.session_id}
+                              role="tabpanel"
+                              hidden={sessionTabValue !== sessionIndex}
+                              id={`session-tabpanel-${sessionIndex}`}
+                              aria-labelledby={`session-tab-${sessionIndex}`}
+                            >
+                              {sessionTabValue === sessionIndex && (
+                                <Box sx={{ p: 2 }}>
+                                  <Paper elevation={2} sx={{ p: 2, mb: 3 }}>
+                                    <Grid container spacing={3}>
+                                      <Grid item xs={12} md={6}>
+                                        <Typography variant="h6" gutterBottom>
+                                          {session.focus_area}
+                                        </Typography>
+                                        <Typography variant="body2" paragraph>
+                                          Día: {session.day_of_week}
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                                          <Chip icon={<AccessTimeIcon />} label={`${session.duration_minutes} min`} color="secondary" size="small" />
+                                        </Box>
+                                      </Grid>
+                                    </Grid>
+                                  </Paper>
+
+                                  {/* Lista de ejercicios */}
+                                  <Paper elevation={2} sx={{ p: 2, mb: 3 }}>
+                                    <Typography variant="h6" gutterBottom color="primary">
+                                      Ejercicios
+                                    </Typography>
+                                    <List dense>
+                                      {session.exercises && session.exercises.map((exercise: any) => {
+                                        // Usamos el nombre del ejercicio directamente del objeto exercise
+                                        // ya que getExerciseById ahora es asíncrono
+                                        const exerciseName = exercise.name || 'Ejercicio';
+
+                                        return (
+                                          <ListItem key={exercise.workout_exercise_id}>
+                                            <ListItemIcon>
+                                              <FitnessCenterIcon color="action" />
+                                            </ListItemIcon>
+                                            <ListItemText
+                                              primary={exerciseName}
+                                              secondary={`${exercise.sets} series × ${exercise.reps || '-'} reps | Descanso: ${exercise.rest_seconds || '-'} seg`}
+                                            />
+                                          </ListItem>
+                                        );
+                                      })}
+                                    </List>
+                                  </Paper>
+
+                                  {/* Historial de seguimiento */}
+                                  <Paper elevation={2} sx={{ p: 2 }}>
+                                    <Typography variant="h6" gutterBottom color="primary">
+                                      Historial de Seguimiento
+                                    </Typography>
+                                    <TableContainer component={Paper} variant="outlined">
+                                      <Table size="small">
+                                        <TableHead>
+                                          <TableRow>
+                                            <TableCell>Fecha</TableCell>
+                                            <TableCell>Día</TableCell>
+                                            <TableCell>Estado</TableCell>
+                                            <TableCell>Hora</TableCell>
+                                            <TableCell>Notas</TableCell>
+                                          </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                          {session.completion_tracking && session.completion_tracking.length > 0 ? (
+                                            session.completion_tracking.map((tracking: any, index: number) => {
+                                              let statusChip;
+                                              switch(tracking.status) {
+                                                case 'completado':
+                                                  statusChip = <Chip icon={<CheckCircleIcon />} label="Completado" size="small" color="success" />;
+                                                  break;
+                                                case 'omitido':
+                                                  statusChip = <Chip icon={<CancelIcon />} label="Omitido" size="small" color="warning" />;
+                                                  break;
+                                                case 'modificado':
+                                                  statusChip = <Chip icon={<EditIcon />} label="Modificado" size="small" color="info" />;
+                                                  break;
+                                                case 'pendiente':
+                                                default:
+                                                  statusChip = <Chip icon={<AutorenewIcon />} label="Pendiente" size="small" color="primary" />;
+                                              }
+
+                                              return (
+                                                <TableRow key={index}>
+                                                  <TableCell>{tracking.date}</TableCell>
+                                                  <TableCell>{tracking.day_of_week}</TableCell>
+                                                  <TableCell>{statusChip}</TableCell>
+                                                  <TableCell>{tracking.completion_time || '-'}</TableCell>
+                                                  <TableCell>{tracking.notes || '-'}</TableCell>
+                                                </TableRow>
+                                              );
+                                            })
+                                          ) : (
+                                            <TableRow>
+                                              <TableCell colSpan={5} align="center">
+                                                <Typography variant="body2" color="text.secondary">
+                                                  No hay registros de seguimiento disponibles.
+                                                </Typography>
+                                              </TableCell>
+                                            </TableRow>
+                                          )}
+                                        </TableBody>
+                                      </Table>
+                                    </TableContainer>
+                                  </Paper>
+                                </Box>
+                              )}
+                            </div>
+                          ))}
+                        </Box>
+                      )}
+                    </Box>
+                  )}
+                </div>
+              ))}
+            </Box>
+          ) : (
+            <Box sx={{ p: 2, textAlign: 'center' }}>
+              <Typography variant="body1" color="text.secondary">
+                No hay planes de entrenamiento disponibles.
+              </Typography>
+            </Box>
+          )}
+        </Box>
       </TabPanel>
 
       {/* Historial de Nutrición Tab */}

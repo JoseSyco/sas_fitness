@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Grid,
   Button,
@@ -35,6 +35,26 @@ const SectionButtons = () => {
   const handleCloseModal = () => {
     setOpenModal(null);
   };
+
+  // Escuchar eventos personalizados para cerrar el modal actual y abrir el modal de Progreso
+  useEffect(() => {
+    const handleCloseCurrentModal = () => {
+      setOpenModal(null);
+    };
+
+    const handleOpenProgressModal = () => {
+      setOpenModal('progress');
+      setRefreshKey(prev => prev + 1);
+    };
+
+    window.addEventListener('closeCurrentModal', handleCloseCurrentModal);
+    window.addEventListener('openProgressModal', handleOpenProgressModal);
+
+    return () => {
+      window.removeEventListener('closeCurrentModal', handleCloseCurrentModal);
+      window.removeEventListener('openProgressModal', handleOpenProgressModal);
+    };
+  }, []);
 
   const sections = [
     {

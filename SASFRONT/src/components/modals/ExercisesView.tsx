@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import ExerciseHistoryModal from './ExerciseHistoryModal';
 import {
   Typography,
   Box,
@@ -105,6 +106,7 @@ const ExercisesView = () => {
   const [tabValue, setTabValue] = useState(0);
   const [selectedExercise, setSelectedExercise] = useState<any>(null);
   const [openProgressDialog, setOpenProgressDialog] = useState(false);
+  const [openHistoryModal, setOpenHistoryModal] = useState(false);
   const [progressData, setProgressData] = useState<ExerciseProgress>({
     date: new Date().toISOString().split('T')[0],
     completed: false,
@@ -125,6 +127,16 @@ const ExercisesView = () => {
 
   const handleCloseProgressDialog = () => {
     setOpenProgressDialog(false);
+  };
+
+  const handleOpenHistoryModal = (exercise: any) => {
+    console.log('Abriendo modal de detalles en ExercisesView:', { exercise });
+    setSelectedExercise(exercise);
+    setOpenHistoryModal(true);
+  };
+
+  const handleCloseHistoryModal = () => {
+    setOpenHistoryModal(false);
   };
 
   const handleSaveProgress = () => {
@@ -384,9 +396,29 @@ const ExercisesView = () => {
                             color="primary"
                             fullWidth
                             startIcon={<CheckCircleIcon />}
-                            onClick={() => handleOpenProgressDialog(exercise)}
+                            onClick={() => {
+                              console.log('Ejercicio seleccionado para ver detalles en ExercisesView:', exercise);
+                              // Asegurarse de que el ejercicio tenga todos los detalles
+                              if (exercise.exercise_id) {
+                                jsonDataService.getExerciseById(exercise.exercise_id)
+                                  .then(fullExercise => {
+                                    if (fullExercise) {
+                                      console.log('Ejercicio completo obtenido:', fullExercise);
+                                      handleOpenHistoryModal(fullExercise);
+                                    } else {
+                                      handleOpenHistoryModal(exercise);
+                                    }
+                                  })
+                                  .catch(error => {
+                                    console.error('Error al obtener ejercicio completo:', error);
+                                    handleOpenHistoryModal(exercise);
+                                  });
+                              } else {
+                                handleOpenHistoryModal(exercise);
+                              }
+                            }}
                           >
-                            Ver Historial
+                            Ver detalles
                           </Button>
                         </Box>
                       </Box>
@@ -481,6 +513,14 @@ const ExercisesView = () => {
           <Button onClick={handleCloseProgressDialog}>Cerrar</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Modal para mostrar el historial detallado */}
+      <ExerciseHistoryModal
+        open={openHistoryModal}
+        onClose={handleCloseHistoryModal}
+        exercise={selectedExercise}
+        session={null}
+      />
     </Box>
   );
 };

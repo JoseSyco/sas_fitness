@@ -23,6 +23,7 @@
               "workout_exercise_id": 1,
               "session_id": 1,
               "exercise_id": 1,
+              "name": "Carrera en cinta",
               "sets": 1,
               "reps": null,
               "duration_seconds": 1200,
@@ -33,6 +34,7 @@
               "workout_exercise_id": 2,
               "session_id": 1,
               "exercise_id": 2,
+              "name": "Plancha",
               "sets": 3,
               "reps": null,
               "duration_seconds": 60,
@@ -43,7 +45,8 @@
           "completion_tracking": [
             {
               "date": "2025-04-01",
-              "completed": true,
+              "day_of_week": "Lunes",
+              "status": "completado",
               "completion_time": "18:45",
               "notes": "Completado según lo planeado"
             }
@@ -63,6 +66,7 @@
               "workout_exercise_id": 3,
               "session_id": 2,
               "exercise_id": 4,
+              "name": "Sentadillas",
               "sets": 3,
               "reps": 15,
               "duration_seconds": null,
@@ -70,7 +74,29 @@
               "notes": "Mantener buena forma"
             }
           ],
-          "completion_tracking": []
+          "completion_tracking": [
+            {
+              "date": "2025-04-03",
+              "day_of_week": "Miércoles",
+              "status": "completado",
+              "completion_time": "18:30",
+              "notes": "Buen rendimiento"
+            },
+            {
+              "date": "2025-04-10",
+              "day_of_week": "Miércoles",
+              "status": "modificado",
+              "completion_time": "19:15",
+              "notes": "Aumentado peso en sentadillas"
+            },
+            {
+              "date": "2025-04-17",
+              "day_of_week": "Miércoles",
+              "status": "omitido",
+              "completion_time": null,
+              "notes": "Dolor en rodilla"
+            }
+          ]
         }
       ]
     }

@@ -31,6 +31,7 @@ const workoutPlansData = {
               "workout_exercise_id": 1,
               "session_id": 1,
               "exercise_id": 1,
+              "name": "Carrera en cinta",
               "sets": 1,
               "reps": null,
               "duration_seconds": 1200,
@@ -41,6 +42,7 @@ const workoutPlansData = {
               "workout_exercise_id": 2,
               "session_id": 1,
               "exercise_id": 2,
+              "name": "Plancha",
               "sets": 3,
               "reps": null,
               "duration_seconds": 60,
@@ -51,7 +53,8 @@ const workoutPlansData = {
           "completion_tracking": [
             {
               "date": "2025-04-01",
-              "completed": true,
+              "day_of_week": "Lunes",
+              "status": "completado",
               "completion_time": "18:45",
               "notes": "Completado según lo planeado"
             }
@@ -71,6 +74,7 @@ const workoutPlansData = {
               "workout_exercise_id": 3,
               "session_id": 2,
               "exercise_id": 4,
+              "name": "Sentadillas",
               "sets": 3,
               "reps": 15,
               "duration_seconds": null,
@@ -78,7 +82,29 @@ const workoutPlansData = {
               "notes": "Mantener buena forma"
             }
           ],
-          "completion_tracking": []
+          "completion_tracking": [
+            {
+              "date": "2025-04-03",
+              "day_of_week": "Miércoles",
+              "status": "completado",
+              "completion_time": "18:30",
+              "notes": "Buen rendimiento"
+            },
+            {
+              "date": "2025-04-10",
+              "day_of_week": "Miércoles",
+              "status": "modificado",
+              "completion_time": "19:15",
+              "notes": "Aumentado peso en sentadillas"
+            },
+            {
+              "date": "2025-04-17",
+              "day_of_week": "Miércoles",
+              "status": "omitido",
+              "completion_time": null,
+              "notes": "Dolor en rodilla"
+            }
+          ]
         }
       ]
     }
@@ -285,6 +311,7 @@ interface WorkoutExercise {
   workout_exercise_id: number;
   session_id: number;
   exercise_id: number;
+  name?: string;
   sets: number;
   reps: number | null;
   duration_seconds: number | null;
@@ -294,7 +321,8 @@ interface WorkoutExercise {
 
 interface CompletionRecord {
   date: string;
-  completed: boolean;
+  day_of_week: string;
+  status: string;
   completion_time: string | null;
   notes: string;
 }
@@ -509,9 +537,21 @@ const jsonDataService = {
     }
   },
 
-  getExerciseById: (exerciseId: number): Exercise | undefined => {
+  getExerciseById: async (exerciseId: number): Promise<Exercise | undefined> => {
     logger.info('Getting exercise by ID from JSON data', { exerciseId });
-    return exercisesData.exercises?.find(exercise => exercise.exercise_id === exerciseId);
+    try {
+      console.log('Buscando ejercicio con ID:', exerciseId);
+      const data = await jsonDataService.loadJsonFile('exercises');
+      console.log('Datos de ejercicios cargados en getExerciseById:', data);
+      const foundExercise = data?.exercises?.find((exercise: Exercise) => exercise.exercise_id === exerciseId);
+      console.log('Ejercicio encontrado por ID:', foundExercise);
+      return foundExercise;
+    } catch (error) {
+      console.error('Error getting exercise by ID:', error);
+      const fallbackExercise = exercisesData.exercises?.find(exercise => exercise.exercise_id === exerciseId);
+      console.log('Ejercicio encontrado en datos de respaldo:', fallbackExercise);
+      return fallbackExercise;
+    }
   },
 
   getExercisesByMuscleGroup: (muscleGroup: string): Exercise[] => {

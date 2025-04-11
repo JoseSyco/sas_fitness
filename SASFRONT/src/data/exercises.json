@@ -3,26 +3,160 @@
     {
       "exercise_id": 1,
       "name": "Carrera en cinta",
-      "description": "Correr a ritmo moderado en cinta.",
+      "description": "Correr a ritmo moderado en cinta para mejorar la resistencia cardiovascular y quemar calorías.",
       "muscle_group": "Cardio",
       "equipment_needed": "Cinta de correr",
       "difficulty_level": "intermediate",
       "calories_per_minute": 10,
       "video_url": "https://example.com/videos/treadmill-run",
       "image_url": "https://example.com/images/treadmill-run.jpg",
+      "instructions": [
+        "Ajusta la velocidad de la cinta a un ritmo moderado",
+        "Mantén una postura erguida con los hombros relajados",
+        "Aterriza suavemente sobre la parte media del pie",
+        "Mantén un ritmo de respiración constante",
+        "Aumenta gradualmente la velocidad según tu nivel de condición física"
+      ],
+      "benefits": [
+        "Mejora la salud cardiovascular",
+        "Quema calorías eficientemente",
+        "Fortalece las piernas y el core",
+        "Aumenta la resistencia general",
+        "Reduce el estrés"
+      ],
+      "tips": [
+        "Usa calzado adecuado para correr",
+        "Mantén la mirada al frente, no hacia abajo",
+        "Hidratate antes, durante y después del ejercicio",
+        "Comienza con intervalos si eres principiante",
+        "Aumenta la inclinación para mayor intensidad"
+      ],
+      "variations": [
+        "Intervalos de alta intensidad (HIIT)",
+        "Carrera en pendiente",
+        "Carrera con cambios de velocidad",
+        "Caminata rápida para principiantes"
+      ],
       "created_at": "2025-04-01T10:00:00Z",
       "updated_at": "2025-04-01T10:00:00Z"
     },
     {
       "exercise_id": 2,
       "name": "Plancha",
-      "description": "Mantén la posición de plancha con el cuerpo recto.",
+      "description": "Ejercicio isométrico que fortalece el core, los hombros y mejora la estabilidad general del cuerpo.",
       "muscle_group": "Core",
       "equipment_needed": "Ninguno",
       "difficulty_level": "intermediate",
       "calories_per_minute": 5,
       "video_url": "https://example.com/videos/plank",
       "image_url": "https://example.com/images/plank.jpg",
+      "instructions": [
+        "Colócate boca abajo con los antebrazos apoyados en el suelo",
+        "Eleva el cuerpo manteniendo una línea recta desde la cabeza hasta los talones",
+        "Contrae el abdomen y los glúteos",
+        "Mantén la posición durante el tiempo indicado",
+        "Respira de manera constante y controlada"
+      ],
+      "benefits": [
+        "Fortalece el core y los músculos abdominales",
+        "Mejora la postura",
+        "Reduce el dolor de espalda",
+        "Aumenta la estabilidad",
+        "Tonifica múltiples grupos musculares simultáneamente"
+      ],
+      "tips": [
+        "Mantén la cabeza alineada con la columna, no dejes caer el cuello",
+        "No eleves las caderas ni las dejes caer",
+        "Si es muy difícil, comienza apoyando las rodillas",
+        "Aumenta gradualmente el tiempo de mantenimiento",
+        "Respira normalmente, no contengas la respiración"
+      ],
+      "variations": [
+        "Plancha lateral",
+        "Plancha con elevación de pierna",
+        "Plancha con apoyo en manos (posición de flexión)",
+        "Plancha dinámica con movimiento de cadera"
+      ],
+      "created_at": "2025-04-01T10:00:00Z",
+      "updated_at": "2025-04-01T10:00:00Z"
+    },
+    {
+      "exercise_id": 3,
+      "name": "Sentadillas",
+      "description": "Ejercicio compuesto que fortalece principalmente las piernas y glúteos, además de mejorar la movilidad de caderas.",
+      "muscle_group": "Piernas",
+      "equipment_needed": "Ninguno (o pesas para mayor intensidad)",
+      "difficulty_level": "beginner",
+      "calories_per_minute": 8,
+      "video_url": "https://example.com/videos/squats",
+      "image_url": "https://example.com/images/squats.jpg",
+      "instructions": [
+        "Colócate de pie con los pies separados al ancho de los hombros",
+        "Mantén la espalda recta y el pecho hacia adelante",
+        "Flexiona las rodillas como si fueras a sentarte en una silla",
+        "Baja hasta que los muslos estén paralelos al suelo (o según tu movilidad)",
+        "Regresa a la posición inicial empujando a través de los talones"
+      ],
+      "benefits": [
+        "Fortalece cuádriceps, isquiotibiales y glúteos",
+        "Mejora la movilidad de caderas y tobillos",
+        "Aumenta la densidad ósea",
+        "Mejora el equilibrio y la estabilidad",
+        "Quema calorías eficientemente"
+      ],
+      "tips": [
+        "Mantén las rodillas alineadas con los pies, sin colapsarlas hacia adentro",
+        "Mantén el peso en los talones y la parte media del pie",
+        "No dejes que las rodillas sobrepasen la punta de los pies",
+        "Mantén el core activado durante todo el movimiento",
+        "Respira: inhala al bajar, exhala al subir"
+      ],
+      "variations": [
+        "Sentadilla con salto",
+        "Sentadilla sumo",
+        "Sentadilla búlgara",
+        "Sentadilla con peso (mancuernas o barra)"
+      ],
+      "created_at": "2025-04-01T10:00:00Z",
+      "updated_at": "2025-04-01T10:00:00Z"
+    },
+    {
+      "exercise_id": 4,
+      "name": "Press de banca",
+      "description": "Ejercicio compuesto que desarrolla principalmente los músculos del pecho, hombros y tríceps.",
+      "muscle_group": "Pecho",
+      "equipment_needed": "Banca, barra y discos",
+      "difficulty_level": "intermediate",
+      "calories_per_minute": 7,
+      "video_url": "https://example.com/videos/bench-press",
+      "image_url": "https://example.com/images/bench-press.jpg",
+      "instructions": [
+        "Acuéstate en una banca plana con los pies apoyados en el suelo",
+        "Agarra la barra con las manos un poco más separadas que el ancho de los hombros",
+        "Baja la barra lentamente hasta tocar ligeramente el pecho",
+        "Empuja la barra hacia arriba hasta extender los brazos sin bloquear los codos",
+        "Mantén los hombros hacia atrás y el pecho elevado durante todo el movimiento"
+      ],
+      "benefits": [
+        "Desarrolla la fuerza y tamaño del pecho",
+        "Fortalece los hombros y tríceps",
+        "Mejora la estabilidad del tren superior",
+        "Aumenta la densidad ósea",
+        "Mejora el rendimiento en otros ejercicios de empuje"
+      ],
+      "tips": [
+        "Siempre usa un compañero de entrenamiento para ejercicios con peso libre",
+        "Mantén las muñecas rectas y firmes",
+        "No rebotes la barra en el pecho",
+        "Mantén los glúteos en contacto con la banca",
+        "Comienza con peso ligero para dominar la técnica"
+      ],
+      "variations": [
+        "Press de banca inclinado",
+        "Press de banca declinado",
+        "Press con mancuernas",
+        "Press con agarre cerrado (para enfatizar tríceps)"
+      ],
       "created_at": "2025-04-01T10:00:00Z",
       "updated_at": "2025-04-01T10:00:00Z"
     }
