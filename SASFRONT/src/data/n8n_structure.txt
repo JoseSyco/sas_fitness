@@ -1,0 +1,569 @@
+# Estructura de Integración con n8n para SAS Fitness
+
+## Descripción General
+
+Este documento describe la estructura de integración entre la aplicación SAS Fitness y n8n, incluyendo:
+- Estructura de la base de datos
+- Formato de peticiones JSON
+- Flujos de trabajo en n8n
+- Webhooks y puntos de entrada
+
+## Estructura de la Base de Datos
+
+### Tablas Principales
+
+1. **users**
+   - user_id (PK)
+   - username
+   - email
+   - password_hash
+   - first_name
+   - last_name
+   - created_at
+   - updated_at
+   - last_login
+   - token (para autenticación)
+
+2. **user_profiles**
+   - profile_id (PK)
+   - user_id (FK)
+   - age
+   - gender
+   - height
+   - weight
+   - activity_level
+   - fitness_level
+   - fitness_goals (JSON)
+   - health_conditions (JSON)
+   - dietary_restrictions (JSON)
+   - created_at
+   - updated_at
+
+3. **user_preferences**
+   - preference_id (PK)
+   - user_id (FK)
+   - receive_notifications
+   - email_notifications
+   - push_notifications
+   - workout_reminders
+   - nutrition_reminders
+   - dark_mode
+   - language
+   - units
+   - created_at
+   - updated_at
+
+4. **workout_plans**
+   - plan_id (PK)
+   - user_id (FK)
+   - plan_name
+   - description
+   - is_ai_generated
+   - start_date
+   - end_date
+   - days_to_follow
+   - frequency (JSON array de días)
+   - created_at
+   - updated_at
+
+5. **workout_sessions**
+   - session_id (PK)
+   - plan_id (FK)
+   - day_of_week
+   - focus_area
+   - duration_minutes
+   - scheduled_time
+   - created_at
+   - updated_at
+
+6. **workout_exercises**
+   - workout_exercise_id (PK)
+   - session_id (FK)
+   - exercise_id (FK)
+   - sets
+   - reps
+   - weight
+   - duration_seconds
+   - rest_seconds
+   - notes
+   - created_at
+   - updated_at
+
+7. **exercises**
+   - exercise_id (PK)
+   - name
+   - description
+   - muscle_group
+   - equipment_needed
+   - difficulty_level
+   - instructions
+   - video_url
+   - image_url
+   - created_at
+   - updated_at
+
+8. **nutrition_plans**
+   - nutrition_plan_id (PK)
+   - user_id (FK)
+   - plan_name
+   - description
+   - detailed_description
+   - recommended_supplements
+   - daily_calories
+   - protein_grams
+   - carbs_grams
+   - fat_grams
+   - is_ai_generated
+   - start_date
+   - end_date
+   - days_to_follow
+   - frequency (JSON array de días)
+   - hydration_recommendation
+   - created_at
+   - updated_at
+
+9. **meals**
+   - meal_id (PK)
+   - nutrition_plan_id (FK)
+   - meal_name
+   - scheduled_time
+   - description
+   - calories
+   - protein_grams
+   - carbs_grams
+   - fat_grams
+   - created_at
+   - updated_at
+
+10. **meal_items**
+    - meal_item_id (PK)
+    - meal_id (FK)
+    - food_name
+    - portion_size
+    - portion_unit
+    - calories
+    - protein_grams
+    - carbs_grams
+    - fat_grams
+    - created_at
+    - updated_at
+
+11. **progress_tracking**
+    - progress_id (PK)
+    - user_id (FK)
+    - date
+    - weight
+    - body_fat_percentage
+    - chest_cm
+    - waist_cm
+    - hips_cm
+    - arms_cm
+    - thighs_cm
+    - notes
+    - created_at
+    - updated_at
+
+12. **workout_tracking**
+    - workout_tracking_id (PK)
+    - user_id (FK)
+    - plan_id (FK)
+    - session_id (FK)
+    - date
+    - status (completado, no_completado)
+    - duration_minutes
+    - calories_burned
+    - notes
+    - created_at
+    - updated_at
+
+13. **nutrition_tracking**
+    - nutrition_tracking_id (PK)
+    - user_id (FK)
+    - nutrition_plan_id (FK)
+    - meal_id (FK)
+    - date
+    - status (completado, no_completado)
+    - notes
+    - created_at
+    - updated_at
+
+## Formato de Peticiones JSON
+
+### 1. Webhook Principal
+
+Todas las peticiones se envían al webhook principal de n8n con la siguiente estructura base:
+
+```json
+{
+  "type": "string",
+  "token": "string",
+  "data": {}
+}
+```
+
+Donde:
+- **type**: Tipo de petición (mensaje_chat, rutinas, nutricion, ejercicios, progreso)
+- **token**: Token de autenticación del usuario
+- **data**: Datos específicos según el tipo de petición
+
+### 2. Tipos de Peticiones
+
+#### 2.1 Mensaje de Chat (IA)
+
+```json
+{
+  "type": "mensaje_chat",
+  "token": "user_token_123",
+  "data": {
+    "nombre_usuario": "juanperez",
+    "mensaje": "Quiero un plan de entrenamiento para perder peso"
+  }
+}
+```
+
+#### 2.2 Rutinas
+
+##### 2.2.1 Obtener Todas las Rutinas
+```json
+{
+  "type": "rutinas",
+  "token": "user_token_123",
+  "data": {
+    "action": "get_all"
+  }
+}
+```
+
+##### 2.2.2 Obtener Rutina Específica
+```json
+{
+  "type": "rutinas",
+  "token": "user_token_123",
+  "data": {
+    "action": "get_by_id",
+    "plan_id": 1
+  }
+}
+```
+
+##### 2.2.3 Registrar Progreso de Rutina
+```json
+{
+  "type": "rutinas",
+  "token": "user_token_123",
+  "data": {
+    "action": "track_progress",
+    "plan_id": 1,
+    "session_id": 2,
+    "date": "2025-04-11",
+    "status": "completado",
+    "duration_minutes": 45,
+    "calories_burned": 320,
+    "notes": "Buena sesión, aumenté peso en press de banca"
+  }
+}
+```
+
+#### 2.3 Nutrición
+
+##### 2.3.1 Obtener Todos los Planes de Nutrición
+```json
+{
+  "type": "nutricion",
+  "token": "user_token_123",
+  "data": {
+    "action": "get_all"
+  }
+}
+```
+
+##### 2.3.2 Obtener Plan de Nutrición Específico
+```json
+{
+  "type": "nutricion",
+  "token": "user_token_123",
+  "data": {
+    "action": "get_by_id",
+    "nutrition_plan_id": 1
+  }
+}
+```
+
+##### 2.3.3 Registrar Progreso de Nutrición
+```json
+{
+  "type": "nutricion",
+  "token": "user_token_123",
+  "data": {
+    "action": "track_progress",
+    "nutrition_plan_id": 1,
+    "meal_id": 3,
+    "date": "2025-04-11",
+    "status": "completado",
+    "notes": "Seguí el plan al 100%"
+  }
+}
+```
+
+#### 2.4 Ejercicios
+
+##### 2.4.1 Obtener Todos los Ejercicios
+```json
+{
+  "type": "ejercicios",
+  "token": "user_token_123",
+  "data": {
+    "action": "get_all"
+  }
+}
+```
+
+##### 2.4.2 Obtener Ejercicio Específico
+```json
+{
+  "type": "ejercicios",
+  "token": "user_token_123",
+  "data": {
+    "action": "get_by_id",
+    "exercise_id": 5
+  }
+}
+```
+
+##### 2.4.3 Buscar Ejercicios por Grupo Muscular
+```json
+{
+  "type": "ejercicios",
+  "token": "user_token_123",
+  "data": {
+    "action": "search",
+    "muscle_group": "piernas"
+  }
+}
+```
+
+#### 2.5 Progreso
+
+##### 2.5.1 Obtener Historial de Progreso
+```json
+{
+  "type": "progreso",
+  "token": "user_token_123",
+  "data": {
+    "action": "get_history",
+    "start_date": "2025-01-01",
+    "end_date": "2025-04-11"
+  }
+}
+```
+
+##### 2.5.2 Registrar Medidas
+```json
+{
+  "type": "progreso",
+  "token": "user_token_123",
+  "data": {
+    "action": "record_measurements",
+    "date": "2025-04-11",
+    "weight": 75.5,
+    "body_fat_percentage": 18.2,
+    "chest_cm": 95,
+    "waist_cm": 82,
+    "hips_cm": 98,
+    "arms_cm": 35,
+    "thighs_cm": 58,
+    "notes": "Me siento más delgado"
+  }
+}
+```
+
+## Respuestas de n8n
+
+### 1. Respuesta General
+
+Todas las respuestas de n8n seguirán esta estructura:
+
+```json
+{
+  "success": true,
+  "message": "Operación completada con éxito",
+  "data": {}
+}
+```
+
+### 2. Respuesta del Agente IA
+
+```json
+{
+  "success": true,
+  "message": "Respuesta del agente generada",
+  "data": {
+    "mensaje_agente": "¡Hola! Puedo ayudarte con un plan de entrenamiento para perder peso. ¿Cuántos días a la semana puedes entrenar?",
+    "data": {
+      "tipo": "recomendacion_ejercicio",
+      "contenido": {
+        "categoria": "cardio",
+        "ejercicios_sugeridos": [
+          {"id": 1, "nombre": "Carrera en cinta", "emoji": "🏃‍♂️"},
+          {"id": 5, "nombre": "Bicicleta estática", "emoji": "🚴‍♀️"},
+          {"id": 8, "nombre": "Salto a la comba", "emoji": "⏱️"}
+        ]
+      }
+    },
+    "action": {
+      "type": "SHOW_QUICK_ACTIONS",
+      "params": {
+        "highlight": "nuevo"
+      }
+    }
+  }
+}
+```
+
+## Flujos de Trabajo en n8n
+
+### 1. Flujo Principal (Webhook Entry Point)
+
+1. **Webhook Trigger**: Recibe todas las peticiones
+2. **Switch Node**: Divide el flujo según el valor de `type`
+   - mensaje_chat → Flujo de IA
+   - rutinas → Flujo de Rutinas
+   - nutricion → Flujo de Nutrición
+   - ejercicios → Flujo de Ejercicios
+   - progreso → Flujo de Progreso
+
+### 2. Flujo de IA (Agente)
+
+1. **Function Node**: Prepara el prompt para DeepSeek
+2. **HTTP Request**: Envía la solicitud a DeepSeek API
+3. **Function Node**: Procesa la respuesta de DeepSeek
+4. **Switch Node**: Según la acción detectada en la respuesta
+   - Si requiere actualizar rutinas → Subflujo de Actualización de Rutinas
+   - Si requiere actualizar nutrición → Subflujo de Actualización de Nutrición
+   - Si requiere registrar progreso → Subflujo de Registro de Progreso
+5. **Webhook Response**: Devuelve la respuesta al frontend
+
+### 3. Flujo de Rutinas
+
+1. **Function Node**: Procesa la acción solicitada
+2. **Switch Node**: Divide según `action`
+   - get_all → Obtiene todas las rutinas
+   - get_by_id → Obtiene una rutina específica
+   - track_progress → Registra progreso de rutina
+3. **HTTP Request / Database**: Interactúa con la base de datos
+4. **Function Node**: Formatea la respuesta
+5. **Webhook Response**: Devuelve la respuesta al frontend
+
+### 4. Flujo de Nutrición
+
+Similar al flujo de rutinas, pero para planes de nutrición.
+
+### 5. Flujo de Ejercicios
+
+Similar al flujo de rutinas, pero para ejercicios.
+
+### 6. Flujo de Progreso
+
+Similar al flujo de rutinas, pero para seguimiento de progreso.
+
+## Implementación en el Frontend
+
+### Actualizaciones Necesarias en los Componentes TSX
+
+1. **SimpleChatInterface.tsx**: Modificar para usar el nuevo formato de peticiones
+2. **SectionButtons.tsx**: Actualizar para manejar los diferentes tipos de peticiones
+3. **Componentes de Modales**: Actualizar para consumir los datos de n8n
+
+### Ejemplo de Actualización para SimpleChatInterface.tsx
+
+```typescript
+// Función para enviar mensaje al agente IA
+const handleSendMessage = async (message: string) => {
+  try {
+    // Crear la petición con el formato correcto
+    const requestData = {
+      type: "mensaje_chat",
+      token: "user_token_123", // En producción, obtener de AuthContext
+      data: {
+        nombre_usuario: "usuario_test", // En producción, obtener de AuthContext
+        mensaje: message
+      }
+    };
+    
+    // Enviar la petición a n8n
+    const response = await fetch('https://n8n.synapticalhub.com/webhook/sas', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(requestData)
+    });
+    
+    // Procesar la respuesta
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+    
+    const responseData = await response.json();
+    
+    // Verificar si la respuesta es exitosa
+    if (!responseData.success) {
+      throw new Error(responseData.message || 'Error desconocido');
+    }
+    
+    // Mostrar la respuesta del agente
+    const agentMessage = responseData.data.mensaje_agente;
+    // Actualizar la interfaz con el mensaje del agente
+    
+    // Procesar acciones adicionales si existen
+    if (responseData.data.action) {
+      handleAgentAction(responseData.data.action);
+    }
+  } catch (error) {
+    console.error('Error al enviar mensaje:', error);
+    // Mostrar mensaje de error al usuario
+  }
+};
+
+// Función para manejar acciones del agente
+const handleAgentAction = (action) => {
+  switch (action.type) {
+    case 'SHOW_QUICK_ACTIONS':
+      // Mostrar acciones rápidas
+      break;
+    case 'SHOW_EXERCISE_CATEGORY':
+      // Mostrar categoría de ejercicios
+      break;
+    // Otros casos según sea necesario
+    default:
+      console.log('Acción no reconocida:', action.type);
+  }
+};
+```
+
+## Token de Autenticación (Ficticio para Desarrollo)
+
+Para desarrollo, puedes usar el siguiente token ficticio:
+
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6Imp1YW5wZXJleiIsImVtYWlsIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsImlhdCI6MTY0MzI5MjQ4MH0.6Y5BHO-n1pTLJcYuRyKU9OqZ4XNR5kJtNmm6z3YS8
+```
+
+Este token contiene la siguiente información (decodificada):
+```json
+{
+  "user_id": 1,
+  "username": "juanperez",
+  "email": "juan.perez@example.com",
+  "iat": 1643292480
+}
+```
+
+## Notas Adicionales
+
+1. **Seguridad**: En producción, implementar autenticación JWT adecuada.
+2. **Manejo de Errores**: Implementar manejo de errores robusto en todos los flujos.
+3. **Caché**: Considerar implementar caché para peticiones frecuentes.
+4. **Logs**: Mantener logs detallados para depuración.
+5. **Pruebas**: Crear pruebas automatizadas para cada flujo.

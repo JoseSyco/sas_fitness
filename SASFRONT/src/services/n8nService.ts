@@ -9,14 +9,28 @@ import { N8N_WEBHOOK_URL } from '../config/env';
 // URL del webhook de n8n (configurado en config/env.ts)
 
 interface UserMessageRequest {
-  nombre_usuario: string;
-  mensaje: string;
+  type: string;
+  token: string;
+  data: {
+    nombre_usuario: string;
+    mensaje: string;
+  };
 }
 
 interface AgentMessageResponse {
   mensaje_agente: string;
   data?: any;
   action?: any;
+}
+
+interface N8nResponse {
+  success: boolean;
+  message: string;
+  data: {
+    mensaje_agente: string;
+    data?: any;
+    action?: any;
+  };
 }
 
 const n8nService = {
@@ -34,10 +48,17 @@ const n8nService = {
       console.log('Usuario:', username);
       console.log('Mensaje:', message);
 
-      // Preparar datos de la solicitud
+      // Token ficticio para desarrollo
+      const demoToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6Imp1YW5wZXJleiIsImVtYWlsIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsImlhdCI6MTY0MzI5MjQ4MH0.6Y5BHO-n1pTLJcYuRyKU9OqZ4XNR5kJtNmm6z3YS8';
+
+      // Preparar datos de la solicitud con el nuevo formato
       const requestData: UserMessageRequest = {
-        nombre_usuario: username,
-        mensaje: message
+        type: 'mensaje_chat',
+        token: demoToken,
+        data: {
+          nombre_usuario: username,
+          mensaje: message
+        }
       };
 
       console.log('Datos JSON a enviar:', JSON.stringify(requestData, null, 2));
@@ -65,6 +86,24 @@ const n8nService = {
         throw new Error('Respuesta vacía desde n8n');
       }
 
+      // Verificar si la respuesta tiene el nuevo formato (success, message, data)
+      if (response.data.success !== undefined) {
+        console.log('Detectado formato de respuesta n8n nuevo');
+
+        // Verificar si la operación fue exitosa
+        if (!response.data.success) {
+          throw new Error(`Error desde n8n: ${response.data.message}`);
+        }
+
+        // Verificar si hay datos en la respuesta
+        if (!response.data.data) {
+          throw new Error('Respuesta sin datos desde n8n');
+        }
+
+        // Devolver los datos del agente
+        return response.data.data;
+      }
+
       // Manejar el caso donde la respuesta tiene un campo 'output' que es un string JSON
       if (response.data.output && typeof response.data.output === 'string') {
         try {
@@ -84,6 +123,15 @@ const n8nService = {
           const parsedOutput = JSON.parse(outputStr);
           console.log('Output parseado correctamente:', parsedOutput);
 
+          // Verificar si es el nuevo formato de respuesta
+          if (parsedOutput.success !== undefined) {
+            if (!parsedOutput.success) {
+              throw new Error(`Error desde n8n: ${parsedOutput.message}`);
+            }
+            return parsedOutput.data;
+          }
+
+          // Formato antiguo
           if (parsedOutput.mensaje_agente) {
             return parsedOutput;
           }
@@ -159,9 +207,16 @@ const n8nService = {
       // Intentar con una solicitud fetch como alternativa
       try {
         console.log('Intentando con fetch como alternativa...');
+        // Token ficticio para desarrollo (mismo que arriba)
+        const demoToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6Imp1YW5wZXJleiIsImVtYWlsIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsImlhdCI6MTY0MzI5MjQ4MH0.6Y5BHO-n1pTLJcYuRyKU9OqZ4XNR5kJtNmm6z3YS8';
+
         const userData = {
-          nombre_usuario: username,
-          mensaje: message
+          type: 'mensaje_chat',
+          token: demoToken,
+          data: {
+            nombre_usuario: username,
+            mensaje: message
+          }
         };
 
         const fetchResponse = await fetch(N8N_WEBHOOK_URL, {
@@ -178,6 +233,24 @@ const n8nService = {
         if (fetchResponse.ok) {
           const data = await fetchResponse.json();
           console.log('Datos de fetch:', JSON.stringify(data, null, 2));
+
+          // Verificar si la respuesta tiene el nuevo formato (success, message, data)
+          if (data.success !== undefined) {
+            console.log('Detectado formato de respuesta n8n nuevo (fetch)');
+
+            // Verificar si la operación fue exitosa
+            if (!data.success) {
+              throw new Error(`Error desde n8n (fetch): ${data.message}`);
+            }
+
+            // Verificar si hay datos en la respuesta
+            if (!data.data) {
+              throw new Error('Respuesta sin datos desde n8n (fetch)');
+            }
+
+            // Devolver los datos del agente
+            return data.data;
+          }
 
           // Manejar el caso donde la respuesta tiene un campo 'output' que es un string JSON
           if (data.output && typeof data.output === 'string') {
@@ -198,6 +271,15 @@ const n8nService = {
               const parsedOutput = JSON.parse(outputStr);
               console.log('Output de fetch parseado correctamente:', parsedOutput);
 
+              // Verificar si es el nuevo formato de respuesta
+              if (parsedOutput.success !== undefined) {
+                if (!parsedOutput.success) {
+                  throw new Error(`Error desde n8n (fetch): ${parsedOutput.message}`);
+                }
+                return parsedOutput.data;
+              }
+
+              // Formato antiguo
               if (parsedOutput.mensaje_agente) {
                 return parsedOutput;
               }
